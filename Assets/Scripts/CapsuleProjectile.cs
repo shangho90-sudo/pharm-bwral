@@ -23,6 +23,7 @@ namespace PharmaBrawl
             trail.startColor=new Color(color.r,color.g,color.b,.7f);trail.endColor=new Color(color.r,color.g,color.b,0);
             transform.localScale=Vector3.one*(kind==4?1.6f:1);
         }
+        void OnDestroy(){if(materials!=null)foreach(var material in materials)if(material)Destroy(material);if(trail && trail.sharedMaterial)Destroy(trail.sharedMaterial);}
         void OnEnable(){if(trail)trail.Clear();}
     }
 }

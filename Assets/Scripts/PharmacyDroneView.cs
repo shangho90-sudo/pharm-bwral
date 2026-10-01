@@ -1,12 +1,15 @@
 using UnityEngine;
+using System.Collections.Generic;
 namespace PharmaBrawl
 {
     public sealed class PharmacyDroneView:MonoBehaviour
     {
-        static void Part(Transform root,string name,PrimitiveType shape,Vector3 position,Vector3 scale,Color color)
+        readonly List<Material> runtimeMaterials=new List<Material>();
+        void OnDestroy(){foreach(var material in runtimeMaterials)if(material)Destroy(material);}
+        void Part(Transform root,string name,PrimitiveType shape,Vector3 position,Vector3 scale,Color color)
         {
             var g=GameObject.CreatePrimitive(shape);g.name=name;g.transform.SetParent(root,false);g.transform.localPosition=position;g.transform.localScale=scale;Destroy(g.GetComponent<Collider>());
-            var mat=new Material(Resources.Load<Material>("CombatMaterial"));mat.color=color;mat.SetFloat("_Metallic",0);mat.SetFloat("_Glossiness",.35f);g.GetComponent<Renderer>().sharedMaterial=mat;
+            var mat=new Material(Resources.Load<Material>("CombatMaterial"));runtimeMaterials.Add(mat);mat.color=color;mat.SetFloat("_Metallic",0);mat.SetFloat("_Glossiness",.35f);g.GetComponent<Renderer>().sharedMaterial=mat;
         }
         public void Initialize()
         {

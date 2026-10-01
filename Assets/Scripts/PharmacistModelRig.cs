@@ -7,6 +7,8 @@ namespace PharmaBrawl
     // joint names differ from Mixamo. No paid retarget clips are required.
     public sealed class PharmacistModelRig : MonoBehaviour
     {
+        readonly List<Material> runtimeMaterials=new List<Material>();
+        void OnDestroy(){foreach(var material in runtimeMaterials)if(material)Destroy(material);}
         readonly List<Transform> bones=new List<Transform>();
         readonly List<Quaternion> restRotations=new List<Quaternion>();
         Transform visual, rightHand, leftHand, rightHip, leftHip, weaponSocket;
@@ -23,7 +25,7 @@ namespace PharmaBrawl
             visual.SetParent(transform,false);
             Instantiate(data.characterPrefab,visual);
             foreach(var renderer in visual.GetComponentsInChildren<Renderer>())foreach(var material in renderer.materials){
-                material.SetFloat("_Metallic",0);material.SetFloat("_Glossiness",.15f);material.DisableKeyword("_METALLICGLOSSMAP");
+                runtimeMaterials.Add(material);material.SetFloat("_Metallic",0);material.SetFloat("_Glossiness",.15f);material.DisableKeyword("_METALLICGLOSSMAP");
                 material.EnableKeyword("_EMISSION");material.SetTexture("_EmissionMap",material.mainTexture);material.SetColor("_EmissionColor",new Color(.3f,.3f,.3f));
             }
             foreach(var animator in visual.GetComponentsInChildren<Animator>())animator.enabled=false;

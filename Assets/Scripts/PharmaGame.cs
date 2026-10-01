@@ -186,7 +186,7 @@ namespace PharmaBrawl
             for(int i=0;i<robotViews.Length;i++){var r=new GameObject("Medical support drone").transform;r.SetParent(actorsRoot,false);r.gameObject.AddComponent<PharmacyDroneView>().Initialize();robotViews[i]=r;r.gameObject.SetActive(false);}
             for(int i=0;i<fx.Length;i++){fx[i]=Shape("Pooled shockwave",PrimitiveType.Sphere,Vector3.zero,Vector3.one,cream,actorsRoot,false);fx[i].gameObject.SetActive(false);fxLife[i]=0;}
             aimLine=Shape("Aim guide",PrimitiveType.Cube,Vector3.zero,new Vector3(.06f,.04f,4),blue,actorsRoot,false);
-            playing=true;paused=false;accumulator=0;realTime=0;titleScreen.SetActive(false);roomScreen.SetActive(false);lobby.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);hud.SetActive(true);
+            playing=true;paused=false;mobileFire=false;touchMove=Vector2.zero;accumulator=0;realTime=0;titleScreen.SetActive(false);roomScreen.SetActive(false);lobby.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);hud.SetActive(true);
             heroLabel.text=roster[selected].displayName+"  /  "+roster[selected].role;status.text=sim.map.name+"  ·  FIRST TO 20";noticeTimer=4;
         }
         void Update()
@@ -201,7 +201,7 @@ namespace PharmaBrawl
             Vector2 move=new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"))+touchMove;
             Vector2 aim=touchAim*f.data.range;
             if(!RoomClient.TouchDevice){Ray ray=cam.ScreenPointToRay(Input.mousePosition);Plane plane=new Plane(Vector3.up,Vector3.zero);if(plane.Raycast(ray,out float d)){Vector3 point=ray.GetPoint(d);aim=new Vector2(point.x,point.z)-f.position;}}
-            bool fire=!paused && Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() || mobileFire;
+            bool fire=!paused && (RoomClient.TouchDevice?mobileFire:Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() || mobileFire);
             skillRequested|=Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.E);ultimateRequested|=Input.GetKeyDown(KeyCode.Space);
             if(network.room!=null){
                 if(Time.unscaledTime>=sendAt){sendAt=Time.unscaledTime+1/30f;network.Send(new NetCommand{type="input",seq=++inputSequence,mx=paused?0:move.x,mz=paused?0:move.y,ax=aim.x,az=aim.y,attack=!paused&&fire,skill=!paused&&skillRequested,ultimate=!paused&&ultimateRequested});skillRequested=ultimateRequested=false;}
@@ -400,7 +400,7 @@ namespace PharmaBrawl
         void LateUpdate(){if(globalMusicButton)globalMusicButton.SetActive(!lobby.activeSelf && !result.activeSelf && !hud.activeSelf && !roomScreen.activeSelf);}
         void AddStick(Transform parent,Vector2 position,bool attack)
         {
-            var p=Panel(attack?"Attack joystick":"Move joystick",parent,position,new Vector2(170,170),new Color(.08f,.16f,.23f,.65f));var stick=p.gameObject.AddComponent<ArenaTouchStick>();stick.game=this;stick.attack=attack;Label(p.transform,attack?"AIM / RELEASE":"MOVE",Vector2.zero,new Vector2(165,40),15,cream,TextAnchor.MiddleCenter);
+            var p=Panel(attack?"Attack joystick":"Move joystick",parent,position,new Vector2(170,170),new Color(.08f,.16f,.23f,.65f));var stick=p.gameObject.AddComponent<ArenaTouchStick>();stick.game=this;stick.attack=attack;Label(p.transform,attack?"조준 / 발사":"MOVE",Vector2.zero,new Vector2(165,40),15,cream,TextAnchor.MiddleCenter);
         }
         public void TouchInput(bool attack,Vector2 value,bool release){if(attack){if(value.sqrMagnitude>.01f)touchAim=value.normalized;mobileFire=!release && value.sqrMagnitude>.01f;}else touchMove=value;}
     }

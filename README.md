@@ -5,7 +5,7 @@ Unity **6000.6.1f1**로 만든 3D 탑다운 약사 아레나 슈팅 게임입니
 ## 다른 컴퓨터에서 이어서 개발
 
 1. Unity Hub에서 **6000.6.1f1**과 Windows Build Support, WebGL Build Support를 설치합니다.
-2. `git clone https://github.com/shangho90-sudo/pharm-bwral.git`으로 저장소를 받습니다. GitHub의 **Code → Download ZIP**도 사용할 수 있습니다.
+2. `git clone --branch codex/four-arenas-music https://github.com/shangho90-sudo/pharm-bwral.git`으로 저장소를 받습니다. GitHub에서 **codex/four-arenas-music** 브랜치를 선택한 뒤 **Code → Download ZIP**도 사용할 수 있습니다.
 3. Unity Hub → Add → 저장소 폴더를 선택합니다. `Assets`, `Packages`, `ProjectSettings`가 있는 폴더가 Unity 프로젝트입니다.
 4. 첫 import가 끝나면 `Assets/Scenes/Pharmacy.unity`를 열고 Play를 누릅니다.
 5. START → 닉네임과 방 설정 → 캐릭터와 맵 선택 → 게임 시작 순서로 게임을 실행합니다.
