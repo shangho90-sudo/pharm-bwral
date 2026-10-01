@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351fef6335b5bfb439ca00c6f99155cd, type: 3}
+  m_Name: 08_Fan
+  m_EditorClassIdentifier: Assembly-CSharp::PharmaBrawl.CharacterDefinition
+  displayName: "\uC0AC\uACF5\uBBFC"
+  role: "\uAD11\uC5ED \uB51C\uB7EC"
+  voiceLine: "\uCF69\uCF69\uC774 \uCF69\uCF69\uCF69!"
+  attackDescription: "\uD30C\uB780 \uC54C\uC57D \uBD80\uCC44\uAF34 5\uBC1C"
+  skillDescription: "\uB2E4\uC74C \uACF5\uACA9 \uBC94\uC704 \uC99D\uAC00"
+  ultimateDescription: "\uB113\uC740 \uBD80\uCC44\uAF34 \uC54C\uC57D \uD3ED\uC6B0"
+  kind: 8
+  color: {r: 0.2, g: 0.77, b: 0.94, a: 1}
+  maxHp: 3200
+  speed: 5
+  damage: 160
+  attackInterval: 0.9
+  range: 8
+  projectileSpeed: 16
+  skillCooldown: 9
+  ultimateRequirement: 4000
+  ultimateVoice: {fileID: 0}
+  characterPrefab: {fileID: 8252305212446187008, guid: b8bf6011094c239479620576abe777e3, type: 3}
+  weaponPrefab: {fileID: 919132149155446097, guid: 6f35a03f813e07f439655cc303f5bcf5, type: 3}
+  weaponGripPosition: {x: 0, y: 0, z: 0}
+  weaponGripEuler: {x: 0, y: 0, z: 0}
+  weaponLength: 1.3

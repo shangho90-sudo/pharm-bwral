@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351fef6335b5bfb439ca00c6f99155cd, type: 3}
+  m_Name: 00_Capsule
+  m_EditorClassIdentifier: Assembly-CSharp::PharmaBrawl.CharacterDefinition
+  displayName: "\uD33D\uC7AC\uD604"
+  role: "\uC62C\uB77C\uC6B4\uB354"
+  voiceLine: "\uD33D\uC2A4\uB2E5 \uC880 \uC0AC\uB77C!"
+  attackDescription: "\uBE68\uAC04 \uCEA1\uC290 \uC9C1\uC120 \uBC1C\uC0AC"
+  skillDescription: "\uD3ED\uBC1C \uCEA1\uC290"
+  ultimateDescription: "\uB300\uD615 \uCEA1\uC290 \uD3ED\uBC1C + \uB109\uBC31"
+  kind: 0
+  color: {r: 1, g: 0.24, b: 0.25, a: 1}
+  maxHp: 3200
+  speed: 5.2
+  damage: 440
+  attackInterval: 0.65
+  range: 10
+  projectileSpeed: 16
+  skillCooldown: 9
+  ultimateRequirement: 4000
+  ultimateVoice: {fileID: 0}
+  characterPrefab: {fileID: 3694367044200802892, guid: e93ea1f453e15194db2866d6327c4693, type: 3}
+  weaponPrefab: {fileID: 919132149155446097, guid: 39fa0434a3b1c624cb71d690c9773199, type: 3}
+  weaponGripPosition: {x: 0, y: 0, z: 0}
+  weaponGripEuler: {x: 0, y: 0, z: 0}
+  weaponLength: 1.3

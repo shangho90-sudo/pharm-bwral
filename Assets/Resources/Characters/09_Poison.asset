@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351fef6335b5bfb439ca00c6f99155cd, type: 3}
+  m_Name: 09_Poison
+  m_EditorClassIdentifier: Assembly-CSharp::PharmaBrawl.CharacterDefinition
+  displayName: "\uC774\uC120\uC6A9"
+  role: "\uC9C0\uC18D \uD53C\uD574"
+  voiceLine: "\uB0B4 \uD2F0\uBAA8 \uB9DB \uC880 \uBD10\uB77C!"
+  attackDescription: "\uBCF4\uB77C \uB3C5\uC131 \uC54C\uC57D + \uC9C0\uC18D \uD53C\uD574"
+  skillDescription: "5\uCD08 \uB3C5 \uC9C0\uC5ED"
+  ultimateDescription: "8\uCD08 \uB3C5\uAD6C\uB984 + \uC774\uB3D9\uC18D\uB3C4 \uAC10\uC18C"
+  kind: 9
+  color: {r: 0.72, g: 0.28, b: 0.88, a: 1}
+  maxHp: 3000
+  speed: 5
+  damage: 340
+  attackInterval: 0.75
+  range: 9
+  projectileSpeed: 16
+  skillCooldown: 9
+  ultimateRequirement: 4000
+  ultimateVoice: {fileID: 0}
+  characterPrefab: {fileID: 4883637322888111239, guid: 3fa85a472666b8e4baf8965241b1da14, type: 3}
+  weaponPrefab: {fileID: 919132149155446097, guid: 85f884968a717a74f85bbe9555805669, type: 3}
+  weaponGripPosition: {x: 0, y: 0, z: 0}
+  weaponGripEuler: {x: 0, y: 0, z: 0}
+  weaponLength: 1.3

@@ -1,0 +1,502 @@
+[
+  {
+    "index": 0,
+    "character": "팽재현",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "596aeded-35a1-4ae0-8f88-7588ec676751",
+    "steps": [
+      {
+        "task_id": "596aeded-35a1-4ae0-8f88-7588ec676751",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "01ec476d-bc65-4b73-9fe2-19c974040ae4",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "138c9701-1f64-422b-a575-7c3bcaa6207a",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "bf6dc59e-da45-45a0-abad-2ec519904bf0",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/00/Pharmacist.prefab"
+  },
+  {
+    "index": 1,
+    "character": "구자현",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "0389317c-c302-4699-9493-4665078f752b",
+    "steps": [
+      {
+        "task_id": "0389317c-c302-4699-9493-4665078f752b",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "17d07527-adaf-47c9-9929-2aefdde478d6",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "dd554e78-055f-4df3-9abc-85c810d70bb3",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "8a31eed8-72ef-490d-8c32-da77c8e38e90",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/01/Pharmacist.prefab"
+  },
+  {
+    "index": 2,
+    "character": "방지욱",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "469e4a96-a5e7-46f9-af65-00e600817474",
+    "steps": [
+      {
+        "task_id": "469e4a96-a5e7-46f9-af65-00e600817474",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "49df6695-8d55-4a5d-85f5-1768181291bd",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "85e619dc-5514-432f-9c6d-ab08f7e63311",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "9468ef3f-3878-48a4-940d-878e7b8ea1ee",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/02/Pharmacist.prefab"
+  },
+  {
+    "index": 3,
+    "character": "박철호",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "bf8e5ef7-152c-42f6-bd53-8d4538a74214",
+    "steps": [
+      {
+        "task_id": "bf8e5ef7-152c-42f6-bd53-8d4538a74214",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "47088fea-9b80-46ca-9604-2595b10d141d",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "ebdf5ac8-67dd-4f30-a902-7a5633562923",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "e2e1c2ec-09d1-45fe-8ab9-5c22f0fa87cf",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/03/Pharmacist.prefab"
+  },
+  {
+    "index": 4,
+    "character": "정석호",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "cb558280-b071-470a-93ef-9c07940b8732",
+    "steps": [
+      {
+        "task_id": "cb558280-b071-470a-93ef-9c07940b8732",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "d587f353-70e9-47cd-8268-e374df6e2bd5",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "6a941595-5c40-40c9-a01d-1a32d4cd875a",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "b1bd72be-72ee-4152-a707-d091934c676c",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/04/Pharmacist.prefab"
+  },
+  {
+    "index": 5,
+    "character": "차동호",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "38d1784d-721e-4d36-8c62-b7d8a911ead9",
+    "steps": [
+      {
+        "task_id": "38d1784d-721e-4d36-8c62-b7d8a911ead9",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "aeaf6759-66a0-4e5a-997c-446e9fb82bbb",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "5ff84e0d-c509-428f-a768-1e604868d15d",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "f7681e4d-dacf-4240-9484-c67cde82e40f",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/05/Pharmacist.prefab"
+  },
+  {
+    "index": 6,
+    "character": "김두영",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "fead522a-c2d7-4402-9dc9-043096cadbd8",
+    "steps": [
+      {
+        "task_id": "fead522a-c2d7-4402-9dc9-043096cadbd8",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "b8dd7a8c-88c1-4581-9a88-008ee2e841ee",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "c2c32bde-5bea-42b9-8ca7-6e2091433088",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "cd63492c-5aa3-4834-bd3d-1111a782036c",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/06/Pharmacist.prefab"
+  },
+  {
+    "index": 7,
+    "character": "조강희",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "32e3ef1f-05a7-4561-8e12-7ec487001c40",
+    "steps": [
+      {
+        "task_id": "32e3ef1f-05a7-4561-8e12-7ec487001c40",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "74e6874c-072b-4ec3-80ca-0b014f41e2bd",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "6f9892f8-f667-4b24-8abf-f333fccd90fb",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "4df2bf8c-0e99-4fb2-be02-451891bfaf87",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/07/Pharmacist.prefab"
+  },
+  {
+    "index": 8,
+    "character": "사공민",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "0de3094d-8aef-4ac0-ae5e-d11dfa11fc1b",
+    "steps": [
+      {
+        "task_id": "0de3094d-8aef-4ac0-ae5e-d11dfa11fc1b",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "1b62fe21-3ed9-4b21-97a8-289cf25712ce",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "b0ff2765-4f0f-4032-9ec7-e34660e808c9",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "60105434-1a42-4df4-bc05-2bbbb00b59ca",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/08/Pharmacist.prefab"
+  },
+  {
+    "index": 9,
+    "character": "이선용",
+    "category": "Characters",
+    "model": "P1-20260311",
+    "source_task_id": "60fc9085-16ac-4054-910a-88c90afe5a0c",
+    "steps": [
+      {
+        "task_id": "60fc9085-16ac-4054-910a-88c90afe5a0c",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "d2b9271b-5ead-4abf-bdfe-b5eb5c1647d1",
+        "type": "animate_prerigcheck",
+        "credits_consumed": 0
+      },
+      {
+        "task_id": "673bb915-bbb1-4948-abce-86d1bc2598b2",
+        "type": "animate_rig",
+        "credits_consumed": 25
+      },
+      {
+        "task_id": "5b6502c5-6829-4c27-aa75-7c70db02adfb",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Characters/09/Pharmacist.prefab"
+  },
+  {
+    "index": 0,
+    "character": "팽재현",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "8c26904b-a32c-4a64-8e92-0f95a9b13acf",
+    "steps": [
+      {
+        "task_id": "8c26904b-a32c-4a64-8e92-0f95a9b13acf",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "3453ff4c-31e0-4eec-8bab-0a70ea8dd0c6",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/00/model.fbx"
+  },
+  {
+    "index": 1,
+    "character": "구자현",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "e8638fc4-a98d-42c3-965a-0b1667f45b25",
+    "steps": [
+      {
+        "task_id": "e8638fc4-a98d-42c3-965a-0b1667f45b25",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "bcef5d92-e805-4666-8474-7750eb7dfc03",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/01/model.fbx"
+  },
+  {
+    "index": 2,
+    "character": "방지욱",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "9616ae34-2990-47ba-85e9-7f0596b6a004",
+    "steps": [
+      {
+        "task_id": "9616ae34-2990-47ba-85e9-7f0596b6a004",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "ed3bd2e4-8f93-4882-9284-a975d240ff38",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/02/model.fbx"
+  },
+  {
+    "index": 3,
+    "character": "박철호",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "db3445d5-2936-4cd8-8f6b-7837c03a9662",
+    "steps": [
+      {
+        "task_id": "db3445d5-2936-4cd8-8f6b-7837c03a9662",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "16e73767-0d85-4755-a49c-8356b40a9662",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/03/model.fbx"
+  },
+  {
+    "index": 4,
+    "character": "정석호",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "a4a2a957-4d1e-4949-a685-9bedf598481a",
+    "steps": [
+      {
+        "task_id": "a4a2a957-4d1e-4949-a685-9bedf598481a",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "ea9e513f-2626-4a47-bb52-c26f6d60883a",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/04/model.fbx"
+  },
+  {
+    "index": 5,
+    "character": "차동호",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "64e1dc8a-508e-4c5d-a051-1f798144a818",
+    "steps": [
+      {
+        "task_id": "64e1dc8a-508e-4c5d-a051-1f798144a818",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "466875d3-1d0d-473f-9e64-879219585dd4",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/05/model.fbx"
+  },
+  {
+    "index": 6,
+    "character": "김두영",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "97082154-b88d-419d-96fc-4a249f553e57",
+    "steps": [
+      {
+        "task_id": "97082154-b88d-419d-96fc-4a249f553e57",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "88963af3-fad1-4602-8a86-1ad4c778ca05",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/06/model.fbx"
+  },
+  {
+    "index": 7,
+    "character": "조강희",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "b0b79c6a-35d6-40b3-b13c-c240ee5e908a",
+    "steps": [
+      {
+        "task_id": "b0b79c6a-35d6-40b3-b13c-c240ee5e908a",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "3ef9a33b-89f6-411d-a4b3-9d6d09cad301",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/07/model.fbx"
+  },
+  {
+    "index": 8,
+    "character": "사공민",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "c23eb42e-217a-4a8a-9b9c-fa8b1beb0985",
+    "steps": [
+      {
+        "task_id": "c23eb42e-217a-4a8a-9b9c-fa8b1beb0985",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "44a2e72f-3c21-4e49-85b9-221beb390317",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/08/model.fbx"
+  },
+  {
+    "index": 9,
+    "character": "이선용",
+    "category": "Weapons",
+    "model": "P1-20260311",
+    "source_task_id": "d7ea009f-9984-4005-95f9-bb08833a0b37",
+    "steps": [
+      {
+        "task_id": "d7ea009f-9984-4005-95f9-bb08833a0b37",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "7d04f901-d040-4594-a791-6fbeb42dbd59",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ],
+    "unity_asset": "Assets/Art/Weapons/09/model.fbx"
+  }
+]

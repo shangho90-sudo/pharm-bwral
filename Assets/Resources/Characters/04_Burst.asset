@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351fef6335b5bfb439ca00c6f99155cd, type: 3}
+  m_Name: 04_Burst
+  m_EditorClassIdentifier: Assembly-CSharp::PharmaBrawl.CharacterDefinition
+  displayName: "\uC815\uC11D\uD638"
+  role: "\uC5F0\uC0AC \uB51C\uB7EC"
+  voiceLine: "\uC544 \uCCA0\uD638\uD615!"
+  attackDescription: "\uC5F0\uB450 \uC54C\uC57D 3\uBC1C \uC5F0\uC0AC"
+  skillDescription: "4\uCD08 \uACF5\uACA9\uC18D\uB3C4 \uC99D\uAC00"
+  ultimateDescription: "\uCD08\uACE0\uC18D \uC54C\uC57D \uB09C\uC0AC"
+  kind: 4
+  color: {r: 0.5, g: 0.86, b: 0.19, a: 1}
+  maxHp: 2900
+  speed: 5.1
+  damage: 175
+  attackInterval: 0.7
+  range: 9
+  projectileSpeed: 16
+  skillCooldown: 9
+  ultimateRequirement: 4000
+  ultimateVoice: {fileID: 0}
+  characterPrefab: {fileID: 976163527350579319, guid: 0b1f74b647926ce40aa9981c06fb0f7a, type: 3}
+  weaponPrefab: {fileID: 919132149155446097, guid: 61bb7a99dd6e6664ca4a9db22923472d, type: 3}
+  weaponGripPosition: {x: 0, y: 0, z: 0}
+  weaponGripEuler: {x: 0, y: 0, z: 0}
+  weaponLength: 1.3
