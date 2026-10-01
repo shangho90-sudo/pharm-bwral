@@ -90,7 +90,6 @@ namespace PharmaBrawl
             foreach(var f in map.features) if(f.blocksMovement) covers.Add(new Cover{position=f.position,size=f.size,destructible=f.breakable,hp=1800,blocksShots=f.blocksShots,feature=f});
             navigation = new ArenaNavigation(this);
         }
-        void AddCover(float x,float y,float w,float h,bool d) => covers.Add(new Cover{position=new Vector2(x,y),size=new Vector2(w,h),destructible=d,hp=1800});
         public static Vector2 Spawn(int id) => new Vector2((id%3-1)*3.2f, id<3?-11.1f:11.1f);
         void Emit(string t, Vector2 p, int actor, float size=1) => Event?.Invoke(new CombatEvent(t,p,actor,size));
         public void Tick(float dt, Vector2 move, Vector2 aim, bool attack, bool skill, bool ultimate, bool allBots=false)

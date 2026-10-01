@@ -39,7 +39,7 @@ namespace PharmaBrawl
         Text mapDetail,musicLabel;
         readonly Button[] mapButtons=new Button[4];
         GameObject movementOverlay;
-        bool captureMap;
+        bool captureMap,captureSelect;
         bool playing,paused,skillRequested,ultimateRequested;
         float accumulator, shake, noticeTimer;
         Vector2 touchMove,touchAim=Vector2.up;
@@ -67,7 +67,7 @@ namespace PharmaBrawl
             whiteSprite=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,Texture2D.whiteTexture.width,Texture2D.whiteTexture.height),new Vector2(.5f,.5f));
             MakeAudio();MakeUI();soundtrack.Play("menu");
             string[] args=Environment.GetCommandLineArgs();
-            for(int i=0;i<args.Length;i++){if(args[i]=="--smoke-test")smoke=true;if((args[i]=="--capture" || args[i]=="--capture-lobby" || args[i]=="--capture-result") && i+1<args.Length){capture=true;captureLobby=args[i]=="--capture-lobby";captureResult=args[i]=="--capture-result";capturePath=args[i+1];}}
+            for(int i=0;i<args.Length;i++){if(args[i]=="--smoke-test")smoke=true;if((args[i]=="--capture" || args[i]=="--capture-lobby" || args[i]=="--capture-result" || args[i]=="--capture-select") && i+1<args.Length){capture=true;captureSelect=args[i]=="--capture-select";captureLobby=args[i]=="--capture-lobby" || captureSelect;captureResult=args[i]=="--capture-result";capturePath=args[i+1];}}
             for(int i=0;i<args.Length-1;i++)if(args[i]=="--capture-models"){capture=true;captureModels=true;capturePath=args[i+1];}
             for(int i=0;i<args.Length-1;i++)if(args[i]=="--map" && int.TryParse(args[i+1],out int mapPick))selectedMap=Mathf.Clamp(mapPick,0,3);
             for(int i=0;i<args.Length-1;i++)if(args[i]=="--capture-map"){capture=true;captureMap=true;capturePath=args[i+1];}
@@ -75,7 +75,7 @@ namespace PharmaBrawl
             if(captureMap){titleScreen.SetActive(false);lobby.SetActive(false);CreateMap(new ArenaSimulation(roster,selected,42,selectedMap));PositionCamera(Vector2.zero,0);Invoke(nameof(SaveCapture),3);return;}
             if(captureModels){ShowModelGallery();Invoke(nameof(SaveCapture),3);return;}
             if(smoke || (capture && !captureLobby))StartMatch();
-            else {CreateMap(new ArenaSimulation(roster,selected,42,selectedMap));PositionCamera(Vector2.zero,0);if(captureLobby)Invoke(nameof(SaveCapture),2);}
+            else {CreateMap(new ArenaSimulation(roster,selected,42,selectedMap));PositionCamera(Vector2.zero,0);if(captureSelect){titleScreen.SetActive(false);lobby.SetActive(true);}if(captureLobby)Invoke(nameof(SaveCapture),2);}
         }
         Material Mat(Color c)
         {
