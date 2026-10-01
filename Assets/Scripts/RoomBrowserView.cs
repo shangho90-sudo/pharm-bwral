@@ -3,39 +3,51 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace PharmaBrawl
 {
-    public sealed class RoomBrowserView:MonoBehaviour
-    {
-        Font font;RoomClient client;InputField nickname,server,name;Text status;Transform list;
-        int teamSize=4,page;RoomInfo[] available=new RoomInfo[0];
-        readonly Color navy=new Color(.025f,.055f,.13f),cyan=new Color(.02f,.65f,.8f);
-        RectTransform Box(Transform parent,string label,Vector2 p,Vector2 size){var go=new GameObject(label,typeof(RectTransform));go.transform.SetParent(parent,false);var r=go.GetComponent<RectTransform>();r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=p;r.sizeDelta=size;return r;}
-        Image Fill(Transform parent,Vector2 p,Vector2 size,Color c){var i=Box(parent,"Panel",p,size).gameObject.AddComponent<Image>();i.color=c;return i;}
-        Text Label(Transform parent,string value,Vector2 p,Vector2 size,int f=24){var t=Box(parent,value,p,size).gameObject.AddComponent<Text>();t.font=font;t.fontSize=f;t.color=Color.white;t.text=value;t.alignment=TextAnchor.MiddleCenter;t.raycastTarget=false;t.supportRichText=false;return t;}
-        Button Button(Transform parent,string text,Vector2 p,Vector2 size,Action click){var bg=Fill(parent,p,size,cyan);var b=bg.gameObject.AddComponent<Button>();b.onClick.AddListener(()=>click());Label(bg.transform,text,Vector2.zero,size,23);return b;}
-        InputField Input(string caption,Vector2 p,int width,string value){Label(transform,caption,p+new Vector2(0,46),new Vector2(width,35),21);var bg=Fill(transform,p,new Vector2(width,52),new Color(.08f,.13f,.23f));var input=bg.gameObject.AddComponent<InputField>();var text=Label(bg.transform,value,Vector2.zero,new Vector2(width-24,46),22);text.alignment=TextAnchor.MiddleLeft;input.textComponent=text;input.text=value;input.characterLimit=caption=="닉네임"?12:caption=="방 이름"?24:200;return input;}
-        public void Initialize(Font f,RoomClient c,Action practice,Action back){
-            font=f;client=c;Fill(transform,Vector2.zero,new Vector2(1600,900),navy);
-            Label(transform,"팽브롤 · 함께할 약사 찾기",new Vector2(0,365),new Vector2(1200,80),42);
-            Label(transform,"로그인 없이 닉네임으로 참가 · 최대 4 : 4",new Vector2(0,300),new Vector2(1200,45),23);
-            nickname=Input("닉네임",new Vector2(-480,170),440,PlayerPrefs.GetString("Nickname","약사"));
-            name=Input("방 이름",new Vector2(-480,60),440,"팽브롤 대전");
-            server=Input("전용 게임 서버 주소",new Vector2(250,170),880,client.endpoint);
-            for(int i=1;i<=4;i++){int size=i;Button(transform,i+" : "+i,new Vector2(-650+(i-1)*110,-35),new Vector2(100,55),()=>{teamSize=size;SetStatus(size+" : "+size+" 방을 만듭니다");});}
-            Button(transform,"방 만들기",new Vector2(-480,-125),new Vector2(440,65),()=>{Save();client.Create(nickname.text,name.text,teamSize);});
-            Button(transform,"방 새로고침",new Vector2(540,60),new Vector2(300,55),Refresh);
-            Label(transform,"공개 대기방",new Vector2(45,60),new Vector2(200,55),26);
-            list=Box(transform,"Rooms",new Vector2(250,-130),new Vector2(880,300));
-            Button(transform,"이전",new Vector2(340,-290),new Vector2(160,45),()=>{page=Mathf.Max(0,page-1);DrawRooms();});Button(transform,"다음",new Vector2(530,-290),new Vector2(160,45),()=>{page=Mathf.Min(Mathf.Max(0,(available.Length-1)/5),page+1);DrawRooms();});
-            Button(transform,"AI 연습 · 4 : 4",new Vector2(-480,-240),new Vector2(440,60),()=>{Save();client.Leave();practice();});
-            Button(transform,"뒤로",new Vector2(-630,-380),new Vector2(180,55),back);
-            status=Label(transform,"서버 주소 연결 후 공개 대기방을 조회할 수 있습니다",new Vector2(180,-350),new Vector2(1100,90),23);
-        }
-        void OnEnable(){if(server&&string.IsNullOrEmpty(server.text))server.text=client.endpoint;}
-        void Save(){client.Configure(server.text);PlayerPrefs.SetString("Nickname",nickname.text);}
-        public void SetStatus(string text){if(status)status.text=text;}
-        public void Refresh(){Save();SetStatus("방을 조회하고 있습니다…");client.List(Show);}
-        void Show(RoomList rooms){available=Array.FindAll(rooms.rooms??new RoomInfo[0],r=>!r.playing&&r.count<r.teamSize*2);page=0;DrawRooms();}
-        void DrawRooms(){foreach(Transform t in list)Destroy(t.gameObject);SetStatus(available.Length==0?"대기 중인 방이 없습니다. 새 방을 만들어 주세요":"닉네임을 설정하고 참가할 방을 선택하세요 · "+(page+1)+"페이지");for(int i=0;i<5&&page*5+i<available.Length;i++){var room=available[page*5+i];Button(list,room.name+" · "+room.count+"/"+(room.teamSize*2)+" · "+room.teamSize+":"+room.teamSize,new Vector2(0,115-i*60),new Vector2(840,52),()=>{Save();client.Join(room.id,nickname.text);});}}
-
-    }
+ public sealed class RoomBrowserView:MonoBehaviour
+ {
+  const float W=1672,H=941,S=1600f/W;
+  Font font;Texture2D artwork;RoomClient client;InputField nickname,server,name;Text status,badge;GameObject statusCover,roomsCover;
+  int teamSize=4,page;RoomInfo[] available=new RoomInfo[0];
+  readonly RawImage[] modes=new RawImage[4];Transform list;
+  RectTransform Box(string label,Rect r){var go=new GameObject(label,typeof(RectTransform));go.transform.SetParent(transform,false);var rt=go.GetComponent<RectTransform>();rt.anchorMin=rt.anchorMax=new Vector2(.5f,.5f);rt.anchoredPosition=new Vector2((r.center.x-W/2)*S,(H/2-r.center.y)*S);rt.sizeDelta=r.size*S;return rt;}
+  RawImage Art(string label,Rect r,Rect source){var a=Box(label,r).gameObject.AddComponent<RawImage>();a.texture=artwork;a.uvRect=new Rect(source.x/W,1-source.yMax/H,source.width/W,source.height/H);a.raycastTarget=false;return a;}
+  Text Label(string value,Rect r,int size=25){var t=Box(value,r).gameObject.AddComponent<Text>();t.font=font;t.fontSize=Mathf.RoundToInt(size*S);t.text=value;t.color=Color.white;t.alignment=TextAnchor.MiddleCenter;t.supportRichText=false;t.raycastTarget=false;return t;}
+  Button Hotspot(string label,Rect r,Action click){var im=Box(label,r).gameObject.AddComponent<Image>();var b=im.gameObject.AddComponent<Button>();b.targetGraphic=im;var c=b.colors;c.normalColor=Color.clear;c.selectedColor=Color.clear;c.highlightedColor=new Color(1,1,1,.08f);c.pressedColor=new Color(1,1,1,.18f);b.colors=c;b.onClick.AddListener(()=>click());return b;}
+  InputField Input(string key,Rect rect,string value,string placeholder,int limit){
+   Art(key+" clean interior",new Rect(rect.x+6,rect.y+4,rect.width-12,rect.height-8),new Rect(rect.xMax-45,rect.y+4,12,rect.height-8));
+   var im=Box(key,rect).gameObject.AddComponent<Image>();im.color=Color.clear;var input=im.gameObject.AddComponent<InputField>();input.targetGraphic=im;
+   var content=new Rect(rect.x+24,rect.y+2,rect.width-48,rect.height-4);
+   var text=Label(value,content,25);text.alignment=TextAnchor.MiddleLeft;text.horizontalOverflow=HorizontalWrapMode.Overflow;text.verticalOverflow=VerticalWrapMode.Truncate;
+   var hint=Label(placeholder,content,24);hint.alignment=TextAnchor.MiddleLeft;hint.color=new Color(.55f,.65f,.82f);input.textComponent=text;input.placeholder=hint;input.characterLimit=limit;input.caretColor=Color.cyan;input.customCaretColor=true;input.selectionColor=new Color(0,.8f,1,.3f);input.text=value;
+   text.transform.SetParent(input.transform,true);hint.transform.SetParent(input.transform,true);return input;
+  }
+  public void Initialize(Font f,RoomClient c,Action practice,Action back){
+   font=f;client=c;artwork=Resources.Load<Texture2D>("RoomLobbyScreen");if(!artwork)throw new InvalidOperationException("Room lobby artwork missing");
+   Art("Premium room lobby",new Rect(0,0,W,H),new Rect(0,0,W,H));
+   nickname=Input("닉네임",new Rect(130,331,474,52),PlayerPrefs.GetString("Nickname","약사"),"닉네임을 입력하세요",12);
+   name=Input("방 이름",new Rect(130,442,474,56),"팽브롤 대전","방 이름을 입력하세요",24);
+   server=Input("게임 서버 주소",new Rect(695,332,844,49),client.endpoint,"서버 주소를 입력하세요",200);
+   Art("Clean mode area",new Rect(126,556,483,75),new Rect(611,556,6,75));
+   for(int i=0;i<4;i++){int pick=i+1;var r=new Rect(130+i*122,562,112,65);modes[i]=Art("Mode background",r,new Rect(130,562,112,65));Hotspot("Mode "+pick,r,()=>{teamSize=pick;UpdateModes();});}
+   UpdateModes();Hotspot("방 만들기",new Rect(127,649,477,80),()=>{Save();client.Create(nickname.text,name.text,teamSize);});
+   Hotspot("AI 연습",new Rect(128,746,476,75),()=>{Save();client.Leave();practice();});Hotspot("뒤로",new Rect(49,860,191,65),back);
+   Hotspot("방 새로고침",new Rect(1333,422,221,55),Refresh);
+   Hotspot("이전 페이지",new Rect(1167,776,178,49),()=>{if(page>0){page--;DrawRooms();}});Hotspot("다음 페이지",new Rect(1366,776,177,49),()=>{if((page+1)*5<available.Length){page++;DrawRooms();}});
+   roomsCover=Art("Live room area",new Rect(689,496,856,268),new Rect(820,503,12,12)).gameObject;roomsCover.SetActive(false);
+   statusCover=Art("Live status background",new Rect(810,655,650,91),new Rect(820,503,12,12)).gameObject;statusCover.SetActive(false);
+   status=Label("",new Rect(807,657,680,88),25);
+   var badgeFill=Box("Connection badge text background",new Rect(1435,293,98,25)).gameObject.AddComponent<Image>();badgeFill.color=new Color(.14f,.075f,.18f);badgeFill.raycastTarget=false;badge=Label("연결 대기",new Rect(1432,286,103,37),18);badge.color=new Color(1,.45f,.58f);
+   list=new GameObject("Room rows",typeof(RectTransform)).transform;list.SetParent(transform,false);list.GetComponent<RectTransform>().sizeDelta=new Vector2(1600,900);
+  }
+  void UpdateModes(){for(int i=0;i<4;i++){var r=new Rect(130+i*122,562,112,65);Rect src=i+1==teamSize?new Rect(491,560,116,67):new Rect(130,562,112,65);modes[i].uvRect=new Rect(src.x/W,1-src.yMax/H,src.width/W,src.height/H);}
+   // Labels are separate from the sampled button background, so mode selection never changes the numbers.
+   if(!transform.Find("Live mode labels")){var group=new GameObject("Live mode labels",typeof(RectTransform));group.transform.SetParent(transform,false);group.GetComponent<RectTransform>().sizeDelta=new Vector2(1600,900);for(int i=0;i<4;i++){float x=130+i*122;var clean=Art("Mode label cover",new Rect(x+15,575,82,37),new Rect(142,572,10,37));clean.transform.SetParent(group.transform,true);var t=Label((i+1)+":"+(i+1),new Rect(x+8,568,96,53),29);t.transform.SetParent(group.transform,true);}}
+  }
+  void OnEnable(){if(server&&string.IsNullOrEmpty(server.text))server.text=client.endpoint;}
+  void Save(){client.Configure(server.text);PlayerPrefs.SetString("Nickname",nickname.text);}
+  public void SetStatus(string text){if(status){status.gameObject.SetActive(true);statusCover.SetActive(true);status.text=text;if(text.Contains("실패")||text.Contains("주소를 설정")){badge.text="연결 대기";badge.color=new Color(1,.45f,.58f);}}}
+  public void Refresh(){Save();SetStatus("방을 조회하고 있습니다…");badge.text="조회 중";client.List(Show);}
+  void Show(RoomList rooms){badge.text="연결 완료";badge.color=Color.cyan;available=Array.FindAll(rooms.rooms??new RoomInfo[0],r=>!r.playing&&r.count<r.teamSize*2);page=0;DrawRooms();}
+  void DrawRooms(){foreach(Transform t in list)Destroy(t.gameObject);roomsCover.SetActive(available.Length>0);statusCover.SetActive(available.Length==0);status.gameObject.SetActive(available.Length==0);if(available.Length==0){SetStatus("대기 중인 방이 없습니다\n새 방을 만들어 주세요");return;}for(int i=0;i<5&&page*5+i<available.Length;i++){var room=available[page*5+i];var r=new Rect(704,502+i*50,817,44);var im=Box("Room "+room.name,r).gameObject.AddComponent<Image>();im.color=new Color(.035f,.16f,.32f,.97f);im.transform.SetParent(list,true);var b=im.gameObject.AddComponent<Button>();b.targetGraphic=im;b.onClick.AddListener(()=>{Save();client.Join(room.id,nickname.text);});var text=Label(room.name+"   ·   "+room.count+"/"+(room.teamSize*2)+"   ·   "+room.teamSize+":"+room.teamSize,r,23);text.transform.SetParent(im.transform,true);}}
+ }
 }

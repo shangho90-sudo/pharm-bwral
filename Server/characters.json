@@ -59,7 +59,7 @@
     "maxHp": 2800.0,
     "speed": 4.8,
     "damage": 600.0,
-    "attackInterval": 1.15,
+    "attackInterval": 0.7,
     "range": 8.0,
     "projectileSpeed": 16.0,
     "skillCooldown": 9.0,

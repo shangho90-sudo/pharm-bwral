@@ -51,7 +51,7 @@ namespace PharmaBrawl
         Vector2 touchMove,touchAim=Vector2.up;
         bool mobileFire;
         AudioSource sfx;
-        WeaponAudio weaponAudio;
+        WeaponAudio weaponAudio;AbilityEffects abilityEffects;
         AudioClip[] tones;
         bool smoke,capture,captureLobby,captureResult,captureModels;
         string capturePath;
@@ -178,6 +178,7 @@ namespace PharmaBrawl
             foreach(Transform t in actorsRoot)Destroy(t.gameObject);
             sim=preparedSimulation??new ArenaSimulation(roster,selected,Environment.TickCount,selectedMap,4);preparedSimulation=null;if(network.room==null){localPlayerId=0;sim.fighters[0].nickname=PlayerPrefs.GetString("Nickname","약사");sim.fighters[0].human=true;}sim.Event+=OnCombat;
             CreateMap(sim);soundtrack.Play(sim.map.key);for(int i=0;i<sim.fighters.Length;i++)actors[i]=MakeActor(sim.fighters[i]);
+            var effectRoot=new GameObject("Character ability effects");effectRoot.transform.SetParent(actorsRoot,false);abilityEffects=effectRoot.AddComponent<AbilityEffects>();abilityEffects.Initialize(sim,localPlayerId);
             foreach(Transform t in actors[localPlayerId].GetComponentsInChildren<Transform>())t.gameObject.layer=8;
             for(int i=0;i<sim.fighters.Length;i++){beamViews[i]=Shape("Pooled ultimate beam",PrimitiveType.Cube,Vector3.zero,Vector3.one,roster[2].color,actorsRoot,false);beamViews[i].gameObject.SetActive(false);beamLife[i]=0;}
             portraitCam.enabled=true;podiumCam.enabled=false;
@@ -274,13 +275,15 @@ namespace PharmaBrawl
         }
         void OnCombat(ArenaSimulation.CombatEvent e)
         {
+            if(abilityEffects)abilityEffects.Emit(e);
+            if((e.type=="skill"||e.type=="ultimate")&&!smoke)weaponAudio.Ability(sim.fighters[e.actor].data.kind,e.type=="ultimate",Vector2.Distance(e.position,sim.fighters[localPlayerId].position));
             if(e.type=="beam" && beamViews[e.actor]){var b=beamViews[e.actor];b.position=P(e.position+sim.fighters[e.actor].aim*e.size*.5f,1.2f);b.rotation=Quaternion.LookRotation(P(sim.fighters[e.actor].aim));b.localScale=new Vector3(.55f,.4f,e.size);b.gameObject.SetActive(true);beamLife[e.actor]=.24f;}
-            if(e.type!="shoot" && e.type!="hit" && e.type!="heal")for(int i=0;i<fx.Length;i++)if(fxLife[i]<=0 && fx[i]){fxLife[i]=.45f;fxSize[i]=e.size;fx[i].position=P(e.position,.5f);fx[i].GetComponent<Renderer>().sharedMaterial=Mat(Glow(e.type=="hit"?cream:sim.fighters[e.actor].data.color,.3f));fx[i].gameObject.SetActive(true);break;}
-            if(e.type=="ultimate"){shake=.8f;status.text=sim.fighters[e.actor].data.displayName+"  ULTIMATE!  "+sim.fighters[e.actor].data.voiceLine;noticeTimer=2.5f;var voice=sim.fighters[e.actor].data.ultimateVoice;if(voice)sfx.PlayOneShot(voice);else PlayTone(3);}
+            if(e.type=="death")for(int i=0;i<fx.Length;i++)if(fxLife[i]<=0 && fx[i]){fxLife[i]=.45f;fxSize[i]=e.size;fx[i].position=P(e.position,.5f);fx[i].GetComponent<Renderer>().sharedMaterial=Mat(Glow(sim.fighters[e.actor].data.color,.3f));fx[i].gameObject.SetActive(true);break;}
+            if(e.type=="ultimate"){shake=.8f;status.text=sim.fighters[e.actor].data.displayName+"  ULTIMATE!  "+sim.fighters[e.actor].data.voiceLine;noticeTimer=2.5f;var voice=sim.fighters[e.actor].data.ultimateVoice;if(voice)sfx.PlayOneShot(voice);}
             else if(e.type=="death"){PlayTone(2);feed.text=sim.fighters[e.actor].data.displayName+"  DOWN  ·  +1 POINT";}
             else if(e.type=="shoot"){if(!smoke)weaponAudio.Fire(e.actor,sim.fighters[e.actor].data.kind,Vector2.Distance(e.position,sim.fighters[localPlayerId].position));}
             else if(e.type=="hit"){if(!smoke)weaponAudio.Hit(e.actor==localPlayerId);if(actors[e.actor])actors[e.actor].GetComponent<PharmacistModelRig>()?.ReactToHit();}
-            else if(e.type=="explosion"){shake=.35f;PlayTone(2);}
+            else if(e.type=="explosion"){shake=.35f;}
         }
         void UpdateHUD()
         {
@@ -294,6 +297,7 @@ namespace PharmaBrawl
         }
         void Finish()
         {
+            if(abilityEffects)abilityEffects.Clear();
             playing=false;soundtrack.Paused=false;soundtrack.Play("menu");portraitCam.enabled=false;podiumCam.enabled=true;hud.SetActive(false);result.SetActive(true);bool win=sim.winner==sim.fighters[localPlayerId].team;
             resultView.Show(sim,localPlayerId);PlayTone(win?4:2);
             // Winning trio forms a podium and holds a celebratory pose.

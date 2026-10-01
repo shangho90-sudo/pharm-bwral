@@ -11,12 +11,13 @@ namespace PharmaBrawl
         void OnDestroy(){foreach(var material in runtimeMaterials)if(material)Destroy(material);}
         readonly List<Transform> bones=new List<Transform>();
         readonly List<Quaternion> restRotations=new List<Quaternion>();
-        Transform visual, rightHand, leftHand, rightHip, leftHip, weaponSocket;
+        Transform visual, rightHand, leftHand, rightHip, leftHip, weaponSocket, chest;
         Quaternion weaponRotation;
         Vector3 previousPosition;
         float gait, speed, hurtRemaining;
         Vector3 visualRestPosition;
-        public void ReactToHit(){hurtRemaining=.24f;}
+        float previousYaw,turnLean;
+        public void ReactToHit(){hurtRemaining=.42f;}
         public bool HasHandSocket => rightHand && weaponSocket;
 
         public void Initialize(CharacterDefinition data)
@@ -41,7 +42,7 @@ namespace PharmaBrawl
                 skin.updateWhenOffscreen=true;
                 foreach(var bone in skin.bones)if(bone && unique.Add(bone))bones.Add(bone);
             }
-            foreach(var bone in bones)restRotations.Add(bone.localRotation);
+            foreach(var bone in bones){restRotations.Add(bone.localRotation);if(bone.name=="Chest")chest=bone;}
             // Locate hands geometrically rather than depending on vendor bone names.
             foreach(var bone in bones)
             {
@@ -81,7 +82,7 @@ namespace PharmaBrawl
                 weapon.localPosition=-grip*gunScale;
                 foreach(var collider in weapon.GetComponentsInChildren<Collider>())Destroy(collider);
             }
-            previousPosition=transform.position;
+            previousPosition=transform.position;previousYaw=transform.eulerAngles.y;
             Pose(0);
         }
         static Transform Palm(Transform tip)
@@ -110,17 +111,23 @@ namespace PharmaBrawl
         }
         void LateUpdate()
         {
-            float dt=Mathf.Max(.0001f,Time.deltaTime);
+            UpdatePose(Time.deltaTime);
+        }
+        public void UpdatePose(float deltaTime)
+        {
+            float dt=Mathf.Max(.0001f,deltaTime);
             speed=Mathf.Lerp(speed,Mathf.Clamp01(Vector3.Distance(transform.position,previousPosition)/(dt*5)),1-Mathf.Exp(-dt*12));
             previousPosition=transform.position;gait+=dt*9*speed;
+            float yaw=transform.eulerAngles.y;turnLean=Mathf.Lerp(turnLean,Mathf.Clamp(Mathf.DeltaAngle(previousYaw,yaw)/dt*.04f,-18,18),1-Mathf.Exp(-dt*10));previousYaw=yaw;
             Pose(Mathf.Sin(gait)*speed);
             hurtRemaining=Mathf.Max(0,hurtRemaining-dt);
-            float flinch=Mathf.Sin(Mathf.Clamp01(hurtRemaining/.24f)*Mathf.PI);
-            if(visual){visual.localRotation=Quaternion.Euler(-12*flinch,0,5*flinch);visual.localPosition=visualRestPosition+new Vector3(0,.04f*flinch,-.08f*flinch);}
+            float flinch=Mathf.Sin(Mathf.Clamp01(hurtRemaining/.42f)*Mathf.PI);
+            if(visual){visual.localRotation=Quaternion.Euler(-28*flinch+speed*3,0,12*flinch-turnLean*.3f);visual.localPosition=visualRestPosition+new Vector3(0,(.06f*Mathf.Abs(Mathf.Sin(gait))*speed+.10f*flinch),-.22f*flinch);}
         }
         void Pose(float walk)
         {
             for(int i=0;i<bones.Count;i++)bones[i].localRotation=restRotations[i];
+            if(chest)chest.localRotation*=Quaternion.Euler(0,turnLean+walk*7,-walk*3);
             if(rightHip)rightHip.rotation=Quaternion.AngleAxis(walk*22,transform.right)*rightHip.rotation;
             if(leftHip)leftHip.rotation=Quaternion.AngleAxis(-walk*22,transform.right)*leftHip.rotation;
             AimArm(rightHand,new Vector3(.36f,1.02f,.48f),Vector3.right);

@@ -23,7 +23,7 @@ MonoBehaviour:
   maxHp: 2800
   speed: 4.8
   damage: 600
-  attackInterval: 1.15
+  attackInterval: 0.7
   range: 8
   projectileSpeed: 16
   skillCooldown: 9

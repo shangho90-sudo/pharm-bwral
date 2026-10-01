@@ -19,7 +19,7 @@ public static class PrototypeBuilder
         string[] ults={"대형 캡슐 폭발 + 넉백","연쇄 번개","초장거리 관통 황금 광선","돌진 + 적 밀어내기","초고속 알약 난사","넓은 범위 7회 폭격","적 뒤로 순간이동 + 근접 공격","강화 로봇 15초 소환","넓은 부채꼴 알약 폭우","8초 독구름 + 이동속도 감소"};
         Color[] colors={new Color(1,.24f,.25f),new Color(.13f,.67f,1),new Color(1,.72f,.16f),new Color(.57f,.32f,.91f),new Color(.5f,.86f,.19f),new Color(.2f,.46f,1),new Color(1,.34f,.69f),new Color(.93f,.27f,.23f),new Color(.2f,.77f,.94f),new Color(.72f,.28f,.88f)};
         float[] hp={3200,2700,2400,5200,2900,2800,2500,3000,3200,3000};float[] speed={5.2f,5,4.7f,4.2f,5.1f,4.8f,6.6f,5,5,5};
-        float[] damage={440,410,780,620,175,600,310,400,160,340};float[] interval={.65f,.7f,1.3f,.85f,.7f,1.15f,.38f,.7f,.9f,.75f};float[] range={10,10,15,3.8f,9,8,6,9,8,9};
+        float[] damage={440,410,780,620,175,600,310,400,160,340};float[] interval={.65f,.7f,1.3f,.85f,.7f,.7f,.38f,.7f,.9f,.75f};float[] range={10,10,15,3.8f,9,8,6,9,8,9};
         var roster=new CharacterDefinition[10];
         for(int i=0;i<10;i++)
         {

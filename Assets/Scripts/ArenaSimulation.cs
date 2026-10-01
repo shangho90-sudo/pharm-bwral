@@ -187,7 +187,7 @@ namespace PharmaBrawl
             float dmg=f.data.damage*(f.boost>0?1.5f:1);
             switch(f.data.kind)
             {
-                case AttackKind.Artillery: MakeZone(f,TargetPoint(f,f.data.range),1.4f,.65f,dmg,0,true); break;
+                case AttackKind.Artillery: MakeZone(f,TargetPoint(f,f.data.range),1.65f,.3f,dmg,0,true); break;
                 case AttackKind.Wave: Cone(f,3.8f,55,dmg);break;
                 case AttackKind.Burst: Fire(f,f.aim,dmg,f.data.range,0);f.burstRemaining=2;f.burstTimer=.09f;break;
                 case AttackKind.Fan: for(int i=-2;i<=2;i++)Fire(f,Rotate(f.aim,i*(f.empowered?16:9)),dmg,f.empowered?f.data.range*1.4f:f.data.range,0);f.empowered=false;break;
