@@ -62,7 +62,7 @@ namespace PharmaBrawl
             QualitySettings.vSyncCount=0;
             font=Resources.Load<Font>("Fonts/NotoSansKR");
             if(!font)font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            cam=new GameObject("Arena Camera").AddComponent<Camera>();cam.tag="MainCamera";cam.orthographic=true;cam.orthographicSize=14;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.025f,.055f,.1f);cam.transform.rotation=Quaternion.Euler(50,0,0);cam.nearClipPlane=.1f;cam.farClipPlane=100;
+            cam=new GameObject("Arena Camera").AddComponent<Camera>();cam.tag="MainCamera";cam.orthographic=true;cam.orthographicSize=14;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.025f,.055f,.1f);cam.transform.rotation=Quaternion.Euler(40,0,0);cam.nearClipPlane=.1f;cam.farClipPlane=100;
             var light=new GameObject("Warm key light").AddComponent<Light>();keyLight=light;light.type=LightType.Directional;light.transform.rotation=Quaternion.Euler(45,-30,0);light.intensity=1.25f;light.shadows=LightShadows.Soft;
             RenderSettings.ambientLight=new Color(.62f,.7f,.85f);RenderSettings.fog=false;
             world=new GameObject("Pharmacy arena").transform;actorsRoot=new GameObject("Pooled combat visuals").transform;
@@ -242,7 +242,7 @@ namespace PharmaBrawl
         {
             // Limit follow at edges, keeping the playfield in view. Constant orthographic angle gives stable aiming.
             float aspect=(float)Screen.width/Screen.height;cam.orthographicSize=referenceOasis?Mathf.Max(12.35f,21.956f/aspect):Mathf.Max(16,23/aspect);
-            Vector3 target=new Vector3(0,28,-23.5f);
+            Vector3 target=new Vector3(0,28,-33.3691f);
             cam.transform.position=dt==0?target:Vector3.Lerp(cam.transform.position,target,1-Mathf.Exp(-dt*5));
             if(shake>0 && !referenceOasis){shake-=dt;cam.transform.position+=new Vector3(Mathf.Sin(Time.time*73),0,Mathf.Cos(Time.time*61))*.10f*shake;}
         }
@@ -382,4 +382,5 @@ namespace PharmaBrawl
         public void OnPointerUp(PointerEventData e)=>game.TouchInput(attack,Vector2.zero,true);
     }
 }
+
 
