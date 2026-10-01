@@ -17,6 +17,10 @@ namespace PharmaBrawl
         RawImage portrait;
         Text heroName,role,number,hp,speed,range,attack,skill,ultimate,musicState;
         Action<int> chooseHero,chooseArena;
+        readonly Button[] heroButtons=new Button[10],mapButtons=new Button[4];
+        readonly GameObject[] locks=new GameObject[10];
+        readonly Text[] stars=new Text[10],owners=new Text[10];
+        Button startButton;Text roomStatus,startStatus;
         readonly Rect[] heroes=new Rect[10],arenas=new Rect[4];
         Color Navy=>new Color(.018f,.045f,.12f,1);
         RectTransform Box(string name,Transform parent,Rect rect)
@@ -72,14 +76,14 @@ namespace PharmaBrawl
             float[] x={35,270,494,714,940};float[] width={220,209,205,211,215};
             for(int i=0;i<10;i++){
                 int pick=i;heroes[i]=new Rect(x[i%5],i<5?137:416,width[i%5],i<5?263:261);
-                Hotspot("Hero "+(i+1)+" "+roster[i].displayName,heroes[i],()=>chooseHero(pick));
+                heroButtons[i]=Hotspot("Hero "+(i+1)+" "+roster[i].displayName,heroes[i],()=>chooseHero(pick));
             }
             float[] mapX={58,336,608,881};
             for(int i=0;i<4;i++){
                 int pick=i;arenas[i]=new Rect(mapX[i],738,i==3?258:262,142);
-                Hotspot("Arena "+ArenaMap.Names[i],arenas[i],()=>chooseArena(pick));
+                mapButtons[i]=Hotspot("Arena "+ArenaMap.Names[i],arenas[i],()=>chooseArena(pick));
             }
-            Hotspot("Start selected hero and arena",new Rect(1180,800,460,94),start);
+            startButton=Hotspot("Start selected hero and arena",new Rect(1180,800,460,94),start);
             Hotspot("Back to title",new Rect(1508,29,132,50),back);
             Hotspot("Toggle music",new Rect(1302,28,178,50),()=>{music.ToggleMute();UpdateMusic();});
             // Hide only the baked first-card check when the user makes another choice.
@@ -109,7 +113,11 @@ namespace PharmaBrawl
             musicState=TextAt(musicLayer.transform,"음악 OFF",new Rect(779,455,114,34),20,Color.white,TextAnchor.MiddleCenter);
             // Text's coordinate helper is global; align it locally to its label panel.
             musicState.rectTransform.anchoredPosition=Vector2.zero;
-            UpdateMusic();SelectHero(0);SelectArena(0);
+            roomStatus=TextAt(transform,"",new Rect(545,96,610,35),17,Color.cyan);
+            var startPanel=Fill("Live start label",transform,new Rect(1320,844,265,37),new Color(0,.77f,.81f));
+            startStatus=TextAt(startPanel.transform,"",new Rect(0,0,260,35),21,Color.black,TextAnchor.MiddleCenter);startStatus.rectTransform.anchoredPosition=Vector2.zero;
+            for(int i=0;i<10;i++){locks[i]=Art("Reserved hero",transform,heroes[i],heroes[i]).gameObject;locks[i].GetComponent<RawImage>().material=new Material(Resources.Load<Shader>("GrayCard"));locks[i].SetActive(false);owners[i]=TextAt(transform,"",new Rect(heroes[i].x+5,heroes[i].yMax-72,heroes[i].width-10,28),19,Color.white,TextAnchor.MiddleCenter);owners[i].supportRichText=false;stars[i]=TextAt(transform,"★",new Rect(heroes[i].x+9,heroes[i].y+36,40,42),34,Color.yellow);stars[i].gameObject.SetActive(false);}
+            UpdateMusic();SelectHero(0);SelectArena(0);SetRoom(null,"");
         }
         Text Ability(float y,string kind,Color color)
         {
@@ -119,6 +127,14 @@ namespace PharmaBrawl
         }
         void UpdateMusic(){musicState.transform.parent.gameObject.SetActive(music.Muted);}
         void OnEnable(){if(musicState)UpdateMusic();}
+        public void SetRoom(RoomInfo room,string playerId){
+            bool host=room==null;for(int i=0;i<10;i++){heroButtons[i].interactable=true;locks[i].SetActive(false);stars[i].gameObject.SetActive(false);owners[i].text="";}
+            if(room!=null){foreach(var member in room.members){if(member.id==playerId)host=member.host;if(member.hero<0)continue;if(member.id!=playerId){heroButtons[member.hero].interactable=false;locks[member.hero].SetActive(true);}stars[member.hero].gameObject.SetActive(member.host);owners[member.hero].text=member.nickname;}}
+            foreach(var button in mapButtons)button.interactable=host;
+            startButton.interactable=host;startStatus.text=room==null?"4 vs 4 · AI 연습":host?room.teamSize+" vs "+room.teamSize+" · 방장 시작":"방장 시작 대기";
+            roomStatus.text=room==null?"AI 연습 · 캐릭터와 맵 선택":room.name+" · "+room.count+" / "+(room.teamSize*2)+" · ★ 방장";
+        }
+        public void SetNotice(string message){if(roomStatus)roomStatus.text=message;}
         public void SelectHero(int index)
         {
             if(!profile)return;

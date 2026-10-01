@@ -19,9 +19,9 @@ namespace PharmaBrawl
         public readonly List<Feature> features = new List<Feature>();
         public static readonly string[] Keys = { "village", "lab", "desert", "alpine" };
         public static readonly string[] Names = { "약국마을", "네온 약품 연구소", "사막 약초 오아시스", "알파인 의약품 보급 기지" };
-        public Vector2 Spawn(int id)
+        public Vector2 Spawn(int id,int teamSize=3)
         {
-            Vector2 origin=new Vector2((id%3-1)*(theme==ArenaTheme.Alpine?.8f:3.2f),(id<3?-1:1)*(theme==ArenaTheme.Desert?12f:11.1f));
+            Vector2 origin=new Vector2((id%teamSize-(teamSize-1)*.5f)*(theme==ArenaTheme.Alpine?.8f:3.2f),(id<teamSize?-1:1)*(theme==ArenaTheme.Desert?12f:11.1f));
             if(SpawnClear(origin))return origin;
             for(float radius=.5f;radius<=8;radius+=.5f)for(int i=0;i<32;i++){
                 float angle=i*Mathf.PI/16;Vector2 p=origin+new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*radius;if(SpawnClear(p))return p;

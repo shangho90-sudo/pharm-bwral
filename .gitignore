@@ -15,3 +15,6 @@
 /Assets/Art/Characters/Reference01/model.fbm.meta
 /Assets/Art/Projectiles/Capsule/model.fbm/
 /Assets/Art/Projectiles/Capsule/model.fbm.meta
+
+Server/bin/
+Server/obj/

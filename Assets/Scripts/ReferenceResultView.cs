@@ -54,33 +54,35 @@ namespace PharmaBrawl
         }
         void UpdateMusic(){muteLabel.SetActive(music.Muted);}
         void OnEnable(){if(muteLabel)UpdateMusic();}
-        public void Show(ArenaSimulation sim)
+        public void Show(ArenaSimulation sim,int localPlayerId=0)
         {
             if(content){content.SetActive(false);Destroy(content);}
             content=new GameObject("Actual match results",typeof(RectTransform));content.transform.SetParent(transform,false);content.GetComponent<RectTransform>().sizeDelta=new Vector2(1600,900);
-            backdrop.texture=sim.winner==0?victory:defeat;
+            backdrop.texture=sim.winner==sim.fighters[localPlayerId].team?victory:defeat;
             Fill(content.transform,new Rect(741,188,78,54),Navy);Fill(content.transform,new Rect(864,188,79,54),Navy);
             Label(content.transform,sim.score[0].ToString(),new Rect(739,180,82,62),54,new Color(.72f,.94f,1));
             Label(content.transform,sim.score[1].ToString(),new Rect(861,180,85,62),54,new Color(1,.35f,.45f));
             if(sim.winner<0){Fill(content.transform,new Rect(583,4,511,181),Navy);Label(content.transform,"무승부\nDRAW",new Rect(600,15,478,160),58,Color.white);}
-            float[] ys={512,561,610,666,716,766};
+            float[] ys=new float[sim.fighters.Length];for(int i=0;i<ys.Length;i++)ys[i]=512+i*36+(i>=sim.TeamSize?8:0);
+            if(sim.TeamSize==3)ys=new float[]{512,561,610,666,716,766};
+            if(sim.TeamSize!=3){Fill(content.transform,new Rect(187,508,1298,306),Navy);Label(content.transform,"BLUE 팀",new Rect(195,520,115,130),23,Color.cyan);Label(content.transform,"RED 팀",new Rect(195,675,115,125),23,new Color(1,.3f,.45f));}
             float[] xs={410,655,830,1050,1280};float[] widths={215,143,188,191,191};
-            for(int row=0;row<6;row++){
+            for(int row=0;row<sim.fighters.Length;row++){
                 // Explicit team order keeps the BLUE and RED table bands accurate.
                 ArenaSimulation.Fighter f=null;int n=0;
-                foreach(var candidate in sim.fighters)if(candidate.team==(row<3?0:1)){if(n++==row%3){f=candidate;break;}}
+                foreach(var candidate in sim.fighters)if(candidate.team==(row<sim.TeamSize?0:1)){if(n++==row%sim.TeamSize){f=candidate;break;}}
                 if(f==null)throw new InvalidOperationException("Expected three fighters per team");
-                string[] values={f.data.displayName+(f.id==0?"  YOU":"  AI"),f.kills+" / "+f.deaths,f.damageDealt.ToString("0"),f.damageTaken.ToString("0"),f.healing.ToString("0")};
+                string[] values={(f.nickname??f.data.displayName)+(f.id==localPlayerId?"  YOU":f.human?"":"  AI"),f.kills+" / "+f.deaths,f.damageDealt.ToString("0"),f.damageTaken.ToString("0"),f.healing.ToString("0")};
                 for(int col=0;col<5;col++){
                     // Sample blank pixels from the same artwork row to retain its gradient.
                     var region=new Rect(xs[col],ys[row],widths[col],40);
-                    Art("Clear example cell",content.transform,(Texture2D)backdrop.texture,region,new Rect(574,ys[row],30,40));
-                    Label(content.transform,values[col],region,24,col==0 && f.id==0?new Color(.35f,.95f,1):Color.white);
+                    if(sim.TeamSize==3)Art("Clear example cell",content.transform,(Texture2D)backdrop.texture,region,new Rect(574,ys[row],30,40));else Fill(content.transform,region,f.team==0?new Color(.03f,.16f,.34f):new Color(.25f,.05f,.14f));
+                    Label(content.transform,values[col],region,sim.TeamSize==3?24:21,col==0 && f.id==localPlayerId?new Color(.35f,.95f,1):Color.white);
                 }
                 int hero=(int)f.data.kind;float[] cardX={35,270,494,714,940};
                 float top=hero<5?137:416;
                 // Headshot comes from the selected hero's reference card, matching the real roster.
-                Art("Actual hero headshot",content.transform,portraits,new Rect(330,ys[row]-2,53,45),new Rect(cardX[hero%5]+35,top+20,140,165));
+                Art("Actual hero headshot",content.transform,portraits,new Rect(330,ys[row]-2,40,34),new Rect(cardX[hero%5]+35,top+20,140,165));
             }
             UpdateMusic();
         }

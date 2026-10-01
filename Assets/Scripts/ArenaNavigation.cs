@@ -10,10 +10,10 @@ namespace PharmaBrawl
         readonly ArenaSimulation sim;
         readonly bool[] open = new bool[N];
         readonly int[] queue = new int[N], parent = new int[N];
-        readonly Vector2[][] paths = new Vector2[18][];
-        readonly int[] cursors = new int[18];
-        readonly float[] timers = new float[18];
-        readonly Vector2[] goals = new Vector2[18];
+        readonly Vector2[][] paths = new Vector2[24][];
+        readonly int[] cursors = new int[24];
+        readonly float[] timers = new float[24];
+        readonly Vector2[] goals = new Vector2[24];
         int activeCount = -1;
         public ArenaNavigation(ArenaSimulation simulation) { sim = simulation; Rebuild(); }
         Vector2 Point(int i) => new Vector2(-17.5f + (i % W) * Cell, -12.5f + (i / W) * Cell);

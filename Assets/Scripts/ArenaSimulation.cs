@@ -9,9 +9,10 @@ namespace PharmaBrawl
     {
         public const float Width = 18, Height = 13, MatchDuration = 180;
         public const int TargetScore = 20;
-        public sealed class Fighter
+        [Serializable] public sealed class Fighter
         {
             public int id, team, kills, deaths;
+            public string nickname;public bool human;
             public CharacterDefinition data;
             public Vector2 position, aim = Vector2.up;
             public float aimDistance=7;
@@ -23,7 +24,7 @@ namespace PharmaBrawl
             public float damageDealt, damageTaken, healing;
             public bool Alive => hp > 0;
         }
-        public sealed class Shot
+        [Serializable] public sealed class Shot
         {
             public bool active, piercing;
             public int owner, kind;
@@ -31,14 +32,14 @@ namespace PharmaBrawl
             public float damage, speed, remaining, radius, poison;
             public int hitMask;
         }
-        public sealed class Zone
+        [Serializable] public sealed class Zone
         {
             public bool active, pending;
             public int owner, kind;
             public Vector2 position;
             public float radius, remaining, tick, damage;
         }
-        public sealed class Robot
+        [Serializable] public sealed class Robot
         {
             public bool active;
             public int owner;
@@ -46,7 +47,7 @@ namespace PharmaBrawl
             public float remaining, attackTimer;
             public bool elite;
         }
-        public sealed class Cover
+        [Serializable] public sealed class Cover
         {
             public Vector2 position, size;
             public float hp;
@@ -55,7 +56,7 @@ namespace PharmaBrawl
             public ArenaMap.Feature feature;
             public bool Active => !destructible || hp > 0;
         }
-        public struct CombatEvent
+        [Serializable] public struct CombatEvent
         {
             public string type;
             public Vector2 position;
@@ -63,7 +64,10 @@ namespace PharmaBrawl
             public float size;
             public CombatEvent(string t, Vector2 p, int a, float s = 1) { type=t; position=p; actor=a; size=s; }
         }
-        public readonly Fighter[] fighters = new Fighter[6];
+        public readonly Fighter[] fighters;
+        public readonly int TeamSize;
+        public struct HumanInput { public bool human,attack,skill,ultimate; public Vector2 move,aim; }
+        HumanInput[] networkInputs;
         public readonly Shot[] shots = new Shot[256];
         public readonly Zone[] zones = new Zone[48];
         public readonly Robot[] robots = new Robot[12];
@@ -78,12 +82,13 @@ namespace PharmaBrawl
         public readonly ArenaMap map;
         readonly ArenaNavigation navigation;
 
-        public ArenaSimulation(CharacterDefinition[] roster, int selected, int seed = 42, int mapIndex = 0)
+        public ArenaSimulation(CharacterDefinition[] roster, int selected, int seed = 42, int mapIndex = 0, int teamSize = 3, int[] heroPicks = null)
         {
+            TeamSize=Mathf.Clamp(teamSize,1,4);fighters=new Fighter[TeamSize*2];
             rng = new System.Random(seed);
             map = new ArenaMap(mapIndex);
-            int[] picks = {selected, (selected+3)%10, (selected+6)%10, (selected+1)%10, (selected+4)%10, (selected+8)%10};
-            for(int i=0;i<6;i++) fighters[i] = new Fighter {id=i, team=i<3?0:1, data=roster[picks[i]], hp=roster[picks[i]].maxHp, position=map.Spawn(i)};
+            int[] picks = heroPicks ?? new[]{selected,(selected+3)%10,(selected+6)%10,(selected+1)%10,(selected+4)%10,(selected+8)%10,(selected+2)%10,(selected+5)%10};
+            for(int i=0;i<fighters.Length;i++) fighters[i] = new Fighter {id=i, team=i<TeamSize?0:1, data=roster[picks[i]], hp=roster[picks[i]].maxHp, position=map.Spawn(i,TeamSize)};
             for(int i=0;i<shots.Length;i++) shots[i]=new Shot();
             for(int i=0;i<zones.Length;i++) zones[i]=new Zone();
             for(int i=0;i<robots.Length;i++) robots[i]=new Robot();
@@ -96,22 +101,24 @@ namespace PharmaBrawl
         {
             if(finished) return;
             timeLeft=Mathf.Max(0,timeLeft-dt);
-            for(int i=0;i<6;i++)
+            for(int i=0;i<fighters.Length;i++)
             {
                 var f=fighters[i];
-                if(!f.Alive) { f.respawn-=dt; if(f.respawn<=0) {f.hp=f.data.maxHp;f.position=map.Spawn(i);f.quiet=0;f.poison=0;f.shield=1;respawns++;Emit("respawn",f.position,i);} continue; }
+                if(!f.Alive) { f.respawn-=dt; if(f.respawn<=0) {f.hp=f.data.maxHp;f.position=map.Spawn(i,TeamSize);f.quiet=0;f.poison=0;f.shield=1;respawns++;Emit("respawn",f.position,i);} continue; }
                 f.attackTimer-=dt; f.skillTimer-=dt; f.shield-=dt; f.haste-=dt; f.boost-=dt; f.quiet+=dt;
                 if(f.poison>0) {f.poison-=dt;f.poisonTick-=dt;if(f.poisonTick<=0){f.poisonTick=.5f;Damage(f.poisonOwner,i,f.poisonDamage,false);}}
                 if(!f.Alive) continue;
                 if(f.burstRemaining>0){f.burstTimer-=dt;if(f.burstTimer<=0){Fire(f,f.aim,f.data.damage,f.data.range,0);f.burstRemaining--;f.burstTimer=.09f;Emit("shoot",f.position,f.id,.3f);}}
                 if(f.rapidRemaining>0){f.rapidRemaining-=dt;Attack(f);}
                 if(f.quiet>3.5f && f.hp<f.data.maxHp) {float healed=Mathf.Min(f.data.maxHp-f.hp, f.data.maxHp*.13f*dt);f.hp+=healed;f.healing+=healed;}
-                if(i==0 && !allBots) { Move(f,move,dt); if(aim.sqrMagnitude>.01f) {f.aim=aim.normalized;f.aimDistance=Mathf.Clamp(aim.magnitude,.8f,f.data.range);} if(attack) Attack(f); if(skill) Skill(f); if(ultimate) Ultimate(f); }
+                if(networkInputs!=null && networkInputs[i].human){var input=networkInputs[i];Move(f,input.move,dt);if(input.aim.sqrMagnitude>.01f){f.aim=input.aim.normalized;f.aimDistance=Mathf.Clamp(input.aim.magnitude,.8f,f.data.range);}if(input.attack)Attack(f);if(input.skill)Skill(f);if(input.ultimate)Ultimate(f);}
+                else if(i==0 && !allBots) { Move(f,move,dt); if(aim.sqrMagnitude>.01f) {f.aim=aim.normalized;f.aimDistance=Mathf.Clamp(aim.magnitude,.8f,f.data.range);} if(attack) Attack(f); if(skill) Skill(f); if(ultimate) Ultimate(f); }
                 else Bot(f,dt);
             }
             UpdateShots(dt); UpdateZones(dt); UpdateRobots(dt);
             if(timeLeft<=0 || score[0]>=TargetScore || score[1]>=TargetScore) { finished=true;winner=score[0]==score[1]?-1:(score[0]>score[1]?0:1);Emit("finish",Vector2.zero,0); }
         }
+        public void TickNetwork(float dt,HumanInput[] inputs){networkInputs=inputs;try{Tick(dt,Vector2.zero,Vector2.up,false,false,false,true);}finally{networkInputs=null;}}
         public bool Blocked(Vector2 p,float radius=.48f)
         {
             if(Mathf.Abs(p.x)>Width-radius || Mathf.Abs(p.y)>Height-radius) return true;
@@ -132,7 +139,7 @@ namespace PharmaBrawl
         public int NearestEnemy(Fighter f,float range=100)
         {
             int best=-1;float distance=range;
-            for(int i=0;i<6;i++) {var e=fighters[i];if(!e.Alive || e.team==f.team)continue;float d=Vector2.Distance(f.position,e.position);if(d<distance){best=i;distance=d;}}
+            for(int i=0;i<fighters.Length;i++) {var e=fighters[i];if(!e.Alive || e.team==f.team)continue;float d=Vector2.Distance(f.position,e.position);if(d<distance){best=i;distance=d;}}
             return best;
         }
         bool LineClear(Vector2 a,Vector2 b)
@@ -238,17 +245,17 @@ namespace PharmaBrawl
         {
             foreach(var z in zones)if(!z.active){z.active=true;z.owner=f.id;z.position=p;z.radius=radius;z.remaining=duration;z.damage=damage;z.kind=kind;z.pending=pending;z.tick=0;return;}
         }
-        void Cone(Fighter f,float range,float angle,float damage){for(int i=0;i<6;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(f.position,e.position)<range && Vector2.Angle(f.aim,e.position-f.position)<angle && LineClear(f.position,e.position))Damage(f.id,i,damage);}Emit("wave",f.position+f.aim*1.6f,f.id,2);}
-        void Beam(Fighter f){for(int i=0;i<6;i++){var e=fighters[i];Vector2 delta=e.position-f.position;float forward=Vector2.Dot(delta,f.aim);if(e.Alive && e.team!=f.team && forward>0 && forward<35 && Mathf.Abs(Vector2.Dot(delta,Vector2.Perpendicular(f.aim)))<.8f)Damage(f.id,i,1900);}Emit("beam",f.position,f.id,35);}
+        void Cone(Fighter f,float range,float angle,float damage){for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(f.position,e.position)<range && Vector2.Angle(f.aim,e.position-f.position)<angle && LineClear(f.position,e.position))Damage(f.id,i,damage);}Emit("wave",f.position+f.aim*1.6f,f.id,2);}
+        void Beam(Fighter f){for(int i=0;i<fighters.Length;i++){var e=fighters[i];Vector2 delta=e.position-f.position;float forward=Vector2.Dot(delta,f.aim);if(e.Alive && e.team!=f.team && forward>0 && forward<35 && Mathf.Abs(Vector2.Dot(delta,Vector2.Perpendicular(f.aim)))<.8f)Damage(f.id,i,1900);}Emit("beam",f.position,f.id,35);}
         void Chain(Fighter f,int jumps,float damage,float range)
         {
             Vector2 point=f.position;int mask=0;
-            for(int j=0;j<jumps;j++){int target=-1;float closest=range;for(int i=0;i<6;i++){var e=fighters[i];float d=Vector2.Distance(point,e.position);if(e.Alive && e.team!=f.team && (mask&(1<<i))==0 && d<closest){target=i;closest=d;}}
+            for(int j=0;j<jumps;j++){int target=-1;float closest=range;for(int i=0;i<fighters.Length;i++){var e=fighters[i];float d=Vector2.Distance(point,e.position);if(e.Alive && e.team!=f.team && (mask&(1<<i))==0 && d<closest){target=i;closest=d;}}
                 if(target<0)break;mask|=1<<target;Damage(f.id,target,damage);point=fighters[target].position;Emit("lightning",point,f.id,1.7f);range=6;}
         }
         void Area(Fighter f,Vector2 p,float radius,float damage,bool knockback)
         {
-            for(int i=0;i<6;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(e.position,p)<radius){Damage(f.id,i,damage);if(knockback){Vector2 n=e.position+(e.position-p).normalized*1.2f;if(!Blocked(n))e.position=n;}}}
+            for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(e.position,p)<radius){Damage(f.id,i,damage);if(knockback){Vector2 n=e.position+(e.position-p).normalized*1.2f;if(!Blocked(n))e.position=n;}}}
             foreach(var c in covers)if(c.destructible && c.Active && Vector2.Distance(c.position,p)<radius+1)c.hp-=damage;
         }
         public void Damage(int owner,int target,float amount,bool charge=true)
@@ -271,7 +278,7 @@ namespace PharmaBrawl
                     if(s.remaining<=0 || Mathf.Abs(s.position.x)>Width || Mathf.Abs(s.position.y)>Height){s.active=false;break;}
                     if(!s.piercing)foreach(var c in covers)if(c.Active && c.blocksShots && Mathf.Abs(s.position.x-c.position.x)<c.size.x*.5f+s.radius && Mathf.Abs(s.position.y-c.position.y)<c.size.y*.5f+s.radius){if(c.destructible)c.hp-=s.damage;Impact(s);break;}
                     if(!s.active)break;
-                    for(int i=0;i<6;i++){var e=fighters[i];if(e.Alive && e.team!=fighters[s.owner].team && (s.hitMask&(1<<i))==0 && Vector2.Distance(e.position,s.position)<.5f+s.radius){s.hitMask|=1<<i;Damage(s.owner,i,s.damage);
+                    for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=fighters[s.owner].team && (s.hitMask&(1<<i))==0 && Vector2.Distance(e.position,s.position)<.5f+s.radius){s.hitMask|=1<<i;Damage(s.owner,i,s.damage);
                         if(s.poison>0 && e.Alive){e.poison=2.5f;e.poisonTick=.5f;e.poisonDamage=s.poison;e.poisonOwner=s.owner;}
                         if(fighters[s.owner].data.kind==AttackKind.Lightning && s.kind==0){Emit("lightning",e.position,s.owner);}
                         if(!s.piercing){Impact(s);break;}}
@@ -287,7 +294,7 @@ namespace PharmaBrawl
         void UpdateRobots(float dt)
         {
             foreach(var r in robots)if(r.active){r.remaining-=dt;if(r.remaining<=0){r.active=false;continue;}var f=fighters[r.owner];int t=NearestEnemy(f,15);if(t<0)continue;var delta=fighters[t].position-r.position;
-                if(delta.magnitude>5){Vector2 direction=Navigate(r.position,fighters[t].position,6+System.Array.IndexOf(robots,r),dt);Vector2 p=r.position+direction*3*dt;if(!Blocked(p,.3f))r.position=p;}r.attackTimer-=dt;
+                if(delta.magnitude>5){Vector2 direction=Navigate(r.position,fighters[t].position,fighters.Length+System.Array.IndexOf(robots,r),dt);Vector2 p=r.position+direction*3*dt;if(!Blocked(p,.3f))r.position=p;}r.attackTimer-=dt;
                 if(r.attackTimer<=0 && delta.magnitude<9 && LineClear(r.position,fighters[t].position)){r.attackTimer=r.elite?.35f:.8f;Vector2 old=f.position;f.position=r.position;Fire(f,delta.normalized,r.elite?240:160,9,0);f.position=old;Emit("shoot",r.position,f.id);}}
         }
     }

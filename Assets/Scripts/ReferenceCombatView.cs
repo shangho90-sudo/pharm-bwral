@@ -39,9 +39,9 @@ namespace PharmaBrawl
         }
         void UpdateMusic(){muteLabel.SetActive(music.Muted);musicState.gameObject.SetActive(music.Muted);}
         void OnEnable(){if(muteLabel)UpdateMusic();}
-        public void UpdateState(ArenaSimulation sim,string feed)
+        public void UpdateState(ArenaSimulation sim,string feed,int localPlayerId=0)
         {
-            var f=sim.fighters[0];blueScore.text=sim.score[0].ToString("00");redScore.text=sim.score[1].ToString("00");int sec=Mathf.CeilToInt(sim.timeLeft);clock.text=$"{sec/60:00}:{sec%60:00}";
+            var f=sim.fighters[localPlayerId];blueScore.text=sim.score[0].ToString("00");redScore.text=sim.score[1].ToString("00");int sec=Mathf.CeilToInt(sim.timeLeft);clock.text=$"{sec/60:00}:{sec%60:00}";
             mapName.text=(sim.map.theme==ArenaTheme.Desert?"약초 오아시스":sim.map.name)+" · 20킬 선승";
             heroName.text=f.data.displayName+" / "+f.data.role;hp.text=$"{Mathf.CeilToInt(f.hp)} / {f.data.maxHp:0} HP";hpBar.fillAmount=f.hp/f.data.maxHp;
             float q=f.charge/f.data.ultimateRequirement;chargeBar.fillAmount=q;charge.text=f.Alive?"궁극기 "+Mathf.FloorToInt(q*100)+"%":"부활 "+Mathf.CeilToInt(f.respawn)+"초";
