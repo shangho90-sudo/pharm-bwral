@@ -1,0 +1,99 @@
+{
+  "sounds": [
+    {
+      "key": "Capsule",
+      "taskId": "b709c36a-d84e-4b3a-8d01-0c6b21f921c4",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Capsule.mp3"
+    },
+    {
+      "key": "Hit",
+      "taskId": "312ac3a4-2c0f-4bdb-9d61-e0a4b2d356ab",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Hit.mp3"
+    },
+    {
+      "key": "Lightning",
+      "taskId": "78becc21-3a70-40ee-9713-2fb636d05ceb",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Lightning.mp3"
+    },
+    {
+      "key": "Arrow",
+      "taskId": "a958e03b-aaad-452f-ab98-a3815d50a72d",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Arrow.mp3"
+    },
+    {
+      "key": "Wave",
+      "taskId": "39434812-f942-46ee-be15-d41798e3ef8d",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Wave.mp3"
+    },
+    {
+      "key": "Burst",
+      "taskId": "70462aa8-fbbe-45c8-9b5d-c668f3357917",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Burst.mp3"
+    },
+    {
+      "key": "Artillery",
+      "taskId": "5875c06c-bba2-4954-a033-6c328fda82bd",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Artillery.mp3"
+    },
+    {
+      "key": "Assassin",
+      "taskId": "cc5e3c8a-356d-49fe-8809-d19fc3633b20",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Assassin.mp3"
+    },
+    {
+      "key": "Summoner",
+      "taskId": "af7223f4-59af-473b-b6f4-86794f3d97fa",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Summoner.mp3"
+    },
+    {
+      "key": "Fan",
+      "taskId": "c775d16e-da4d-4e12-82b2-a530418370b3",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Fan.mp3"
+    },
+    {
+      "key": "Poison",
+      "taskId": "d833a3f5-e15c-4b3a-aec2-4f63840b9374",
+      "provider": "Runway",
+      "credits": 1,
+      "durationSeconds": 0.6,
+      "file": "Assets/Resources/SFX/Poison.mp3"
+    }
+  ],
+  "runwayCredits": 11,
+  "hurtAnimation": {
+    "taskId": "5ae362c6-ddde-40d1-b5ab-56947d2fde6b",
+    "status": "failed_refunded",
+    "credits": 0,
+    "fallback": "Runtime 0.24-second flinch on existing character rig"
+  }
+}

@@ -20,7 +20,7 @@ WASD 이동 · 마우스 조준 · 좌클릭 공격 · 우클릭/E 특수 스킬
 
 ## 네 가지 아레나
 
-기존 고정 약국 맵을 제거했습니다. 네 맵은 `ArenaMap`의 같은 구조물 데이터로 3D 외형과 이동/탄환 판정을 만듭니다. 첨부 이미지를 평면 배경으로 사용하지 않고, 실제 3D 전투 구역으로 재구성했습니다. 외형과 배치는 게임에 맞게 조정한 것으로 참조 이미지의 픽셀 단위 복제는 아닙니다.
+기존 고정 약국 맵을 제거했습니다. 네 맵은 `ArenaMap`의 같은 구조물 데이터로 3D 외형과 이동/탄환 판정을 만듭니다. 최신 전투 화면은 첨부 이미지의 배경과 3D 캐릭터·탄환을 조합합니다. 이동/탄환 충돌 영역은 배경의 벽·물·컨테이너 위치에 맞춰 별도로 설정했습니다.
 
 | 맵 | 이동 가능 | 이동 불가 |
 |---|---|---|
@@ -86,3 +86,9 @@ Runway music has been replaced with five energetic instrumental arcade tracks (1
 
 Rebuild the updated web version with `ResultScreenBuilder.BuildWebAndCapture`. This imports new reference models, captures actual victory/defeat screens, validates 40 AI matches and terrain/boundary rules, then builds WebGL.
 
+
+## 전투 효과음과 캐릭터 표현
+
+Runway로 일반 공격 10종과 피격음 1종을 생성했습니다. AttackKind에 따라 캡슐·전기·액체 다트·음파·3연사·포격·쌍권총·로봇·확산·독성 발사음을 연결합니다. 캐릭터별 재생 간격과 거리 음량을 적용하며 3연사 발사음은 한 묶음당 한 번 재생합니다. 생성 내역과 11크레딧 비용은 COMBAT-AUDIO.json에 기록했습니다.
+
+피격 시 기존 모델이 0.24초 동안 뒤로 젖혀졌다가 돌아옵니다. Tripo 피격 애니메이션 생성은 실패하여 환불되었고, 실제 적용 동작은 런타임에서 구현했습니다. 캐릭터의 텍스처 발광을 소량 추가하고 금속 광택을 줄였습니다. 흰색 블록 형태의 소환 로봇은 작은 청록색 의료 드론으로 교체했습니다.

@@ -12,7 +12,9 @@ namespace PharmaBrawl
         Transform visual, rightHand, leftHand, rightHip, leftHip, weaponSocket;
         Quaternion weaponRotation;
         Vector3 previousPosition;
-        float gait, speed;
+        float gait, speed, hurtRemaining;
+        Vector3 visualRestPosition;
+        public void ReactToHit(){hurtRemaining=.24f;}
         public bool HasHandSocket => rightHand && weaponSocket;
 
         public void Initialize(CharacterDefinition data)
@@ -20,12 +22,17 @@ namespace PharmaBrawl
             visual=new GameObject("Tripo / "+data.displayName).transform;
             visual.SetParent(transform,false);
             Instantiate(data.characterPrefab,visual);
+            foreach(var renderer in visual.GetComponentsInChildren<Renderer>())foreach(var material in renderer.materials){
+                material.SetFloat("_Metallic",0);material.SetFloat("_Glossiness",.15f);material.DisableKeyword("_METALLICGLOSSMAP");
+                material.EnableKeyword("_EMISSION");material.SetTexture("_EmissionMap",material.mainTexture);material.SetColor("_EmissionColor",new Color(.3f,.3f,.3f));
+            }
             foreach(var animator in visual.GetComponentsInChildren<Animator>())animator.enabled=false;
             foreach(var collider in visual.GetComponentsInChildren<Collider>())Destroy(collider);
             Bounds bounds=BoundsOf(visual);
             float scale=2.8f/Mathf.Max(.01f,bounds.size.y);
             visual.localScale=Vector3.one*scale;
             visual.localPosition=new Vector3(-bounds.center.x*scale,-bounds.min.y*scale,-bounds.center.z*scale);
+            visualRestPosition=visual.localPosition;
             var unique=new HashSet<Transform>();
             foreach(var skin in visual.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
@@ -105,6 +112,9 @@ namespace PharmaBrawl
             speed=Mathf.Lerp(speed,Mathf.Clamp01(Vector3.Distance(transform.position,previousPosition)/(dt*5)),1-Mathf.Exp(-dt*12));
             previousPosition=transform.position;gait+=dt*9*speed;
             Pose(Mathf.Sin(gait)*speed);
+            hurtRemaining=Mathf.Max(0,hurtRemaining-dt);
+            float flinch=Mathf.Sin(Mathf.Clamp01(hurtRemaining/.24f)*Mathf.PI);
+            if(visual){visual.localRotation=Quaternion.Euler(-12*flinch,0,5*flinch);visual.localPosition=visualRestPosition+new Vector3(0,.04f*flinch,-.08f*flinch);}
         }
         void Pose(float walk)
         {
