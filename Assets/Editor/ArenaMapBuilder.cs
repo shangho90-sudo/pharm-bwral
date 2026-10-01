@@ -15,12 +15,19 @@ public static class ArenaMapBuilder
         for(int map=0;map<4;map++)
         {
             var sim=new ArenaSimulation(roster,0,42,map);var nav=new ArenaNavigation(sim);
+            foreach(var direction in new[]{Vector2.left,Vector2.right,Vector2.up,Vector2.down}){
+                var edge=new ArenaSimulation(roster,0,42,map);edge.fighters[0].position=direction* (direction.x!=0?17.4f:12.4f);
+                if(edge.Blocked(edge.fighters[0].position))continue;
+                for(int t=0;t<180;t++)edge.Tick(1/60f,direction,direction,false,false,false);
+                Require(!edge.Blocked(edge.fighters[0].position),"boundary containment "+map);
+                Require(Mathf.Abs(edge.fighters[0].position.x)<=ArenaSimulation.Width-.48f && Mathf.Abs(edge.fighters[0].position.y)<=ArenaSimulation.Height-.48f,"edge radius "+map);
+            }
             for(int id=0;id<6;id++)Require(!sim.Blocked(sim.map.Spawn(id)),"spawn clearance "+map+"/"+id);
             for(int from=0;from<3;from++)for(int to=3;to<6;to++)Require(nav.FindPath(sim.map.Spawn(from),sim.map.Spawn(to)).Length>0,"team connectivity "+map);
             foreach(var feature in sim.map.features)
             {
                 if(feature.blocksMovement)Require(sim.Blocked(feature.position,.01f),"solid footprint "+map+" "+feature.kind);
-                if(feature.kind==ArenaProp.Bridge || feature.kind==ArenaProp.Ice || feature.kind==ArenaProp.Bush)Require(!sim.Blocked(feature.position),"passable feature "+map+" "+feature.kind);
+                if(feature.kind==ArenaProp.Bridge || feature.kind==ArenaProp.Ice || feature.kind==ArenaProp.Bush)Require(!sim.Blocked(feature.position),"passable feature "+map+" "+feature.kind+" "+feature.position);
                 if(feature.kind==ArenaProp.Water)Require(!sim.ShotBlocked(feature.position,.01f),"bullets cross water "+map);
             }
             // Direct input walks into the river, but must stop before water; all three bridges cross it.
@@ -101,15 +108,21 @@ public static class ArenaMapBuilder
     }
     public static void ImportSelectionArtwork()
     {
-        var importer=AssetImporter.GetAtPath("Assets/Resources/SelectionScreen.png") as TextureImporter;
+        foreach(string key in new[]{"SelectionScreen","VictoryScreen","DefeatScreen","GameplayReference","OasisBackground","VillageBackground","LabBackground","AlpineBackground"}){
+        var importer=AssetImporter.GetAtPath("Assets/Resources/"+key+".png") as TextureImporter;
         importer.textureType=TextureImporterType.Default;importer.mipmapEnabled=false;
         importer.npotScale=TextureImporterNPOTScale.None;importer.maxTextureSize=2048;
         importer.textureCompression=TextureImporterCompression.Uncompressed;importer.wrapMode=TextureWrapMode.Clamp;
-        importer.SaveAndReimport();
+        importer.SaveAndReimport();}
+    }
+    public static void CreateReferenceMaterial()
+    {
+        const string path="Assets/Resources/ReferenceMap.mat";
+        if(!AssetDatabase.LoadAssetAtPath<Material>(path))AssetDatabase.CreateAsset(new Material(Shader.Find("Unlit/Texture")),path);
     }
     public static void BuildWeb()
     {
-        ImportSelectionArtwork();Validate();
+        ImportSelectionArtwork();CreateReferenceMaterial();Validate();
         PlayerSettings.WebGL.template="PROJECT:Pharma";
         PlayerSettings.WebGL.compressionFormat=WebGLCompressionFormat.Gzip;
         PlayerSettings.WebGL.decompressionFallback=true;
@@ -125,3 +138,4 @@ public static class ArenaMapBuilder
         Debug.Log("FOUR_ARENAS_WEB_SUCCESS "+destination);
     }
 }
+

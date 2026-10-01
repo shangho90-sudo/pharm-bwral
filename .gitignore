@@ -10,3 +10,8 @@
 # FBX importer extracts another copy of embedded textures here. Materials use Textures/.
 /Assets/Art/Maps/*/model.fbm/
 /Assets/Art/Maps/*/model.fbm.meta
+
+/Assets/Art/Characters/Reference01/model.fbm/
+/Assets/Art/Characters/Reference01/model.fbm.meta
+/Assets/Art/Projectiles/Capsule/model.fbm/
+/Assets/Art/Projectiles/Capsule/model.fbm.meta

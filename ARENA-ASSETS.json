@@ -165,9 +165,104 @@
           "credits_consumed": 10
         }
       ]
+    },
+    {
+      "key": "reference-pharmacist",
+      "model": "P1-20260311",
+      "file": "Assets/Art/Characters/Reference01/model.fbx",
+      "creditsConsumed": 80,
+      "steps": [
+        {
+          "task_id": "4ca58d8a-f3c2-4f2b-89db-65319983ae0b",
+          "type": "image_to_model",
+          "credits_consumed": 50
+        },
+        {
+          "task_id": "fd0fbd38-41cb-4dce-b246-1dc77b8a295c",
+          "type": "animate_rig",
+          "credits_consumed": 25
+        },
+        {
+          "task_id": "f8f38bdb-5ab2-49fc-a476-0ae626519a92",
+          "type": "convert_model",
+          "credits_consumed": 5
+        }
+      ]
+    },
+    {
+      "key": "capsule-projectile",
+      "model": "P1-20260311",
+      "file": "Assets/Art/Projectiles/Capsule/model.fbx",
+      "creditsConsumed": 45,
+      "steps": [
+        {
+          "task_id": "cec0b880-8819-469e-bb7e-502682cd5600",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "9d974df4-7d4f-474d-b220-2823d2e5485f",
+          "type": "convert_model",
+          "credits_consumed": 5
+        }
+      ]
     }
   ],
   "music": [
+    {
+      "key": "menu",
+      "prompt": "Original instrumental soundtrack for a colorful fast-paced 3-versus-3 arcade shooter. Exciting, playful, energetic and catchy from the first second, NOT ambient, NOT slow, NOT cinematic drone. Strong punchy drums, driving bass and clear memorable melodies, no vocals, no lyrics, no gunshots or sound effects. Keep action energy throughout with short varied 8-bar sections, restrained low bass so weapon sounds remain audible, brief intro, no long breakdown or slow outro, suitable for seamless repeating gameplay. 150 BPM heroic electro-rock and funky arcade chiptune, triumphant bright brass synth hooks and crunchy rhythm guitar. A joyful get-ready-for-battle menu anthem.",
+      "taskId": "eea75082-79a3-4c39-9be6-ad78d14bba96",
+      "durationSeconds": 111.333833,
+      "provider": "Runway",
+      "credits": 8,
+      "file": "Assets/Resources/Music/menu.mp3"
+    },
+    {
+      "key": "village",
+      "prompt": "Original instrumental soundtrack for a colorful fast-paced 3-versus-3 arcade shooter. Exciting, playful, energetic and catchy from the first second, NOT ambient, NOT slow, NOT cinematic drone. Strong punchy drums, driving bass and clear memorable melodies, no vocals, no lyrics, no gunshots or sound effects. Keep action energy throughout with short varied 8-bar sections, restrained low bass so weapon sounds remain audible, brief intro, no long breakdown or slow outro, suitable for seamless repeating gameplay. 154 BPM upbeat future funk and electro-swing arcade action, bouncy slap bass, bright brass stabs, playful marimba and chiptune lead. Cheerful sunny pharmacy village battles.",
+      "taskId": "b468ff8a-f15d-453b-95ef-435790d3c055",
+      "durationSeconds": 106.527292,
+      "provider": "Runway",
+      "credits": 8,
+      "file": "Assets/Resources/Music/village.mp3"
+    },
+    {
+      "key": "lab",
+      "prompt": "Original instrumental soundtrack for a colorful fast-paced 3-versus-3 arcade shooter. Exciting, playful, energetic and catchy from the first second, NOT ambient, NOT slow, NOT cinematic drone. Strong punchy drums, driving bass and clear memorable melodies, no vocals, no lyrics, no gunshots or sound effects. Keep action energy throughout with short varied 8-bar sections, restrained low bass so weapon sounds remain audible, brief intro, no long breakdown or slow outro, suitable for seamless repeating gameplay. 168 BPM high-energy drum-and-bass and futuristic electro, rapid crisp breakbeats, neon synth arpeggios, pulsing bass, infectious melody. Exciting neon pharmaceutical laboratory shootout.",
+      "taskId": "468d7286-587a-4afd-8007-76de347f5de6",
+      "durationSeconds": 112.326458,
+      "provider": "Runway",
+      "credits": 8,
+      "file": "Assets/Resources/Music/lab.mp3"
+    },
+    {
+      "key": "desert",
+      "prompt": "Original instrumental soundtrack for a colorful fast-paced 3-versus-3 arcade shooter. Exciting, playful, energetic and catchy from the first second, NOT ambient, NOT slow, NOT cinematic drone. Strong punchy drums, driving bass and clear memorable melodies, no vocals, no lyrics, no gunshots or sound effects. Keep action energy throughout with short varied 8-bar sections, restrained low bass so weapon sounds remain audible, brief intro, no long breakdown or slow outro, suitable for seamless repeating gameplay. 156 BPM energetic breakbeat and desert electro-rock, darbuka percussion, plucked oud-like hooks, fiery electric guitar riff, driving bass. Adventure and fast arcade combat in a sunny herbal oasis.",
+      "taskId": "962cbc08-4f41-48de-986b-80708d6a7601",
+      "durationSeconds": 106.84075,
+      "provider": "Runway",
+      "credits": 8,
+      "file": "Assets/Resources/Music/desert.mp3"
+    },
+    {
+      "key": "alpine",
+      "prompt": "Original instrumental soundtrack for a colorful fast-paced 3-versus-3 arcade shooter. Exciting, playful, energetic and catchy from the first second, NOT ambient, NOT slow, NOT cinematic drone. Strong punchy drums, driving bass and clear memorable melodies, no vocals, no lyrics, no gunshots or sound effects. Keep action energy throughout with short varied 8-bar sections, restrained low bass so weapon sounds remain audible, brief intro, no long breakdown or slow outro, suitable for seamless repeating gameplay. 160 BPM fast uplifting melodic electro-rock, tight drums, energetic bass, bright icy bell arpeggios and heroic synth hook, rhythmic guitars. Snowy medical supply base arcade battle.",
+      "taskId": "b0d96514-5632-401e-b5d3-4695d67fd958",
+      "durationSeconds": 117.2375,
+      "provider": "Runway",
+      "credits": 8,
+      "file": "Assets/Resources/Music/alpine.mp3"
+    }
+  ],
+  "actualCosts": {
+    "tripo": 525,
+    "runway": 80,
+    "total": 605,
+    "tripoRemaining": 1765
+  },
+  "verification": "Unity 6000.6.1f1: 40 AI matches across 4 reference arenas and 10 heroes, boundary containment, spawn/respawn clearance, solid terrain, passable foliage/ice, river/bridges, destructible oasis crates, actual result statistics, WebGL build and browser playtest.",
+  "previousMusic": [
     {
       "key": "menu",
       "taskId": "11608634-0eaf-4b26-9df2-ce3bc95a1ff6",
@@ -209,11 +304,10 @@
       "file": "Assets/Resources/Music/alpine.mp3"
     }
   ],
-  "actualCosts": {
-    "tripo": 400,
-    "runway": 40,
-    "total": 440,
-    "tripoRemaining": 1890
-  },
-  "verification": "Unity 6000.6.1f1: 40 AI matches, spawn/respawn, terrain collision, bridges, water projectile clearance, destroyed crates, music/landmarks. Windows build and rendered map screenshots."
+  "referenceBackgrounds": [
+    "Assets/Resources/VillageBackground.png",
+    "Assets/Resources/LabBackground.png",
+    "Assets/Resources/OasisBackground.png",
+    "Assets/Resources/AlpineBackground.png"
+  ]
 }

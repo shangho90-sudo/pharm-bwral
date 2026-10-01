@@ -76,3 +76,13 @@ The `gh-pages` branch contains the generated web player. Pages publishes that br
 
 Hero selection uses the supplied 1672×941 artwork as a UI atlas. ReferenceSelectionView maps ten hero cards, four map cards, music/back/start buttons to real interactions, and updates the selected portrait, HP, speed, range and skill descriptions from CharacterDefinition. The original default hero/map appearance is preserved; alternative selections receive live profiles and selection markers. SelectionScreen is imported without mipmaps, resizing or lossy texture compression to preserve Korean text.
 
+## Reference gameplay update
+
+Four cleaned reference background plates retain the supplied arena composition. Live 3D fighters, weapons, Tripo capsule projectiles, luminous team medallions and effects render over those plates. ArenaMap stores calibrated collision footprints: solid walls, containers and rocks block movement/shots; water blocks movement; three oasis bridges and village bridges are traversable; foliage and alpine ice are traversable. Playfield bounds include fighter radius, movement is subdivided to avoid tunnelling, and spawn positions search for terrain clearance.
+
+ReferenceCombatView recreates the supplied HUD with live scores, clock, HP, charge, cooldowns, music and pause/ability controls. ReferenceResultView uses the supplied victory/defeat artwork and overlays actual match score and six-player statistics. Reference01 replaces the first hero with a newly generated and rigged Tripo model. The remaining nine heroes retain their existing distinct models and abilities. CapsuleProjectile uses the new textured Tripo mesh, colored emission and short trails.
+
+Runway music has been replaced with five energetic instrumental arcade tracks (150–168 BPM prompts), one menu theme and four map themes. Generation task IDs and billed costs are in ARENA-ASSETS.json. The reference gameplay style is 2.5D; background scenery is baked artwork rather than independently rotating geometry.
+
+Rebuild the updated web version with `ResultScreenBuilder.BuildWebAndCapture`. This imports new reference models, captures actual victory/defeat screens, validates 40 AI matches and terrain/boundary rules, then builds WebGL.
+

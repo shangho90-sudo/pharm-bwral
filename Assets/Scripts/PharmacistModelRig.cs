@@ -23,7 +23,7 @@ namespace PharmaBrawl
             foreach(var animator in visual.GetComponentsInChildren<Animator>())animator.enabled=false;
             foreach(var collider in visual.GetComponentsInChildren<Collider>())Destroy(collider);
             Bounds bounds=BoundsOf(visual);
-            float scale=2.3f/Mathf.Max(.01f,bounds.size.y);
+            float scale=2.8f/Mathf.Max(.01f,bounds.size.y);
             visual.localScale=Vector3.one*scale;
             visual.localPosition=new Vector3(-bounds.center.x*scale,-bounds.min.y*scale,-bounds.center.z*scale);
             var unique=new HashSet<Transform>();
