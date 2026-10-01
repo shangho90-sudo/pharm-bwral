@@ -18,3 +18,4 @@
 
 Server/bin/
 Server/obj/
+!Server/PharmaBrawl.Server.csproj

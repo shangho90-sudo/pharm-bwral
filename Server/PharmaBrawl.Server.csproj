@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Assets/Scripts/ArenaSimulation.cs" Link="Shared/ArenaSimulation.cs" />
+    <Compile Include="../Assets/Scripts/ArenaMap.cs" Link="Shared/ArenaMap.cs" />
+    <Compile Include="../Assets/Scripts/ArenaNavigation.cs" Link="Shared/ArenaNavigation.cs" />
+    <Compile Include="../Assets/Scripts/NetworkProtocol.cs" Link="Shared/NetworkProtocol.cs" />
+    <Content Update="characters.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
