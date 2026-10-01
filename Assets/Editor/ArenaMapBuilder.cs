@@ -99,9 +99,17 @@ public static class ArenaMapBuilder
         Require(report.summary.result==UnityEditor.Build.Reporting.BuildResult.Succeeded,"Windows build "+report.summary.result);
         Debug.Log("FOUR_ARENAS_BUILD_SUCCESS "+destination);
     }
+    public static void ImportSelectionArtwork()
+    {
+        var importer=AssetImporter.GetAtPath("Assets/Resources/SelectionScreen.png") as TextureImporter;
+        importer.textureType=TextureImporterType.Default;importer.mipmapEnabled=false;
+        importer.npotScale=TextureImporterNPOTScale.None;importer.maxTextureSize=2048;
+        importer.textureCompression=TextureImporterCompression.Uncompressed;importer.wrapMode=TextureWrapMode.Clamp;
+        importer.SaveAndReimport();
+    }
     public static void BuildWeb()
     {
-        Validate();
+        ImportSelectionArtwork();Validate();
         PlayerSettings.WebGL.template="PROJECT:Pharma";
         PlayerSettings.WebGL.compressionFormat=WebGLCompressionFormat.Gzip;
         PlayerSettings.WebGL.decompressionFallback=true;

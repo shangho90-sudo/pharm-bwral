@@ -29,15 +29,16 @@ namespace PharmaBrawl
         Font font;
         Sprite whiteSprite;
         GameObject titleScreen, lobby, hud, result, pausePanel;
-        Text scoreBlue,scoreRed,timer,hpText,chargeText,skillText,status,feed,heroLabel,resultTitle,resultStats,detail,selectedName;
+        Text scoreBlue,scoreRed,timer,hpText,chargeText,skillText,status,feed,heroLabel,resultTitle,resultStats;
         Image hpFill,chargeFill;
         Button skillButton,ultButton;
         Transform aimLine;
         int selected,selectedMap;
         Light keyLight;
         ArenaMusic soundtrack;
-        Text mapDetail,musicLabel;
-        readonly Button[] mapButtons=new Button[4];
+        Text musicLabel;
+        ReferenceSelectionView selectionView;
+        GameObject globalMusicButton;
         GameObject movementOverlay;
         bool captureMap,captureSelect;
         bool playing,paused,skillRequested,ultimateRequested;
@@ -315,27 +316,13 @@ namespace PharmaBrawl
             poster.sprite=Resources.Load<Sprite>("TitleScreen");poster.preserveAspect=true;poster.raycastTarget=false;
             TitleHotspot("START",new Vector2(0,-173),new Vector2(405,105),()=>{titleScreen.SetActive(false);lobby.SetActive(true);});
             TitleHotspot("EXIT",new Vector2(0,-293),new Vector2(318,80),ExitGame);
-            lobby=Panel("Character select",canvas.transform,Vector2.zero,new Vector2(1600,900),new Color(navy.r,navy.g,navy.b,.94f)).gameObject;
-            Label(lobby.transform,"PHARMA / BRAWL",new Vector2(-475,340),new Vector2(530,100),54,cream);
-            Label(lobby.transform,"약사 브롤   ·   4 ARENAS",new Vector2(-470,273),new Vector2(530,45),20,blue);
-            Btn(lobby.transform,"← START SCREEN",new Vector2(610,337),new Vector2(260,55),new Color(.15f,.28f,.4f),()=>{lobby.SetActive(false);titleScreen.SetActive(true);});
-            Label(lobby.transform,"CHOOSE YOUR PHARMACIST",new Vector2(-450,215),new Vector2(570,55),23,cream);
-            for(int i=0;i<10;i++){int pick=i;int col=i%5,row=i/5;var b=Btn(lobby.transform,roster[i].displayName+"\n"+roster[i].role,new Vector2(-580+col*215,140-row*110),new Vector2(197,98),roster[i].color*.62f,()=>Select(pick));Label(b.transform,((int)roster[i].kind+1).ToString("00"),new Vector2(-72,39),new Vector2(40,25),14,cream);}
-            mapDetail=Label(lobby.transform,"",new Vector2(555,215),new Vector2(390,140),16,new Color(.7f,.83f,.9f));
-            Label(lobby.transform,"SELECT ARENA",new Vector2(-545,-45),new Vector2(350,28),17,blue);
-            for(int i=0;i<4;i++){
-                int pick=i;
-                mapButtons[i]=Btn(lobby.transform,"",new Vector2(-465+i*310,-116),new Vector2(296,102),new Color(.14f,.23f,.32f),()=>SelectMap(pick));
-                var preview=Rect("Reference preview",mapButtons[i].transform,new Vector2(-82,0),new Vector2(120,90)).gameObject.AddComponent<RawImage>();preview.texture=Resources.Load<Texture2D>("Maps/"+ArenaMap.Keys[i]);preview.raycastTarget=false;
-                Label(mapButtons[i].transform,ArenaMap.Names[i],new Vector2(64,12),new Vector2(147,55),17,cream,TextAnchor.MiddleCenter);
-                Label(mapButtons[i].transform,(i+1).ToString("00")+" / 3 vs 3",new Vector2(64,-31),new Vector2(140,25),13,blue,TextAnchor.MiddleCenter);
-            }
+            lobby=Rect("Reference hero and arena selection",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;
+            selectionView=lobby.AddComponent<ReferenceSelectionView>();
+            selectionView.Initialize(roster,font,soundtrack,Select,SelectMap,StartMatch,()=>{lobby.SetActive(false);titleScreen.SetActive(true);});
             var musicButton=Btn(canvas.transform,"",new Vector2(675,425),new Vector2(210,34),navy,()=>{soundtrack.ToggleMute();musicLabel.text=soundtrack.Muted?"음악 OFF":"음악 ON";});
+            globalMusicButton=musicButton.gameObject;
             musicLabel=Label(musicButton.transform,soundtrack.Muted?"음악 OFF":"음악 ON",Vector2.zero,new Vector2(200,32),16,cream,TextAnchor.MiddleCenter);
-            var info=Panel("Selected profile",lobby.transform,new Vector2(0,-266),new Vector2(1250,172),new Color(.09f,.15f,.23f));
-            selectedName=Label(info.transform,"",new Vector2(-435,47),new Vector2(330,70),30,cream);detail=Label(info.transform,"",new Vector2(160,0),new Vector2(800,155),18,cream);
-            Btn(lobby.transform,"START 3 vs 3  →",new Vector2(470,-380),new Vector2(310,65),new Color(.06f,.55f,.49f),StartMatch);
-            Label(lobby.transform,"WASD 이동  ·  마우스 조준  ·  LMB 공격  ·  RMB 스킬  ·  SPACE 궁극기\n3분 / 20킬   ·   AI 5명 자동 참가   ·   ESC 일시정지",new Vector2(-250,-377),new Vector2(920,70),17,new Color(.62f,.74f,.83f));Select(0);
+            Select(0);
             hud=Rect("HUD",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;
             var top=Panel("Score",hud.transform,new Vector2(0,382),new Vector2(610,90),navy);Label(top.transform,"BLUE",new Vector2(-237,23),new Vector2(90,24),14,blue,TextAnchor.MiddleCenter);Label(top.transform,"RED",new Vector2(237,23),new Vector2(90,24),14,red,TextAnchor.MiddleCenter);
             scoreBlue=Label(top.transform,"00",new Vector2(-233,-9),new Vector2(100,55),36,cream,TextAnchor.MiddleCenter);scoreRed=Label(top.transform,"00",new Vector2(233,-9),new Vector2(100,55),36,cream,TextAnchor.MiddleCenter);timer=Label(top.transform,"03:00",Vector2.zero,new Vector2(160,75),34,cream,TextAnchor.MiddleCenter);
@@ -370,13 +357,9 @@ namespace PharmaBrawl
             var b=im.gameObject.AddComponent<Button>();b.targetGraphic=im;b.onClick.AddListener(()=>action());
             var c=b.colors;c.normalColor=Color.clear;c.highlightedColor=new Color(1,1,1,.10f);c.selectedColor=Color.clear;c.pressedColor=new Color(0,0,0,.14f);b.colors=c;
         }
-        void SelectMap(int index)
-        {
-            selectedMap=index;var data=new ArenaMap(index);
-            mapDetail.text=data.name+"\n"+data.description;
-            for(int i=0;i<4;i++)if(mapButtons[i])mapButtons[i].GetComponent<Image>().color=i==index?new Color(.05f,.43f,.46f):new Color(.14f,.23f,.32f);
-        }
-        void Select(int index){selected=index;var d=roster[index];selectedName.text=d.displayName+"\n"+d.role;selectedName.color=d.color;detail.text=$"HP {d.maxHp:0}   /   SPEED {d.speed:0.0}   /   RANGE {d.range:0.0}\n일반: {d.attackDescription}\n스킬: {d.skillDescription}  ({d.skillCooldown:0}초)\n궁극기: {d.ultimateDescription}";}
+        void SelectMap(int index){selectedMap=index;selectionView.SelectArena(index);}
+        void Select(int index){selected=index;selectionView.SelectHero(index);}
+        void LateUpdate(){if(globalMusicButton)globalMusicButton.SetActive(!lobby.activeSelf);}
         void AddStick(Transform parent,Vector2 position,bool attack)
         {
             var p=Panel(attack?"Attack joystick":"Move joystick",parent,position,new Vector2(170,170),new Color(.08f,.16f,.23f,.65f));var stick=p.gameObject.AddComponent<ArenaTouchStick>();stick.game=this;stick.attack=attack;Label(p.transform,attack?"AIM / RELEASE":"MOVE",Vector2.zero,new Vector2(165,40),15,cream,TextAnchor.MiddleCenter);

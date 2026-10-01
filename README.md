@@ -73,3 +73,6 @@ Build with Unity 6000.6.1f1, WebGL module installed:
 Output: `../../outputs/PharmaBrawl-Web`. Gzip with JavaScript decompression fallback allows ordinary static hosting, including GitHub Pages. Serve the folder through HTTP; opening index.html directly cannot load the game. Desktop keyboard and mouse: WASD movement, left mouse attack, right mouse skill, Space ultimate. Click the game to enable browser audio.
 
 The `gh-pages` branch contains the generated web player. Pages publishes that branch from its root. The editor project remains on `codex/four-arenas-music`.
+
+Hero selection uses the supplied 1672×941 artwork as a UI atlas. ReferenceSelectionView maps ten hero cards, four map cards, music/back/start buttons to real interactions, and updates the selected portrait, HP, speed, range and skill descriptions from CharacterDefinition. The original default hero/map appearance is preserved; alternative selections receive live profiles and selection markers. SelectionScreen is imported without mipmaps, resizing or lossy texture compression to preserve Korean text.
+
