@@ -99,4 +99,21 @@ public static class ArenaMapBuilder
         Require(report.summary.result==UnityEditor.Build.Reporting.BuildResult.Succeeded,"Windows build "+report.summary.result);
         Debug.Log("FOUR_ARENAS_BUILD_SUCCESS "+destination);
     }
+    public static void BuildWeb()
+    {
+        Validate();
+        PlayerSettings.WebGL.template="PROJECT:Pharma";
+        PlayerSettings.WebGL.compressionFormat=WebGLCompressionFormat.Gzip;
+        PlayerSettings.WebGL.decompressionFallback=true;
+        PlayerSettings.WebGL.initialMemorySize=512;
+        foreach(string key in new[]{"menu","village","lab","desert","alpine"}){
+            var importer=AssetImporter.GetAtPath("Assets/Resources/Music/"+key+".mp3") as AudioImporter;
+            var settings=importer.defaultSampleSettings;settings.loadType=AudioClipLoadType.CompressedInMemory;
+            importer.SetOverrideSampleSettings("WebGL",settings);importer.SaveAndReimport();
+        }
+        string destination=Path.GetFullPath("../../outputs/PharmaBrawl-Web");
+        var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/Scenes/Pharmacy.unity"},locationPathName=destination,target=BuildTarget.WebGL,options=BuildOptions.None});
+        Require(report.summary.result==UnityEditor.Build.Reporting.BuildResult.Succeeded,"Web build "+report.summary.result);
+        Debug.Log("FOUR_ARENAS_WEB_SUCCESS "+destination);
+    }
 }

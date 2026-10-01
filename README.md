@@ -63,3 +63,13 @@ Unity Build Profiles에서 Windows 또는 WebGL을 선택하거나 에디터 배
 `--map 0..3`은 검증/캡처 때 사용할 맵을 지정합니다. `--capture-map <절대 PNG 경로>`는 선택한 맵만 1600×900으로 렌더링합니다. 일반 실행에서는 로비에서 맵을 선택합니다.
 
 폰트: Noto Sans CJK KR, SIL Open Font License. 라이선스는 `Assets/Resources/Fonts/OFL.txt`에 포함되어 있습니다. 시작 화면과 캐릭터/무기 참조는 사용자가 제공한 이미지입니다.
+
+## Browser version
+
+Build with Unity 6000.6.1f1, WebGL module installed:
+
+`Unity.exe -batchmode -quit -buildTarget WebGL -projectPath <project> -executeMethod ArenaMapBuilder.BuildWeb -logFile web-build.log`
+
+Output: `../../outputs/PharmaBrawl-Web`. Gzip with JavaScript decompression fallback allows ordinary static hosting, including GitHub Pages. Serve the folder through HTTP; opening index.html directly cannot load the game. Desktop keyboard and mouse: WASD movement, left mouse attack, right mouse skill, Space ultimate. Click the game to enable browser audio.
+
+The `gh-pages` branch contains the generated web player. Pages publishes that branch from its root. The editor project remains on `codex/four-arenas-music`.
