@@ -7,3 +7,6 @@
 /Builds/
 *.csproj
 *.sln
+# FBX importer extracts another copy of embedded textures here. Materials use Textures/.
+/Assets/Art/Maps/*/model.fbm/
+/Assets/Art/Maps/*/model.fbm.meta

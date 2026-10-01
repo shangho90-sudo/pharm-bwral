@@ -33,12 +33,18 @@ namespace PharmaBrawl
         Image hpFill,chargeFill;
         Button skillButton,ultButton;
         Transform aimLine;
-        int selected;
+        int selected,selectedMap;
+        Light keyLight;
+        ArenaMusic soundtrack;
+        Text mapDetail,musicLabel;
+        readonly Button[] mapButtons=new Button[4];
+        GameObject movementOverlay;
+        bool captureMap;
         bool playing,paused,skillRequested,ultimateRequested;
-        float accumulator, shake, noticeTimer, musicClock;
+        float accumulator, shake, noticeTimer;
         Vector2 touchMove,touchAim=Vector2.up;
         bool mobileFire;
-        AudioSource sfx,music;
+        AudioSource sfx;
         AudioClip[] tones;
         bool smoke,capture,captureLobby,captureResult,captureModels;
         string capturePath;
@@ -51,21 +57,25 @@ namespace PharmaBrawl
             QualitySettings.vSyncCount=0;
             font=Resources.Load<Font>("Fonts/NotoSansKR");
             if(!font)font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            cam=new GameObject("Arena Camera").AddComponent<Camera>();cam.tag="MainCamera";cam.orthographic=true;cam.orthographicSize=14;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.025f,.055f,.1f);cam.transform.rotation=Quaternion.Euler(58,0,0);cam.nearClipPlane=.1f;cam.farClipPlane=100;
-            var light=new GameObject("Warm key light").AddComponent<Light>();light.type=LightType.Directional;light.transform.rotation=Quaternion.Euler(45,-30,0);light.intensity=1.25f;light.shadows=LightShadows.Soft;
+            cam=new GameObject("Arena Camera").AddComponent<Camera>();cam.tag="MainCamera";cam.orthographic=true;cam.orthographicSize=14;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.025f,.055f,.1f);cam.transform.rotation=Quaternion.Euler(50,0,0);cam.nearClipPlane=.1f;cam.farClipPlane=100;
+            var light=new GameObject("Warm key light").AddComponent<Light>();keyLight=light;light.type=LightType.Directional;light.transform.rotation=Quaternion.Euler(45,-30,0);light.intensity=1.25f;light.shadows=LightShadows.Soft;
             RenderSettings.ambientLight=new Color(.62f,.7f,.85f);RenderSettings.fog=false;
             world=new GameObject("Pharmacy arena").transform;actorsRoot=new GameObject("Pooled combat visuals").transform;
             portraitTexture=new RenderTexture(160,160,16);podiumTexture=new RenderTexture(1000,220,16);
             portraitCam=new GameObject("Portrait Camera").AddComponent<Camera>();portraitCam.orthographic=true;portraitCam.orthographicSize=1.3f;portraitCam.targetTexture=portraitTexture;portraitCam.cullingMask=1<<8;portraitCam.clearFlags=CameraClearFlags.SolidColor;portraitCam.backgroundColor=navy;portraitCam.enabled=false;
             podiumCam=new GameObject("Victory Podium Camera").AddComponent<Camera>();podiumCam.orthographic=true;podiumCam.orthographicSize=2.5f;podiumCam.targetTexture=podiumTexture;podiumCam.backgroundColor=navy;podiumCam.clearFlags=CameraClearFlags.SolidColor;podiumCam.enabled=false;podiumCam.transform.position=new Vector3(0,5,-11);podiumCam.transform.LookAt(new Vector3(0,1.25f,0));
             whiteSprite=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,Texture2D.whiteTexture.width,Texture2D.whiteTexture.height),new Vector2(.5f,.5f));
-            MakeAudio();MakeUI();
+            MakeAudio();MakeUI();soundtrack.Play("menu");
             string[] args=Environment.GetCommandLineArgs();
             for(int i=0;i<args.Length;i++){if(args[i]=="--smoke-test")smoke=true;if((args[i]=="--capture" || args[i]=="--capture-lobby" || args[i]=="--capture-result") && i+1<args.Length){capture=true;captureLobby=args[i]=="--capture-lobby";captureResult=args[i]=="--capture-result";capturePath=args[i+1];}}
             for(int i=0;i<args.Length-1;i++)if(args[i]=="--capture-models"){capture=true;captureModels=true;capturePath=args[i+1];}
+            for(int i=0;i<args.Length-1;i++)if(args[i]=="--map" && int.TryParse(args[i+1],out int mapPick))selectedMap=Mathf.Clamp(mapPick,0,3);
+            for(int i=0;i<args.Length-1;i++)if(args[i]=="--capture-map"){capture=true;captureMap=true;capturePath=args[i+1];}
+            SelectMap(selectedMap);
+            if(captureMap){titleScreen.SetActive(false);lobby.SetActive(false);CreateMap(new ArenaSimulation(roster,selected,42,selectedMap));PositionCamera(Vector2.zero,0);Invoke(nameof(SaveCapture),3);return;}
             if(captureModels){ShowModelGallery();Invoke(nameof(SaveCapture),3);return;}
             if(smoke || (capture && !captureLobby))StartMatch();
-            else {CreateMap(new ArenaSimulation(roster,selected));PositionCamera(Vector2.zero,0);if(captureLobby)Invoke(nameof(SaveCapture),2);}
+            else {CreateMap(new ArenaSimulation(roster,selected,42,selectedMap));PositionCamera(Vector2.zero,0);if(captureLobby)Invoke(nameof(SaveCapture),2);}
         }
         Material Mat(Color c)
         {
@@ -98,32 +108,21 @@ namespace PharmaBrawl
         static Vector3 P(Vector2 p,float y=0)=>new Vector3(p.x,y,p.y);
         void CreateMap(ArenaSimulation model)
         {
-            foreach(Transform child in world)Destroy(child.gameObject);coverViews.Clear();
-            Shape("Foundation",PrimitiveType.Cube,new Vector3(0,-.45f,0),new Vector3(39,.8f,29),new Color(.10f,.24f,.3f));
-            Shape("Mint pharmacy floor",PrimitiveType.Cube,new Vector3(0,-.04f,0),new Vector3(36,.15f,26),new Color(.65f,.82f,.79f));
-            for(int x=-17;x<=17;x+=2)for(int z=-12;z<=12;z+=2)Shape("Terrazzo tile",PrimitiveType.Cube,new Vector3(x,.045f,z),new Vector3(1.96f,.04f,1.96f),((x+z)%4==0)?new Color(.73f,.87f,.83f):new Color(.68f,.82f,.8f),null,false);
-            Shape("Back wall",PrimitiveType.Cube,new Vector3(0,1.3f,13.5f),new Vector3(38,2.6f,.7f),new Color(.2f,.46f,.49f));
-            Shape("Back wall cap",PrimitiveType.Cube,new Vector3(0,2.7f,13.5f),new Vector3(38,.25f,1),new Color(.86f,.95f,.88f));
-            Shape("Blue spawn pad",PrimitiveType.Cylinder,new Vector3(-14,.1f,0),new Vector3(5,.05f,9),new Color(.18f,.59f,.73f),null,false);
-            Shape("Red spawn pad",PrimitiveType.Cylinder,new Vector3(14,.1f,0),new Vector3(5,.05f,9),new Color(.86f,.46f,.5f),null,false);
-            for(int i=0;i<2;i++){float x=i==0?-14:14;Color c=i==0?blue:red;Shape("Spawn cross",PrimitiveType.Cube,new Vector3(x,.17f,0),new Vector3(2.6f,.03f,.6f),cream,null,false);Shape("Spawn cross",PrimitiveType.Cube,new Vector3(x,.17f,0),new Vector3(.6f,.03f,2.6f),cream,null,false);}
-            Shape("Central dispensing emblem",PrimitiveType.Cylinder,new Vector3(0,.09f,0),new Vector3(5,.035f,5),new Color(.38f,.69f,.62f),null,false);
-            Shape("Emblem",PrimitiveType.Cube,new Vector3(0,.14f,0),new Vector3(2.7f,.025f,.7f),cream,null,false);Shape("Emblem",PrimitiveType.Cube,new Vector3(0,.14f,0),new Vector3(.7f,.025f,2.7f),cream,null,false);
-            foreach(var c in model.covers)
-            {
-                var root=new GameObject(c.destructible?"Breakable medicine carton":"Medicine shelf").transform;root.SetParent(world);root.position=P(c.position);coverViews.Add(root);
-                if(c.destructible){Shape("Carton",PrimitiveType.Cube,new Vector3(0,.65f,0),new Vector3(c.size.x,1.3f,c.size.y),new Color(.85f,.65f,.36f),root);Shape("Tape",PrimitiveType.Cube,new Vector3(0,1.31f,0),new Vector3(.25f,.03f,c.size.y),cream,root);Shape("Medical label",PrimitiveType.Cube,new Vector3(0,.72f,-c.size.y*.51f),new Vector3(.7f,.5f,.02f),cream,root);}
-                else
-                {
-                    Shape("Low shelf body",PrimitiveType.Cube,new Vector3(0,.65f,0),new Vector3(c.size.x,1.3f,c.size.y),new Color(.25f,.5f,.49f),root);
-                    Shape("White counter",PrimitiveType.Cube,new Vector3(0,1.34f,0),new Vector3(c.size.x+.15f,.12f,c.size.y+.15f),cream,root);
-                    int n=Mathf.RoundToInt(Mathf.Max(c.size.x,c.size.y));for(int j=0;j<n;j++){Vector3 pos=c.size.x>c.size.y?new Vector3(j-(n-1)*.5f,1.65f,0):new Vector3(0,1.65f,j-(n-1)*.5f);Color bottle=roster[(j+2)%10].color;Shape("Medicine bottle",PrimitiveType.Cylinder,pos,new Vector3(.36f,.3f,.36f),bottle,root);Shape("Bottle cap",PrimitiveType.Cylinder,pos+Vector3.up*.33f,new Vector3(.38f,.05f,.38f),cream,root);}
-                }
-            }
-            for(int i=-3;i<=3;i++){Shape("Back pharmacy cabinet",PrimitiveType.Cube,new Vector3(i*4,1.1f,12.6f),new Vector3(3.3f,2,1),new Color(.77f,.91f,.86f));for(int j=0;j<4;j++)Shape("Stock",PrimitiveType.Cube,new Vector3(i*4-1+j*.65f,2.2f,12.6f),new Vector3(.4f,.35f,.5f),roster[(i+j+10)%10].color);}
-            // Camera-side boundary stays low, so it never obscures combat.
-            Shape("Front boundary",PrimitiveType.Cube,new Vector3(0,.25f,-13.5f),new Vector3(38,.5f,.7f),new Color(.18f,.43f,.45f));
-            for(int sign=-1;sign<=1;sign+=2)Shape("Side rail",PrimitiveType.Cube,new Vector3(sign*18.6f,.35f,0),new Vector3(.7f,.7f,27),new Color(.18f,.43f,.45f));
+            foreach(Transform child in world){child.gameObject.SetActive(false);Destroy(child.gameObject);}coverViews.Clear();
+            movementOverlay=null;
+            world.name=model.map.name;
+            new ArenaMapView(world,model.map).Build(model,coverViews);
+            bool lab=model.map.theme==ArenaTheme.Laboratory;
+            keyLight.intensity=lab?.8f:1.25f;
+            RenderSettings.ambientLight=lab?new Color(.44f,.4f,.64f):model.map.theme==ArenaTheme.Desert?new Color(.83f,.74f,.58f):new Color(.65f,.75f,.87f);
+            cam.backgroundColor=lab?new Color(.035f,.025f,.09f):model.map.theme==ArenaTheme.Desert?new Color(.38f,.23f,.11f):model.map.theme==ArenaTheme.Alpine?new Color(.2f,.32f,.45f):new Color(.21f,.35f,.32f);
+        }
+        void ToggleMovementOverlay()
+        {
+            if(movementOverlay){movementOverlay.SetActive(!movementOverlay.activeSelf);return;}
+            movementOverlay=new GameObject("F2 movement inspection");movementOverlay.transform.SetParent(world,false);
+            for(float x=-17.5f;x<=17.5f;x+=1)for(float z=-12.5f;z<=12.5f;z+=1)
+                Shape(sim.Blocked(new Vector2(x,z))?"Blocked":"Walkable",PrimitiveType.Cube,new Vector3(x,.21f,z),new Vector3(.25f,.025f,.25f),sim.Blocked(new Vector2(x,z))?red:new Color(.22f,1,.46f),movementOverlay.transform,false);
         }
         Transform MakeActor(ArenaSimulation.Fighter f)
         {
@@ -164,8 +163,8 @@ namespace PharmaBrawl
         void StartMatch()
         {
             foreach(Transform t in actorsRoot)Destroy(t.gameObject);
-            sim=new ArenaSimulation(roster,selected,Environment.TickCount);sim.Event+=OnCombat;
-            CreateMap(sim);for(int i=0;i<6;i++)actors[i]=MakeActor(sim.fighters[i]);
+            sim=new ArenaSimulation(roster,selected,Environment.TickCount,selectedMap);sim.Event+=OnCombat;
+            CreateMap(sim);soundtrack.Play(sim.map.key);for(int i=0;i<6;i++)actors[i]=MakeActor(sim.fighters[i]);
             foreach(Transform t in actors[0].GetComponentsInChildren<Transform>())t.gameObject.layer=8;
             for(int i=0;i<6;i++){beamViews[i]=Shape("Pooled ultimate beam",PrimitiveType.Cube,Vector3.zero,Vector3.one,roster[2].color,actorsRoot,false);beamViews[i].gameObject.SetActive(false);beamLife[i]=0;}
             portraitCam.enabled=true;podiumCam.enabled=false;
@@ -175,13 +174,15 @@ namespace PharmaBrawl
             for(int i=0;i<fx.Length;i++){fx[i]=Shape("Pooled shockwave",PrimitiveType.Sphere,Vector3.zero,Vector3.one,cream,actorsRoot,false);fx[i].gameObject.SetActive(false);fxLife[i]=0;}
             aimLine=Shape("Aim guide",PrimitiveType.Cube,Vector3.zero,new Vector3(.06f,.04f,4),blue,actorsRoot,false);
             playing=true;paused=false;accumulator=0;realTime=0;titleScreen.SetActive(false);lobby.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);hud.SetActive(true);
-            heroLabel.text=roster[selected].displayName+"  /  "+roster[selected].role;status.text="FIRST TO 20  ·  TEAM DEATHMATCH";noticeTimer=4;
+            heroLabel.text=roster[selected].displayName+"  /  "+roster[selected].role;status.text=sim.map.name+"  ·  FIRST TO 20";noticeTimer=4;
         }
         void Update()
         {
             if(!playing){if(result && result.activeSelf && sim!=null){int team=sim.winner<0?0:sim.winner;for(int i=0;i<6;i++)if(sim.fighters[i].team==team)actors[i].position=new Vector3((i%3-1)*2.5f,Mathf.Sin(Time.time*3+i)*.07f,0);}return;}
             realTime+=Time.unscaledDeltaTime;
             if(Input.GetKeyDown(KeyCode.Escape)){paused=!paused;pausePanel.SetActive(paused);}
+            soundtrack.Paused=paused;
+            if(Input.GetKeyDown(KeyCode.F2))ToggleMovementOverlay();
             if(paused)return;
             var f=sim.fighters[0];
             Vector2 move=new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"))+touchMove;
@@ -192,11 +193,23 @@ namespace PharmaBrawl
             accumulator+=Mathf.Min(Time.deltaTime,.1f);
             if(smoke || captureResult)accumulator+=2;
             while(accumulator>=1f/60f){sim.Tick(1f/60f,move,aim,fire,skillRequested,ultimateRequested,smoke || capture);accumulator-=1f/60f;skillRequested=false;ultimateRequested=false;mobileFire=false;if(sim.finished)break;}
-            RenderGame();UpdateHUD();MusicTick();
+            RenderGame();UpdateHUD();
             if(sim.finished){Finish();if(smoke){Debug.Log("PHARMA_SMOKE_COMPLETE "+JsonUtility.ToJson(new SmokeReport(sim)));Application.Quit();}else if(captureResult)Invoke(nameof(SaveCapture),1);}
             if(capture && !captureResult && realTime>7)SaveCapture();
         }
-        void SaveCapture(){ScreenCapture.CaptureScreenshot(capturePath);capture=false;Invoke(nameof(QuitCapture),1);}
+        void SaveCapture()
+        {
+            // Render explicitly: hidden automated captures have no readable window backbuffer.
+            var target=new RenderTexture(1600,900,24);var previous=RenderTexture.active;
+            cam.targetTexture=target;
+            canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=5;
+            if(captureMap)canvas.enabled=false;
+            Canvas.ForceUpdateCanvases();if(portraitCam.enabled)portraitCam.Render();if(podiumCam.enabled)podiumCam.Render();cam.Render();
+            RenderTexture.active=target;var pixels=new Texture2D(1600,900,TextureFormat.RGB24,false);pixels.ReadPixels(new Rect(0,0,1600,900),0,0);pixels.Apply();
+            System.IO.File.WriteAllBytes(capturePath,pixels.EncodeToPNG());
+            cam.targetTexture=null;RenderTexture.active=previous;target.Release();Destroy(target);Destroy(pixels);
+            capture=false;Invoke(nameof(QuitCapture),1);
+        }
         void QuitCapture()=>Application.Quit();
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")] static extern void PharmaExitToBlank();
@@ -219,8 +232,8 @@ namespace PharmaBrawl
         void PositionCamera(Vector2 point,float dt)
         {
             // Limit follow at edges, keeping the playfield in view. Constant orthographic angle gives stable aiming.
-            float aspect=(float)Screen.width/Screen.height;cam.orthographicSize=aspect<1.3f?16:12.5f;
-            Vector3 target=new Vector3(Mathf.Clamp(point.x*.48f,-6,6),24,Mathf.Clamp(point.y*.4f,-3,3)-15);
+            float aspect=(float)Screen.width/Screen.height;cam.orthographicSize=Mathf.Max(16,23/aspect);
+            Vector3 target=new Vector3(0,28,-23.5f);
             cam.transform.position=dt==0?target:Vector3.Lerp(cam.transform.position,target,1-Mathf.Exp(-dt*5));
             if(shake>0){shake-=dt;cam.transform.position+=new Vector3(Mathf.Sin(Time.time*73),0,Mathf.Cos(Time.time*61))*.10f*shake;}
         }
@@ -259,11 +272,11 @@ namespace PharmaBrawl
             float q=f.charge/f.data.ultimateRequirement;chargeFill.fillAmount=q;chargeText.text=q>=1?"ULTIMATE READY  ·  SPACE":$"ULTIMATE  {Mathf.FloorToInt(q*100)}%";
             skillText.text=f.skillTimer<=0?"SKILL  /  RMB":$"SKILL  {f.skillTimer:0.0}s";skillButton.interactable=f.Alive && f.skillTimer<=0;ultButton.interactable=f.Alive && q>=1;ultButton.GetComponent<Image>().color=q>=1?Color.Lerp(new Color(.75f,.5f,.1f),new Color(1,.85f,.25f),.5f+.5f*Mathf.Sin(Time.time*8)):new Color(.75f,.5f,.1f);
             if(!f.Alive){status.text=$"RESPAWNING IN {Mathf.CeilToInt(f.respawn)}  ·  TEAM SPAWN";noticeTimer=.2f;}
-            else {noticeTimer-=Time.deltaTime;if(noticeTimer<=0)status.text="PHARMACY 01  ·  FIRST TO 20  ·  FRIENDLY FIRE OFF";}
+            else {noticeTimer-=Time.deltaTime;if(noticeTimer<=0)status.text=sim.map.name+"  ·  FIRST TO 20  ·  F2 이동 구역 표시";}
         }
         void Finish()
         {
-            playing=false;portraitCam.enabled=false;podiumCam.enabled=true;hud.SetActive(false);result.SetActive(true);bool win=sim.winner==0;resultTitle.text=sim.winner<0?"DRAW":win?"VICTORY":"DEFEAT";resultTitle.color=win?blue:red;
+            playing=false;soundtrack.Paused=false;soundtrack.Play("menu");portraitCam.enabled=false;podiumCam.enabled=true;hud.SetActive(false);result.SetActive(true);bool win=sim.winner==0;resultTitle.text=sim.winner<0?"DRAW":win?"VICTORY":"DEFEAT";resultTitle.color=win?blue:red;
             string text=$"BLUE {sim.score[0]} : {sim.score[1]} RED\n\nPHARMACIST          K / D       DAMAGE       TAKEN       HEAL\n";
             foreach(var f in sim.fighters)text+=$"{f.data.displayName} {(f.id==0?"YOU":"AI")}     {f.kills} / {f.deaths}       {f.damageDealt:0}       {f.damageTaken:0}       {f.healing:0}\n";
             resultStats.text=text;PlayTone(win?4:2);
@@ -275,12 +288,11 @@ namespace PharmaBrawl
         }
         void MakeAudio()
         {
-            sfx=gameObject.AddComponent<AudioSource>();sfx.volume=.18f;music=gameObject.AddComponent<AudioSource>();music.volume=.035f;
+            sfx=gameObject.AddComponent<AudioSource>();sfx.volume=.3f;gameObject.AddComponent<AudioListener>();soundtrack=gameObject.AddComponent<ArenaMusic>();
             tones=new AudioClip[6];float[] freqs={720,180,90,440,880,330};
             for(int j=0;j<6;j++){int len=j==3?12000:4000;var samples=new float[len];for(int i=0;i<len;i++){float t=i/24000f;float envelope=Mathf.Pow(1-(float)i/len,2);samples[i]=(Mathf.Sin(t*freqs[j]*Mathf.PI*2)+.3f*Mathf.Sin(t*freqs[j]*2*Mathf.PI*2))*envelope*.6f;}tones[j]=AudioClip.Create("Original synthesized cue "+j,len,1,24000,false);tones[j].SetData(samples,0);}
         }
         void PlayTone(int i){if(!smoke)sfx.PlayOneShot(tones[i]);}
-        void MusicTick(){if(smoke)return;musicClock-=Time.deltaTime;if(musicClock<=0){musicClock=.32f;music.pitch=new[]{1f,1.25f,1.5f,1.25f}[Mathf.FloorToInt(Time.time/.32f)%4];music.PlayOneShot(tones[5]);}}
         RectTransform Rect(string name,Transform parent,Vector2 pos,Vector2 size)
         {
             var g=new GameObject(name,typeof(RectTransform));g.transform.SetParent(parent,false);var r=g.GetComponent<RectTransform>();r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=pos;r.sizeDelta=size;return r;
@@ -305,12 +317,23 @@ namespace PharmaBrawl
             TitleHotspot("EXIT",new Vector2(0,-293),new Vector2(318,80),ExitGame);
             lobby=Panel("Character select",canvas.transform,Vector2.zero,new Vector2(1600,900),new Color(navy.r,navy.g,navy.b,.94f)).gameObject;
             Label(lobby.transform,"PHARMA / BRAWL",new Vector2(-475,340),new Vector2(530,100),54,cream);
-            Label(lobby.transform,"약사 브롤   ·   PHASE 01",new Vector2(-470,273),new Vector2(530,45),20,blue);
+            Label(lobby.transform,"약사 브롤   ·   4 ARENAS",new Vector2(-470,273),new Vector2(530,45),20,blue);
             Btn(lobby.transform,"← START SCREEN",new Vector2(610,337),new Vector2(260,55),new Color(.15f,.28f,.4f),()=>{lobby.SetActive(false);titleScreen.SetActive(true);});
-            Label(lobby.transform,"CHOOSE YOUR PHARMACIST",new Vector2(-450,198),new Vector2(570,55),23,cream);
-            for(int i=0;i<10;i++){int pick=i;int col=i%5,row=i/5;var b=Btn(lobby.transform,roster[i].displayName+"\n"+roster[i].role,new Vector2(-580+col*215,80-row*140),new Vector2(197,118),roster[i].color*.62f,()=>Select(pick));Label(b.transform,((int)roster[i].kind+1).ToString("00"),new Vector2(-72,39),new Vector2(40,25),14,cream);}
-            var info=Panel("Selected profile",lobby.transform,new Vector2(0,-245),new Vector2(1250,200),new Color(.09f,.15f,.23f));
-            selectedName=Label(info.transform,"",new Vector2(-435,47),new Vector2(330,70),30,cream);detail=Label(info.transform,"",new Vector2(160,0),new Vector2(800,165),18,cream);
+            Label(lobby.transform,"CHOOSE YOUR PHARMACIST",new Vector2(-450,215),new Vector2(570,55),23,cream);
+            for(int i=0;i<10;i++){int pick=i;int col=i%5,row=i/5;var b=Btn(lobby.transform,roster[i].displayName+"\n"+roster[i].role,new Vector2(-580+col*215,140-row*110),new Vector2(197,98),roster[i].color*.62f,()=>Select(pick));Label(b.transform,((int)roster[i].kind+1).ToString("00"),new Vector2(-72,39),new Vector2(40,25),14,cream);}
+            mapDetail=Label(lobby.transform,"",new Vector2(555,215),new Vector2(390,140),16,new Color(.7f,.83f,.9f));
+            Label(lobby.transform,"SELECT ARENA",new Vector2(-545,-45),new Vector2(350,28),17,blue);
+            for(int i=0;i<4;i++){
+                int pick=i;
+                mapButtons[i]=Btn(lobby.transform,"",new Vector2(-465+i*310,-116),new Vector2(296,102),new Color(.14f,.23f,.32f),()=>SelectMap(pick));
+                var preview=Rect("Reference preview",mapButtons[i].transform,new Vector2(-82,0),new Vector2(120,90)).gameObject.AddComponent<RawImage>();preview.texture=Resources.Load<Texture2D>("Maps/"+ArenaMap.Keys[i]);preview.raycastTarget=false;
+                Label(mapButtons[i].transform,ArenaMap.Names[i],new Vector2(64,12),new Vector2(147,55),17,cream,TextAnchor.MiddleCenter);
+                Label(mapButtons[i].transform,(i+1).ToString("00")+" / 3 vs 3",new Vector2(64,-31),new Vector2(140,25),13,blue,TextAnchor.MiddleCenter);
+            }
+            var musicButton=Btn(canvas.transform,"",new Vector2(675,425),new Vector2(210,34),navy,()=>{soundtrack.ToggleMute();musicLabel.text=soundtrack.Muted?"음악 OFF":"음악 ON";});
+            musicLabel=Label(musicButton.transform,soundtrack.Muted?"음악 OFF":"음악 ON",Vector2.zero,new Vector2(200,32),16,cream,TextAnchor.MiddleCenter);
+            var info=Panel("Selected profile",lobby.transform,new Vector2(0,-266),new Vector2(1250,172),new Color(.09f,.15f,.23f));
+            selectedName=Label(info.transform,"",new Vector2(-435,47),new Vector2(330,70),30,cream);detail=Label(info.transform,"",new Vector2(160,0),new Vector2(800,155),18,cream);
             Btn(lobby.transform,"START 3 vs 3  →",new Vector2(470,-380),new Vector2(310,65),new Color(.06f,.55f,.49f),StartMatch);
             Label(lobby.transform,"WASD 이동  ·  마우스 조준  ·  LMB 공격  ·  RMB 스킬  ·  SPACE 궁극기\n3분 / 20킬   ·   AI 5명 자동 참가   ·   ESC 일시정지",new Vector2(-250,-377),new Vector2(920,70),17,new Color(.62f,.74f,.83f));Select(0);
             hud=Rect("HUD",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;
@@ -334,10 +357,10 @@ namespace PharmaBrawl
             resultTitle=Label(result.transform,"VICTORY",new Vector2(0,260),new Vector2(1000,100),74,blue,TextAnchor.MiddleCenter);
             var podium=Rect("Winner trio",result.transform,new Vector2(0,140),new Vector2(1000,160)).gameObject.AddComponent<RawImage>();podium.material=Resources.Load<Material>("UIBase");podium.texture=podiumTexture;
             resultStats=Label(result.transform,"",new Vector2(0,-92),new Vector2(1140,285),20,cream,TextAnchor.MiddleCenter);
-            Btn(result.transform,"REMATCH",new Vector2(220,-280),new Vector2(280,65),new Color(.06f,.55f,.49f),StartMatch);Btn(result.transform,"CHARACTER SELECT",new Vector2(-220,-280),new Vector2(300,65),new Color(.15f,.28f,.4f),()=>{result.SetActive(false);lobby.SetActive(true);});
+            Btn(result.transform,"REMATCH",new Vector2(220,-280),new Vector2(280,65),new Color(.06f,.55f,.49f),StartMatch);Btn(result.transform,"CHARACTER SELECT",new Vector2(-220,-280),new Vector2(300,65),new Color(.15f,.28f,.4f),()=>{result.SetActive(false);lobby.SetActive(true);soundtrack.Play("menu");});
             pausePanel=Panel("Pause",canvas.transform,Vector2.zero,new Vector2(740,430),new Color(navy.r,navy.g,navy.b,.98f)).gameObject;
             Label(pausePanel.transform,"PAUSED",new Vector2(0,135),new Vector2(650,80),44,cream,TextAnchor.MiddleCenter);
-            Label(pausePanel.transform,"공격 / 피격 없이 3.5초 → 자동 회복\n사망 → 4초 뒤 부활\n적에게 피해 → 궁극기 충전\n상자 파괴 가능 · 진열대는 엄폐물",new Vector2(0,12),new Vector2(650,150),21,cream,TextAnchor.MiddleCenter);
+            Label(pausePanel.transform,"공격 / 피격 없이 3.5초 → 자동 회복\n사망 → 4초 뒤 부활\n적에게 피해 → 궁극기 충전\n상자 파괴 가능 · 벽/컨테이너 이동 불가\n수풀/얼음 통과 가능 · F2 이동 구역 표시",new Vector2(0,12),new Vector2(650,185),19,cream,TextAnchor.MiddleCenter);
             Btn(pausePanel.transform,"RESUME",new Vector2(0,-142),new Vector2(270,60),new Color(.06f,.55f,.49f),()=>{paused=false;pausePanel.SetActive(false);});
             lobby.SetActive(false);hud.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);
         }
@@ -346,6 +369,12 @@ namespace PharmaBrawl
             var im=Panel(name+" clickable area",titleScreen.transform,position,size,Color.white);
             var b=im.gameObject.AddComponent<Button>();b.targetGraphic=im;b.onClick.AddListener(()=>action());
             var c=b.colors;c.normalColor=Color.clear;c.highlightedColor=new Color(1,1,1,.10f);c.selectedColor=Color.clear;c.pressedColor=new Color(0,0,0,.14f);b.colors=c;
+        }
+        void SelectMap(int index)
+        {
+            selectedMap=index;var data=new ArenaMap(index);
+            mapDetail.text=data.name+"\n"+data.description;
+            for(int i=0;i<4;i++)if(mapButtons[i])mapButtons[i].GetComponent<Image>().color=i==index?new Color(.05f,.43f,.46f):new Color(.14f,.23f,.32f);
         }
         void Select(int index){selected=index;var d=roster[index];selectedName.text=d.displayName+"\n"+d.role;selectedName.color=d.color;detail.text=$"HP {d.maxHp:0}   /   SPEED {d.speed:0.0}   /   RANGE {d.range:0.0}\n일반: {d.attackDescription}\n스킬: {d.skillDescription}  ({d.skillCooldown:0}초)\n궁극기: {d.ultimateDescription}";}
         void AddStick(Transform parent,Vector2 position,bool attack)

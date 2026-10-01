@@ -1,0 +1,219 @@
+{
+  "maps": [
+    "village",
+    "lab",
+    "desert",
+    "alpine"
+  ],
+  "tripo": [
+    {
+      "key": "village",
+      "model": "P1-20260311",
+      "prompt": "Stylized cozy pharmacy shop game prop, pastel cream stucco, turquoise and white striped awning, large turquoise medical cross sign, shelves of colorful medicine bottles in shop front, rounded roof, tiny flower planters. Single small building, no ground plane, no people. Cartoon soft rounded shapes, readable from elevated top-down arena camera, low poly.",
+      "faceLimit": 8000,
+      "file": "Assets/Art/Maps/village/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "78f3761a-9130-446c-bfa9-427b12f03ac3",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "1e2b68d6-6f28-44c1-a658-e6343c64a19c",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "lab",
+      "model": "P1-20260311",
+      "prompt": "Stylized science fiction pharmaceutical laboratory tank game prop. Large cylindrical glowing cyan glass liquid chamber with green floating bubbles, chunky purple metal frame, yellow caution accents, luminous cyan strips, connected curved purple pipes and compact control console. Single machine, no ground plane, no people, cartoon rounded shapes, readable elevated top-down game camera, low poly.",
+      "faceLimit": 8000,
+      "file": "Assets/Art/Maps/lab/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "366eaa98-1567-4427-ae51-f59a638e0267",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "900e2591-9c29-4f0d-b55b-044462a8e3f0",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "desert",
+      "model": "P1-20260311",
+      "prompt": "Stylized desert herbal ruin landmark game prop. Warm terracotta sandstone arch and two worn columns around a large stone mortar bowl with stone pestle, small clay herb pots and climbing green vines. Compact isolated landmark, no ground plane, no people, rounded cartoon shapes, readable from elevated top-down arena camera, low poly.",
+      "faceLimit": 8000,
+      "file": "Assets/Art/Maps/desert/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "716704a2-abc9-4b83-9e2d-aa991a6c34ce",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "ebbe2dd0-ff86-47f4-ac6c-92ec1204b3f7",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "alpine",
+      "model": "P1-20260311",
+      "prompt": "Stylized alpine medical supply cabin game prop. Cozy brown wooden chalet with thick white snow on pitched roof, warm amber windows, red medical cross on front, snowy small porch, medical supply crates outside. Single compact building, no ground plane, no people, rounded cartoon shapes, readable elevated top-down game camera, low poly.",
+      "faceLimit": 8000,
+      "file": "Assets/Art/Maps/alpine/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "a6d05b94-8a7c-492a-b469-a580f42500a1",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "094e1914-8bf0-47db-83cb-2f71a6baa979",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "capsule-wall",
+      "model": "P1-20260311",
+      "prompt": "Stylized cartoon pharmacy arena modular low barricade made of three horizontal chunky rounded pill capsules, alternating turquoise white and coral pink, on a cream low stone plinth. Clean rectangular footprint 3 meters wide 0.8 meters deep and 1 meter tall, freestanding, flat bottom, no ground plane, no background, no plants, no people. Rounded toy-like finish, game-ready low poly.",
+      "faceLimit": 4000,
+      "file": "Assets/Art/Maps/capsule-wall/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "ec73d164-05c5-4b87-93ce-389c2fd0d291",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "d55ad2f8-5343-400c-b449-4bbf8fb34119",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "lab-wall",
+      "model": "P1-20260311",
+      "prompt": "Stylized cartoon science fiction laboratory arena modular straight low cover wall. Chunky rounded purple steel rectangular barrier with pale lavender top cap, thin glowing cyan inset strip and small yellow safety corner bands. Rectangular footprint 3 meters wide 0.7 meters deep and 1 meter tall. Freestanding isolated barrier, flat bottom, no ground plane, no pipes beyond footprint, no people, game-ready low poly.",
+      "faceLimit": 4000,
+      "file": "Assets/Art/Maps/lab-wall/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "9eaf7e38-0cbd-499c-bfd9-f3b29fbcccd5",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "183faad7-29be-4f91-a77c-751d14e762b9",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "medical-container",
+      "model": "P1-20260311",
+      "prompt": "Stylized cartoon alpine medical supply shipping container game prop. A single compact teal corrugated cargo container with white medical cross painted on doors, warm orange door trim, thick soft white snow on roof. Rectangular footprint 3 meters long 1.4 meters wide 1.5 meters tall. Isolated single container with flat bottom, no crates, no ground plane, no people, readable from top-down game camera, game-ready low poly.",
+      "faceLimit": 4000,
+      "file": "Assets/Art/Maps/medical-container/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "d7d7a674-50a8-43f0-9110-5649458515b4",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "c40a5a7f-0ba1-4d15-bb2d-fc9a03ac6168",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    },
+    {
+      "key": "herb-bush",
+      "model": "P1-20260311",
+      "prompt": "Stylized cartoon game prop dense square clump of medicinal green herbs, lush broad rounded leaves in shades of bright green, tiny white five-petal flowers, a few soft tall leafy sprigs. Compact low ground-cover foliage, square footprint, no planter, no rocks, no soil base, no ground plane, no people. Rounded toy-like art for top-down arena game, game-ready low poly.",
+      "faceLimit": 4000,
+      "file": "Assets/Art/Maps/herb-bush/model.fbx",
+      "creditsConsumed": 50,
+      "steps": [
+        {
+          "task_id": "9ebcc884-e4e5-4aa4-b4d4-f46a52c070e6",
+          "type": "text_to_model",
+          "credits_consumed": 40
+        },
+        {
+          "task_id": "d8b75e76-ab6e-4bac-8f9d-bdc6ef81cf9f",
+          "type": "convert_model",
+          "credits_consumed": 10
+        }
+      ]
+    }
+  ],
+  "music": [
+    {
+      "key": "menu",
+      "taskId": "11608634-0eaf-4b26-9df2-ce3bc95a1ff6",
+      "provider": "Runway",
+      "credits": 8,
+      "durationSeconds": 153.182,
+      "file": "Assets/Resources/Music/menu.mp3"
+    },
+    {
+      "key": "village",
+      "taskId": "6041daef-c40f-42d3-8671-7a61f6900f3b",
+      "provider": "Runway",
+      "credits": 8,
+      "durationSeconds": 157.805667,
+      "file": "Assets/Resources/Music/village.mp3"
+    },
+    {
+      "key": "lab",
+      "taskId": "9e44341c-1f42-4b5b-9d6a-5c51fbb82065",
+      "provider": "Runway",
+      "credits": 8,
+      "durationSeconds": 175.751792,
+      "file": "Assets/Resources/Music/lab.mp3"
+    },
+    {
+      "key": "desert",
+      "taskId": "312ca3d1-2cbf-428a-ad27-ad060bffe334",
+      "provider": "Runway",
+      "credits": 8,
+      "durationSeconds": 152.267708,
+      "file": "Assets/Resources/Music/desert.mp3"
+    },
+    {
+      "key": "alpine",
+      "taskId": "3ca2d2b8-0f2c-4da4-8105-96f673844076",
+      "provider": "Runway",
+      "credits": 8,
+      "durationSeconds": 155.37625,
+      "file": "Assets/Resources/Music/alpine.mp3"
+    }
+  ],
+  "actualCosts": {
+    "tripo": 400,
+    "runway": 40,
+    "total": 440,
+    "tripoRemaining": 1890
+  },
+  "verification": "Unity 6000.6.1f1: 40 AI matches, spawn/respawn, terrain collision, bridges, water projectile clearance, destroyed crates, music/landmarks. Windows build and rendered map screenshots."
+}
