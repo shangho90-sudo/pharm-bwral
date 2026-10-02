@@ -106,7 +106,7 @@
     "attackInterval": 0.75,
     "range": 9.0,
     "projectileSpeed": 16.0,
-    "skillCooldown": 6,
-    "ultimateRequirement": 2800
+    "skillCooldown": 8,
+    "ultimateRequirement": 3640
   }
 ]

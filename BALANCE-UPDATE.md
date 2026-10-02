@@ -10,3 +10,5 @@
 검증: BalanceValidator에서 10명 쿨타임/궁극기 문턱, 로봇 피해/파괴/아군 공격 제외/풀 재사용 초기화/관통탄 중복 적중 방지/점수 제외를 확인합니다. 기존 캐릭터 기술, 모바일 입력, 4개 맵 총 40경기 검증도 실행합니다. Server/reference-sync-test.mjs는 두 클라이언트의 동일 tick 상태 및 지원 로봇 피해·제거와 정예 로봇 HP를 검증합니다.
 
 주요 변경: Assets/Scripts/ArenaSimulation.cs, PharmacyDroneView.cs, ReferenceAbilityView.cs, CharacterDefinition.cs, Assets/Resources/Characters/*.asset, Assets/Editor/PrototypeBuilder.cs, BalanceValidator.cs, Server/characters.json, Program.cs, reference-sync-test.mjs.
+
+후속 조정: 이선용만 스킬 쿨타임 6초 → 8초, 궁극기 요구량 2,800 → 3,640(현재 값에서 30% 증가). 나머지 캐릭터의 수치는 유지합니다.

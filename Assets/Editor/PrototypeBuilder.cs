@@ -25,7 +25,7 @@ public static class PrototypeBuilder
         {
             string path=$"{Root}/{i:00}_{(AttackKind)i}.asset";var d=AssetDatabase.LoadAssetAtPath<CharacterDefinition>(path);
             if(!d){d=ScriptableObject.CreateInstance<CharacterDefinition>();AssetDatabase.CreateAsset(d,path);}
-            d.displayName=names[i];d.role=roles[i];d.voiceLine=voices[i];d.kind=(AttackKind)i;d.color=colors[i];d.maxHp=hp[i];d.speed=speed[i];d.damage=damage[i];d.attackInterval=interval[i];d.range=range[i];d.projectileSpeed=i==2?26:16;d.skillCooldown=i==6?3:6;d.ultimateRequirement=i==3?2310:2800;d.attackDescription=attacks[i];d.skillDescription=skills[i];d.ultimateDescription=ults[i];EditorUtility.SetDirty(d);roster[i]=d;
+            d.displayName=names[i];d.role=roles[i];d.voiceLine=voices[i];d.kind=(AttackKind)i;d.color=colors[i];d.maxHp=hp[i];d.speed=speed[i];d.damage=damage[i];d.attackInterval=interval[i];d.range=range[i];d.projectileSpeed=i==2?26:16;d.skillCooldown=i==6?3:i==9?8:6;d.ultimateRequirement=i==3?2310:i==9?3640:2800;d.attackDescription=attacks[i];d.skillDescription=skills[i];d.ultimateDescription=ults[i];EditorUtility.SetDirty(d);roster[i]=d;
         }
         if(!AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/CombatMaterial.mat"))AssetDatabase.CreateAsset(new Material(Shader.Find("Standard")),"Assets/Resources/CombatMaterial.mat");
         if(!AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/UIBase.mat"))AssetDatabase.CreateAsset(new Material(Shader.Find("UI/Default")),"Assets/Resources/UIBase.mat");
