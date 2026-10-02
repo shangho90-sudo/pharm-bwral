@@ -30,6 +30,7 @@ Unity 6000.6.1f1. 전투 판정은 기존 ArenaSimulation.cs 및 공개 서버�
 
 재현: Unity batchmode에서 ReferenceAbilityBuilder.FinalBuild를 실행하면 시뮬레이션·모바일 입력 검증, 동일 카메라 전후 캡처 및 WebGL 빌드를 실행합니다. 서버 동기화 검증은 프로젝트 루트에서 `node Server/reference-sync-test.mjs`를 실행합니다.
 
-[개선 전](Docs/VFX/paeng-before.png) / [개선 후](Docs/VFX/paeng-after.png) / [Unity 렌더 영상 3초](Docs/VFX/paeng-ultimate.mp4)
+[개선 전](docs/VFX/paeng-before.png) / [개선 후](docs/VFX/paeng-after.png) / [Unity 렌더 영상 3초](docs/VFX/paeng-ultimate.mp4)
 
 모바일 360도 양쪽 패드, 기존 캐릭터, 네 개 맵, 공개 서버 주소와 카카오 공유 미리보기 설정을 유지합니다. 서버 런타임/프로토콜은 변경하지 않았습니다.
+
