@@ -1,6 +1,6 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "296a714cb3310156efef6478b871769e4b0bfc55",
+  "sourceCommit": "ec2802cb9eb76300d18965ef653fbca8ff2ac0b2",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
@@ -9,7 +9,7 @@
   "koreanNicknameInput": "native browser IME",
   "paengLocomotion": "new Tripo P1 character and Mixamo humanoid rig; authored Idle/Walk/Run Animator clips; native skin weights retained",
   "paengAbilities": "pooled Tripo capsule bomb; authoritative .9 second fuse and 3.5 radius; orange impact, ground shockwave, cyan badge, recoil and separate impact/fade audio",
-  "paengAbilityValidation": "600+300 skill damage, 9 second cooldown, 1700 ultimate, 1.2 knockback, charge gating, cleanup and four matching two-client snapshots on public server",
+  "paengAbilityValidation": "600+300 skill damage, 6 second cooldown, 1700 ultimate, 1.2 knockback, charge gating and cleanup",
   "kakaoImageSha256": "5934af75834b1ffb915d365a6dacfb5d7513759b5b0e8b1683e501b7d7e5dd97",
   "referenceVfx": "ten character families; textured impact/smoke atlas, server event chain lightning, precise golden laser, rim shield, afterimages, fan and gas particles",
   "tripoRobots": {
@@ -17,24 +17,33 @@
     "elite": "f30f1806-b842-4a6b-b9ed-0af07c7cbe0c",
     "totalCredits": 80
   },
-  "referenceValidation": "Unity ability and cleanup validations, same-camera Paeng before/after, nine public-server two-client ability checks; combat values unchanged",
+  "referenceValidation": "Unity ability and cleanup validations; unchanged ability damage/range/duration; updated cooldown and charge thresholds",
+  "combatBalance": {
+    "assassinSkillCooldown": 3,
+    "otherSkillCooldown": 6,
+    "ultimateRequirementMultiplier": 0.7,
+    "tankUltimateRequirement": 2310,
+    "otherUltimateRequirement": 2800,
+    "supportRobotHp": 800,
+    "eliteRobotHp": 1600
+  },
   "cameraShake": "short gentle shake; persistent ON/OFF option in pause menu",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103088847,
-      "sha256": "852195109379233df534194b2973d687dcd67701ac58075d95fe18e1ea011094"
+      "bytes": 103086333,
+      "sha256": "d15176a10abfb9a6b11657de9269435bec39a22daaeaebaadeee4823dec3488f"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
       "bytes": 77145,
-      "sha256": "b28d5dc04a2bdbb3678fea9739e7b903069098164443a97f2bbf665ebbeb5a33"
+      "sha256": "fafeebd67136bdd3c9e6d60e3fa2accfc419b77c5c90933ef0c9b1a50c64ade8"
     },
     "Build/PharmaBrawl-Web.loader.js": {
       "bytes": 48779,
-      "sha256": "a623254fe75716fbed22c01f66d638f6f12242abbbe30d1e62b60a45162de7c9"
+      "sha256": "b0ea1a0649ca66de3ab3e66d31fc0ab5dab8920c8aa02aa4491bcf2fd3d44d31"
     },
     "Build/PharmaBrawl-Web.wasm.unityweb": {
-      "bytes": 6236282,
-      "sha256": "9735f589c741b1aeb58ce7e68c9d6819478b1b848fc8db1bafce4c5603531425"
+      "bytes": 6236691,
+      "sha256": "cb748adb28b75ab47443cc2cb16f0aa861232fdb2a83212ed867d7f3ad3f2d42"
     }
   }
 }
