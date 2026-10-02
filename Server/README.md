@@ -17,6 +17,8 @@ dotnet run --project Server/PharmaBrawl.Server.csproj --no-restore
 
 ## 새 서버 배포 준비
 
+현재 공개 WebGL의 기본 서버는 `https://paengbrawl-rooms-production.up.railway.app`입니다. `Assets/StreamingAssets/server-config.json`에 설정되어 있으며, 2026-10-02에 상태 확인, GitHub Pages 오리진의 CORS, 8인 WebSocket 참가·이동·상태 동기화·방장 승계 통합 테스트를 통과했습니다. GitHub Pages는 WebGL 정적 파일을 제공하고 실시간 게임 로직은 이 외부 서버가 처리합니다.
+
 `Server/Dockerfile`과 루트의 `render.yaml`을 포함했습니다. Render Web Service에서 저장소의 `codex/four-arenas-music` 브랜치를 선택하고 Dockerfile 경로를 `Server/Dockerfile`, Docker context를 저장소 루트로 지정합니다. `GAME_ORIGINS=https://shangho90-sudo.github.io`를 설정하고 `/health`를 상태 확인 경로로 사용합니다.
 
 Blueprint의 `starter`는 상시 실행을 위한 유료 플랜입니다. 현재 외부 서버 계정 연결·서비스 생성·결제·배포는 실행하지 않았습니다. 계정에서 선택한 비용과 지역을 확인한 뒤 배포하세요. 게임 서버는 1개 인스턴스로 실행해야 합니다. 방 상태가 메모리에 있어 서버 재시작/배포 때 진행 중인 방은 사라집니다.
