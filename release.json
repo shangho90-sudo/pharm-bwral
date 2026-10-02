@@ -1,6 +1,6 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "43a65cf8f2478f2b85dda5bdc29558cbd05a2a11",
+  "sourceCommit": "296a714cb3310156efef6478b871769e4b0bfc55",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
@@ -11,22 +11,30 @@
   "paengAbilities": "pooled Tripo capsule bomb; authoritative .9 second fuse and 3.5 radius; orange impact, ground shockwave, cyan badge, recoil and separate impact/fade audio",
   "paengAbilityValidation": "600+300 skill damage, 9 second cooldown, 1700 ultimate, 1.2 knockback, charge gating, cleanup and four matching two-client snapshots on public server",
   "kakaoImageSha256": "5934af75834b1ffb915d365a6dacfb5d7513759b5b0e8b1683e501b7d7e5dd97",
+  "referenceVfx": "ten character families; textured impact/smoke atlas, server event chain lightning, precise golden laser, rim shield, afterimages, fan and gas particles",
+  "tripoRobots": {
+    "support": "b78742e7-42ac-44cb-a2f5-09b08bb179b8",
+    "elite": "f30f1806-b842-4a6b-b9ed-0af07c7cbe0c",
+    "totalCredits": 80
+  },
+  "referenceValidation": "Unity ability and cleanup validations, same-camera Paeng before/after, nine public-server two-client ability checks; combat values unchanged",
+  "cameraShake": "short gentle shake; persistent ON/OFF option in pause menu",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103063349,
-      "sha256": "b338fae73bdec6b199a1f9bed179ae1c3827acf46321ed94abfe3f0c5c2e121f"
+      "bytes": 103088847,
+      "sha256": "852195109379233df534194b2973d687dcd67701ac58075d95fe18e1ea011094"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
       "bytes": 77145,
-      "sha256": "74a81786f349ad096d582d0999e6694a54e0a4cb512d5e76385e77ed3920a0f4"
+      "sha256": "b28d5dc04a2bdbb3678fea9739e7b903069098164443a97f2bbf665ebbeb5a33"
     },
     "Build/PharmaBrawl-Web.loader.js": {
       "bytes": 48779,
-      "sha256": "dbe5ba0c34e565762204060a3db3c6c972fd16910d85f7e98ad5e48067b889a5"
+      "sha256": "a623254fe75716fbed22c01f66d638f6f12242abbbe30d1e62b60a45162de7c9"
     },
     "Build/PharmaBrawl-Web.wasm.unityweb": {
-      "bytes": 6218104,
-      "sha256": "51644f7918e16f7567641e2fc2e91170b2737ea940bd5c8629793d6c15093f6e"
+      "bytes": 6236282,
+      "sha256": "9735f589c741b1aeb58ce7e68c9d6819478b1b848fc8db1bafce4c5603531425"
     }
   }
 }
