@@ -249,6 +249,17 @@ namespace PharmaBrawl
             Application.Quit();
 #endif
         }
+        void LeaveMatch()
+        {
+            playing=false;paused=false;skillRequested=ultimateRequested=mobileFire=false;touchMove=touchAim=Vector2.zero;shake=0;
+            if(mobileControls)mobileControls.ResetInput();
+            if(sim!=null)sim.Event-=OnCombat;
+            if(abilityEffects)abilityEffects.Clear();if(paengEffects)paengEffects.Clear();if(lightningEffects)lightningEffects.Clear();if(goldenEffects)goldenEffects.Clear();if(referenceEffects)referenceEffects.Clear();
+            network.Leave();networkRoomId=null;networkMatch=-1;lastSnapshotTick=-1;preparedSimulation=null;sim=null;
+            foreach(Transform child in actorsRoot){child.gameObject.SetActive(false);Destroy(child.gameObject);}
+            portraitCam.enabled=podiumCam.enabled=false;pausePanel.SetActive(false);hud.SetActive(false);result.SetActive(false);lobby.SetActive(false);titleScreen.SetActive(false);roomScreen.SetActive(true);selectionView.SetRoom(null,"");
+            soundtrack.Paused=false;soundtrack.Play("menu");
+        }
         [Serializable] sealed class SmokeReport
         {
             public int blueScore,redScore,shots,skills,ultimates,respawns; public bool finished;public float elapsed;
@@ -382,12 +393,13 @@ namespace PharmaBrawl
             result=Rect("Reference victory and defeat",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;
             resultView=result.AddComponent<ReferenceResultView>();
             resultView.Initialize(font,soundtrack,()=>{result.SetActive(false);lobby.SetActive(true);soundtrack.Play("menu");},StartMatch);
-            pausePanel=Panel("Pause",canvas.transform,Vector2.zero,new Vector2(740,430),new Color(navy.r,navy.g,navy.b,.98f)).gameObject;
+            pausePanel=Panel("Pause",canvas.transform,Vector2.zero,new Vector2(740,530),new Color(navy.r,navy.g,navy.b,.98f)).gameObject;
             Label(pausePanel.transform,"PAUSED",new Vector2(0,135),new Vector2(650,80),44,cream,TextAnchor.MiddleCenter);
             Label(pausePanel.transform,"공격 / 피격 없이 3.5초 → 자동 회복\n사망 → 4초 뒤 부활\n적에게 피해 → 궁극기 충전\n상자 파괴 가능 · 벽/컨테이너 이동 불가\n수풀/얼음 통과 가능 · F2 이동 구역 표시",new Vector2(0,12),new Vector2(650,185),19,cream,TextAnchor.MiddleCenter);
             Btn(pausePanel.transform,"RESUME",new Vector2(-155,-142),new Vector2(270,60),new Color(.06f,.55f,.49f),()=>{paused=false;pausePanel.SetActive(false);});
             cameraShakeEnabled=PlayerPrefs.GetInt("CameraShake",1)==1;
             var shakeButton=Btn(pausePanel.transform,"화면 흔들림 "+(cameraShakeEnabled?"ON":"OFF"),new Vector2(155,-142),new Vector2(270,60),new Color(.16f,.35f,.6f),()=>{cameraShakeEnabled=!cameraShakeEnabled;PlayerPrefs.SetInt("CameraShake",cameraShakeEnabled?1:0);shakeSetting.text="화면 흔들림 "+(cameraShakeEnabled?"ON":"OFF");});shakeSetting=shakeButton.GetComponentInChildren<Text>();
+            Btn(pausePanel.transform,"게임 나가기",new Vector2(0,-220),new Vector2(580,60),new Color(.65f,.18f,.23f),LeaveMatch);
             lobby.SetActive(false);hud.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);
         }
         void TitleHotspot(string name,Vector2 position,Vector2 size,Action action)

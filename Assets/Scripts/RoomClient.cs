@@ -59,7 +59,7 @@ namespace PharmaBrawl
 #endif
         }
         public void OnSocketOpen(string unused){connected=true;retryDelay=1;}
-        public void OnSocketMessage(string text){var message=JsonUtility.FromJson<NetMessage>(text);if(message.room!=null){room=message.room;RoomChanged?.Invoke(room);}if(message.type=="snapshot")Snapshot?.Invoke(message);else if(message.type=="error")Error?.Invoke(message.error);}
+        public void OnSocketMessage(string text){if(leaving)return;var message=JsonUtility.FromJson<NetMessage>(text);if(message.room!=null){room=message.room;RoomChanged?.Invoke(room);}if(message.type=="snapshot")Snapshot?.Invoke(message);else if(message.type=="error")Error?.Invoke(message.error);}
         public void OnSocketClose(string unused){connected=false;if(!leaving){retryAt=Time.unscaledTime+retryDelay;retryDelay=Mathf.Min(20,retryDelay*2);Error?.Invoke("서버 연결 복구 중…");}}
         void Update(){if(!connected&&!leaving&&session!=null&&retryAt>0&&Time.unscaledTime>=retryAt){retryAt=0;Connect();}}
         public void Leave(){Send(new NetCommand{type="leave"});leaving=true;connected=false;session=null;room=null;
