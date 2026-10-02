@@ -1,26 +1,30 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "bc4647be5db76a4a70ba6dbcf0e2bd7f67e6fd2e",
+  "sourceCommit": "d8b9f416eac776df3e4c2477bec8c629f5cc22d3",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
+  "multiplayerProtocol": 2,
+  "onlineRules": "balanced BLUE/RED teams, all guests ready, 1:1 to 4:4 humans only",
+  "koreanNicknameInput": "native browser IME",
+  "paengLocomotion": "Tripo skeleton verified; mesh deformation tested over 90 frames",
   "kakaoImageSha256": "5934af75834b1ffb915d365a6dacfb5d7513759b5b0e8b1683e501b7d7e5dd97",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103153160,
-      "sha256": "e13df4e75ab55f972343c3f5ace09eae3dfad83b496913e467db94adfd99d42a"
+      "bytes": 103150663,
+      "sha256": "a41bf62aa17d007d81e3c5b956df5bdfbdeb9f7d52b102ecde41f410aaff311d"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
-      "bytes": 76604,
-      "sha256": "63b4001b1bed105c91cb72f2f3e370b8425b0294a2ecaa14caf0a41748168716"
+      "bytes": 77145,
+      "sha256": "c6434257adac6b73471c21d5e06536bb014cdb1df64b6d0c7b164d9f962f9212"
     },
     "Build/PharmaBrawl-Web.loader.js": {
       "bytes": 48779,
-      "sha256": "fb950f78cc379762398e2d6759c568f56754b7721132f2956a7aae8c862f0cfb"
+      "sha256": "61d6811876fe1cc7a85b1e81c7eb9e936f7ef30ac67fae644656f57962364617"
     },
     "Build/PharmaBrawl-Web.wasm.unityweb": {
-      "bytes": 6209295,
-      "sha256": "935058d8fd8b9fe96531bea40f28e1c07643c30d39988b28631c075938173f4b"
+      "bytes": 6211602,
+      "sha256": "0140b6673dc402b42927ef795aaf2962e5f36fb94803188c8ea3335d6f263972"
     }
   }
 }
