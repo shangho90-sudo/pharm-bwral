@@ -36,13 +36,13 @@ public static class PaengCombatValidator
         var root=new GameObject("Paeng ability presentation validation");var view=root.AddComponent<PaengAbilityView>();view.Initialize(sim);sim.Event+=view.Emit;
         sim.Ultimate(p);Require(sim.ultimatesUsed==0,"cannot cast without required charge");p.charge=p.data.ultimateRequirement;sim.Ultimate(p);Require(p.charge==0,"charge consumed");view.Sync(0);Require(view.ActiveBombs==1,"one falling bomb");
         var zone=Array.Find(sim.zones,z=>z.active);Require(zone.radius==3.5f&&zone.damage==1700&&zone.remaining==.9f,"original ultimate values");
-        foreach(var line in root.GetComponentsInChildren<LineRenderer>())if(line.name=="Exact damage radius"&&line.gameObject.activeInHierarchy)for(int i=0;i<line.positionCount;i++){var point=line.GetPosition(i);Require(Mathf.Abs(Vector2.Distance(new Vector2(point.x,point.z),zone.position)-zone.radius)<.001f,"floor marker equals server radius");}
+        foreach(var line in root.GetComponentsInChildren<LineRenderer>())Require(!line.enabled,"range guides remain disabled");
         sim.TickNetwork(.89f,inputs);Require(sim.fighters[2].damageTaken==0,"no early explosion");view.Sync(0);Require(view.ActiveBombs==1,"warning persists before fuse end");
         var before=sim.fighters[2].position;sim.TickNetwork(.02f,inputs);view.Sync(0);Require(sim.fighters[2].damageTaken==1700,"ultimate damage");Require(Mathf.Abs(Vector2.Distance(before,sim.fighters[2].position)-1.2f)<.001f,"existing knockback");Require(sim.fighters[3].damageTaken==0,"outside radius is unharmed");Require(view.ActiveBombs==0&&view.ActiveBursts==1,"bomb removed and one impact plays");
         view.Sync(1);Require(view.ActiveBursts==0,"impact expires");p.charge=p.data.ultimateRequirement;sim.Ultimate(p);view.Sync(0);view.SetVisible(false);Require(view.ActiveBombs==0&&view.ActiveBursts==0,"pause clears effects");view.SetVisible(true);view.Sync(0);Require(view.ActiveBombs==1,"resume reconstructs only authoritative pending zone");view.Clear();view.Sync(0);Require(view.ActiveBombs==0&&view.ActiveBursts==0,"match/leave cleanup remains cleared on next frame");UnityEngine.Object.DestroyImmediate(root);
         var mapSim=new ArenaSimulation(roster,0,57,0,1,new[]{0,0});
         File.WriteAllText(Path.GetFullPath("../../work/paeng-test-map.json"),JsonUtility.ToJson(new MapGeometry{covers=mapSim.covers.ToArray()}));
-        Debug.Log("PAENG_ABILITIES_PASS direct=600 splash=300 cooldown=6 fuse=.9 radius=3.5 damage=1700 knockback=1.2 charge gating, exact marker, pooled expiry, pause and match cleanup");
+        Debug.Log("PAENG_ABILITIES_PASS direct=600 splash=300 cooldown=6 fuse=.9 radius=3.5 damage=1700 knockback=1.2 charge gating, disabled range guides, pooled expiry, pause and match cleanup");
     }
     [Serializable]public sealed class MapGeometry{public ArenaSimulation.Cover[] covers;}
 }
