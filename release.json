@@ -1,11 +1,12 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "b333972b7d7323f0bdf5ecef979d44bf130ae94a",
+  "sourceCommit": "4e78d34033165471b25ec7077f47dc5b02e4b121",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
   "multiplayerProtocol": 2,
   "onlineRules": "balanced BLUE/RED teams, all guests ready, 1:1 to 4:4 humans only",
+  "pauseExit": "leave match button returns to room browser; remaining players continue; withdrawn fighters cannot respawn and owned effects are removed; host migration preserved",
   "koreanNicknameInput": "native browser IME",
   "paengLocomotion": "new Tripo P1 character and Mixamo humanoid rig; authored Idle/Walk/Run Animator clips; native skin weights retained",
   "paengAbilities": "pooled Tripo capsule bomb; authoritative .9 second fuse and 3.5 radius; orange impact, ground shockwave, cyan badge, recoil and separate impact/fade audio",
@@ -32,20 +33,20 @@
   "cameraShake": "short gentle shake; persistent ON/OFF option in pause menu",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103085957,
-      "sha256": "de9b75c6bea44e874d7d59d8c61568ca68b2547254be472fe0365c585d2422f7"
+      "bytes": 103086150,
+      "sha256": "b78b9776b5cf45709a69baa78074e8bc4348bb4ed5646f26584c5b56c7e730df"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
       "bytes": 77145,
-      "sha256": "fafeebd67136bdd3c9e6d60e3fa2accfc419b77c5c90933ef0c9b1a50c64ade8"
+      "sha256": "49fef1e40fb13adbe60b0a3b51a825d00410e26f0ee549fea873b0c36a4376ab"
     },
     "Build/PharmaBrawl-Web.loader.js": {
       "bytes": 48779,
-      "sha256": "b0ea1a0649ca66de3ab3e66d31fc0ab5dab8920c8aa02aa4491bcf2fd3d44d31"
+      "sha256": "30fb43ae6c7048224ecf465deaf0388d0c3c509b0730e4eff8b132b7ec97f2da"
     },
     "Build/PharmaBrawl-Web.wasm.unityweb": {
-      "bytes": 6236691,
-      "sha256": "cb748adb28b75ab47443cc2cb16f0aa861232fdb2a83212ed867d7f3ad3f2d42"
+      "bytes": 6237475,
+      "sha256": "551678ae18e897118361ed60fd70d068415dd563c8c95ac843e998b8f1c28e26"
     }
   }
 }
