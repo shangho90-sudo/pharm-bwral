@@ -29,7 +29,8 @@ try{
  input();await pause(100);input(undefined,false,true);
  const skill=await wait(()=>host.messages.find(m=>m.type==='snapshot'&&m.events.some(e=>e.type==='skill'&&e.actor===0)));input();
  if([2,4,8].includes(hero)){input(undefined,true);await pause(250);input();}
- const cooldown=skill.fighters[0].skillTimer;const expectedCooldown=hero===6?3:6;assert(cooldown>expectedCooldown-.2&&cooldown<=expectedCooldown);
+ const cooldown=skill.fighters[0].skillTimer;const expectedCooldown=hero===6?3:hero===9?8:6;assert(cooldown>expectedCooldown-.2&&cooldown<=expectedCooldown);
+ if(hero===0)assert(skill.shots.some(s=>s.value.owner===0&&s.value.kind===1&&s.value.damage===600));
  if(hero===7){
   const summoned=skill.robots.find(r=>r.value.owner===0&&!r.value.elite);assert.equal(summoned.value.hp,800);assert.equal(summoned.value.maxHp,800);
   let guestSeq=0;const end=Date.now()+6500;let damageSnapshot;
@@ -44,6 +45,7 @@ try{
  const deadline=Date.now()+75000;while(snap(host).fighters[0].charge<Number(fs.readFileSync(fs.readdirSync("Assets/Resources/Characters").filter(f=>f.startsWith(String(hero).padStart(2,"0"))&&f.endsWith(".asset")).map(f=>"Assets/Resources/Characters/"+f)[0],"utf8").match(/ultimateRequirement: ([0-9.]+)/)[1])){assert(Date.now()<deadline,'Could not charge ultimate hero '+hero+' '+JSON.stringify(snap(host).fighters));input(undefined,true);await pause(60);}input();
  await wait(()=>snap(host).fighters[1].hp>0,6500);input(undefined,false,false,true);
  const ultimate=await wait(()=>host.messages.find(m=>m.type==='snapshot'&&m.events.some(e=>e.type==='ultimate'&&e.actor===0)));input();
+ if(hero===0){const zone=ultimate.zones.find(z=>z.value.owner===0&&z.value.kind===3).value;assert.equal(zone.radius,3.5);assert.equal(zone.damage,1700);assert(zone.pending);}
  if(hero===1)assert(ultimate.events.some(e=>e.type==='lightning'&&e.size===1.7));
  if(hero===2)assert(ultimate.events.some(e=>e.type==='beam'&&e.size===35));
  if(hero===5)assert.equal(ultimate.zones.filter(z=>z.value.owner===0&&z.value.pending).length,7);
@@ -52,6 +54,7 @@ try{
  if(hero===8)assert.equal(ultimate.shots.filter(s=>s.value.owner===0&&s.value.damage===300).length,17);
  if(hero===9){const zone=ultimate.zones.find(z=>z.value.owner===0&&z.value.kind===2).value;assert.equal(zone.radius,4.5);assert(zone.remaining>7.8&&zone.remaining<=8);}
  await pause(250);const updated=snap(host);
+ if(hero===0)await wait(()=>host.messages.some(m=>m.tick>=ultimate.tick&&m.events?.some(e=>e.type==='explosion'&&e.actor===0&&e.size===3.5)),2000);
  for(const message of [skill,ultimate,updated]){const other=await wait(()=>guest.messages.find(m=>m.type==='snapshot'&&m.tick===message.tick));for(const field of ['events','shots','zones','robots','fighters'])assert.deepEqual(other[field],message[field]);}
  console.log('REFERENCE_TWO_CLIENT_SYNC_PASS',JSON.stringify({hero,cooldown,matchingSnapshots:3,server:base}));
 
