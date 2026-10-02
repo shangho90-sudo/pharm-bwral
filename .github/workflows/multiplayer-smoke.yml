@@ -1,0 +1,32 @@
+name: Guest multiplayer smoke test
+on:
+  push:
+    branches: [codex/guest-multiplayer-server]
+    paths: ['.github/workflows/multiplayer-smoke.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  multiplayer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify allowed browser origin
+        run: |
+          node --input-type=module -e "
+          import assert from 'node:assert/strict';
+          const response = await fetch(process.env.TEST_SERVER + '/rooms', {headers: {Origin: 'https://shangho90-sudo.github.io'}});
+          assert.equal(response.status, 200);
+          assert.equal(response.headers.get('access-control-allow-origin'), 'https://shangho90-sudo.github.io');
+          console.log('CORS_PASS');
+          "
+        env:
+          TEST_SERVER: https://paengbrawl-rooms-production.up.railway.app
+      - name: Verify eight guest players
+        run: node Server/integration-test.mjs
+        env:
+          TEST_SERVER: https://paengbrawl-rooms-production.up.railway.app
