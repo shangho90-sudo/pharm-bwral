@@ -32,10 +32,10 @@
   <div id="rotate">휴대폰을 가로로 돌려 플레이해 주세요 ↻</div>
   <header><strong>PHARMA <span>BRAWL</span></strong><small>4 ARENAS · WASD 이동 / 마우스 조준 / LMB 공격 / RMB 스킬 / SPACE 궁극기</small><button id="full">전체 화면</button></header>
   <main id="arena"><div id="frame"><canvas id="unity-canvas" width="1600" height="900" tabindex="0"></canvas><div id="loading"><h1>PHARMA BRAWL</h1><p>약국 아레나를 준비하고 있습니다</p><div class="track"><div class="bar" id="bar"></div></div><p>Unity WebGL prototype</p></div><div id="error"></div></div></main>
-  <script src="Build/PharmaBrawl-Web.loader.js"></script>
+  <script src="Build/PharmaBrawl-Web.loader.js?v=bc4647be5db7"></script>
   <script>
     const canvas=document.getElementById('unity-canvas');
-    const config={dataUrl:'Build/PharmaBrawl-Web.data.unityweb',frameworkUrl:'Build/PharmaBrawl-Web.framework.js.unityweb',codeUrl:'Build/PharmaBrawl-Web.wasm.unityweb',streamingAssetsUrl:'StreamingAssets/multiplayer-v1',companyName:'Pharma Brawl Prototype',productName:'PHARMA BRAWL',productVersion:'0.2',devicePixelRatio:Math.min(2,window.devicePixelRatio||1),showBanner:(message,type)=>{if(type==='error'){let e=document.getElementById('error');e.textContent=message;e.style.display='block';}else console.log(message)}};
+    const config={dataUrl:'Build/PharmaBrawl-Web.data.unityweb?v=bc4647be5db7',frameworkUrl:'Build/PharmaBrawl-Web.framework.js.unityweb?v=bc4647be5db7',codeUrl:'Build/PharmaBrawl-Web.wasm.unityweb?v=bc4647be5db7',streamingAssetsUrl:'StreamingAssets',companyName:'Pharma Brawl Prototype',productName:'PHARMA BRAWL',productVersion:'0.2',devicePixelRatio:Math.min(2,window.devicePixelRatio||1),showBanner:(message,type)=>{if(type==='error'){let e=document.getElementById('error');e.textContent=message;e.style.display='block';}else console.log(message)}};
     createUnityInstance(canvas,config,p=>document.getElementById('bar').style.width=(p*100)+'%').then(instance=>{document.getElementById('loading').remove();canvas.focus();document.getElementById('full').onclick=()=>instance.SetFullscreen(1)}).catch(error=>{const e=document.getElementById('error');e.textContent=String(error);e.style.display='block'});
   </script>
 </body>

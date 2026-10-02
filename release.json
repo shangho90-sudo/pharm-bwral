@@ -1,0 +1,26 @@
+{
+  "sourceBranch": "codex/four-arenas-music",
+  "sourceCommit": "bc4647be5db76a4a70ba6dbcf0e2bd7f67e6fd2e",
+  "unityVersion": "6000.6.1f1",
+  "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
+  "mobileControls": "independent circular 360-degree move and attack pads",
+  "kakaoImageSha256": "5934af75834b1ffb915d365a6dacfb5d7513759b5b0e8b1683e501b7d7e5dd97",
+  "assets": {
+    "Build/PharmaBrawl-Web.data.unityweb": {
+      "bytes": 103153160,
+      "sha256": "e13df4e75ab55f972343c3f5ace09eae3dfad83b496913e467db94adfd99d42a"
+    },
+    "Build/PharmaBrawl-Web.framework.js.unityweb": {
+      "bytes": 76604,
+      "sha256": "63b4001b1bed105c91cb72f2f3e370b8425b0294a2ecaa14caf0a41748168716"
+    },
+    "Build/PharmaBrawl-Web.loader.js": {
+      "bytes": 48779,
+      "sha256": "fb950f78cc379762398e2d6759c568f56754b7721132f2956a7aae8c862f0cfb"
+    },
+    "Build/PharmaBrawl-Web.wasm.unityweb": {
+      "bytes": 6209295,
+      "sha256": "935058d8fd8b9fe96531bea40f28e1c07643c30d39988b28631c075938173f4b"
+    }
+  }
+}
