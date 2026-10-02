@@ -26,8 +26,8 @@ MonoBehaviour:
   attackInterval: 1.3
   range: 15
   projectileSpeed: 26
-  skillCooldown: 9
-  ultimateRequirement: 4000
+  skillCooldown: 6
+  ultimateRequirement: 2800
   ultimateVoice: {fileID: 0}
   characterPrefab: {fileID: 4540500206716631264, guid: ac657f65af8728d4b8e3cf7a462dd7e4, type: 3}
   weaponPrefab: {fileID: 606139257068119134, guid: f66e7d35ff4697e49aacb22e9a6bd265, type: 3}

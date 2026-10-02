@@ -29,7 +29,18 @@ try{
  input();await pause(100);input(undefined,false,true);
  const skill=await wait(()=>host.messages.find(m=>m.type==='snapshot'&&m.events.some(e=>e.type==='skill'&&e.actor===0)));input();
  if([2,4,8].includes(hero)){input(undefined,true);await pause(250);input();}
- const cooldown=skill.fighters[0].skillTimer;assert(cooldown>0&&cooldown<=9);
+ const cooldown=skill.fighters[0].skillTimer;const expectedCooldown=hero===6?3:6;assert(cooldown>expectedCooldown-.2&&cooldown<=expectedCooldown);
+ if(hero===7){
+  const summoned=skill.robots.find(r=>r.value.owner===0&&!r.value.elite);assert.equal(summoned.value.hp,800);assert.equal(summoned.value.maxHp,800);
+  let guestSeq=0;const end=Date.now()+6500;let damageSnapshot;
+  while(snap(host).robots.some(r=>r.index===summoned.index)){
+   assert(Date.now()<end,'Support robot could not be destroyed');const s=snap(host),r=s.robots.find(r=>r.index===summoned.index),p=s.fighters[1].position;
+   guest.send({type:'input',seq:++guestSeq,mx:0,mz:0,ax:r.value.position.x-p.x,az:r.value.position.y-p.y,attack:true});
+   if(r.value.hp<800)damageSnapshot=s;await pause(60);
+  }
+  guest.send({type:'input',seq:++guestSeq,mx:0,mz:0,ax:0,az:1,attack:false});assert(damageSnapshot,'Robot HP decreased before removal');
+  const other=await wait(()=>guest.messages.find(m=>m.type==='snapshot'&&m.tick===damageSnapshot.tick));assert.deepEqual(other.robots,damageSnapshot.robots);const removed=snap(host);await wait(()=>guest.messages.find(m=>m.type==='snapshot'&&m.tick===removed.tick));assert(removed.events.some(e=>e.type==='robotDestroyed')||host.messages.some(m=>m.events?.some(e=>e.type==='robotDestroyed')));console.log('ROBOT_TWO_CLIENT_DESTRUCTION_PASS hp=800 damaged and removed, identical snapshots');
+ }
  const deadline=Date.now()+75000;while(snap(host).fighters[0].charge<Number(fs.readFileSync(fs.readdirSync("Assets/Resources/Characters").filter(f=>f.startsWith(String(hero).padStart(2,"0"))&&f.endsWith(".asset")).map(f=>"Assets/Resources/Characters/"+f)[0],"utf8").match(/ultimateRequirement: ([0-9.]+)/)[1])){assert(Date.now()<deadline,'Could not charge ultimate hero '+hero+' '+JSON.stringify(snap(host).fighters));input(undefined,true);await pause(60);}input();
  await wait(()=>snap(host).fighters[1].hp>0,6500);input(undefined,false,false,true);
  const ultimate=await wait(()=>host.messages.find(m=>m.type==='snapshot'&&m.events.some(e=>e.type==='ultimate'&&e.actor===0)));input();
@@ -37,7 +48,7 @@ try{
  if(hero===2)assert(ultimate.events.some(e=>e.type==='beam'&&e.size===35));
  if(hero===5)assert.equal(ultimate.zones.filter(z=>z.value.owner===0&&z.value.pending).length,7);
  if(hero===6)assert.equal(ultimate.events.filter(e=>e.type==='blink').length,2);
- if(hero===7){const robot=ultimate.robots.find(r=>r.value.elite).value;assert(robot.remaining>14.8&&robot.remaining<=15);}
+ if(hero===7){const robot=ultimate.robots.find(r=>r.value.elite).value;assert(robot.remaining>14.8&&robot.remaining<=15);assert.equal(robot.hp,1600);assert.equal(robot.maxHp,1600);}
  if(hero===8)assert.equal(ultimate.shots.filter(s=>s.value.owner===0&&s.value.damage===300).length,17);
  if(hero===9){const zone=ultimate.zones.find(z=>z.value.owner===0&&z.value.kind===2).value;assert.equal(zone.radius,4.5);assert(zone.remaining>7.8&&zone.remaining<=8);}
  await pause(250);const updated=snap(host);
@@ -47,7 +58,7 @@ try{
 }finally{for(const c of [host,guest])if(c.socket.readyState===1){c.send({type:'leave'});c.socket.close();}}
 }
 for(let hero=Number(process.argv[2]||1);hero<Number(process.argv[3]||10);hero++)await verify(hero);
-console.log('REFERENCE_ALL_NINE_SYNC_PASS');
+console.log('REFERENCE_REQUESTED_HEROES_SYNC_PASS');
 
 
 

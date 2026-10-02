@@ -39,6 +39,7 @@ namespace PharmaBrawl
             if(e.type=="death"){dashLife[e.actor]=0;blinkPending[e.actor]=false;foreach(var b in bursts)if(b.owner==e.actor){b.time=0;b.root.SetActive(false);}return;}
             if(e.type=="ultimate"&&f.data.kind==AttackKind.Wave){dashStart[e.actor]=e.position;dashLife[e.actor]=.5f;CaptureGhost(e.actor);}
             if(e.type=="blink"){BurstAt(e.position,.75f,new Color(1,.25f,.8f),e.actor);if(!blinkPending[e.actor]){blinkStart[e.actor]=e.position;blinkPending[e.actor]=true;CaptureGhost(e.actor);}else{dashStart[e.actor]=blinkStart[e.actor];dashLife[e.actor]=.4f;blinkPending[e.actor]=false;}return;}
+            if(e.type=="robotDestroyed")BurstAt(e.position,e.size,new Color(1,.65f,.2f),e.actor,.6f,true);
             if(e.type=="explosion"&&f.data.kind==AttackKind.Artillery)BurstAt(e.position,e.size,new Color(1,.7f,.1f),e.actor,.75f,true);
             if(e.type=="wave")BurstAt(e.position,e.size,new Color(.75f,.2f,1),e.actor);
             if(e.type=="hit"){bool poisoned=f.poison>0;foreach(var z in simulation.zones)if(z.active&&!z.pending&&z.kind==2&&simulation.fighters[z.owner].team!=f.team&&Vector2.Distance(z.position,e.position)<z.radius)poisoned=true;if(poisoned)BurstAt(e.position,.45f,new Color(.85f,.2f,1),e.actor,.25f);else BurstAt(e.position,.28f,new Color(1,.92f,.7f),e.actor,.2f);}

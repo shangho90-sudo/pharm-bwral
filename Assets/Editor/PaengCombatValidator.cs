@@ -28,7 +28,7 @@ public static class PaengCombatValidator
         var inputs=new ArenaSimulation.HumanInput[4];for(int i=0;i<inputs.Length;i++)inputs[i].human=true;
         var sim=new ArenaSimulation(roster,0,57,0,2,new[]{0,1,2,3});sim.covers.Clear();
         var p=sim.fighters[0];p.position=Vector2.zero;p.aim=Vector2.right;sim.fighters[1].position=new Vector2(-8,8);sim.fighters[2].position=new Vector2(2,0);sim.fighters[3].position=new Vector2(2,1.1f);
-        sim.Skill(p);Require(p.skillTimer==9,"9 second cooldown");Require(sim.shotsFired==1,"one skill capsule");sim.Skill(p);Require(sim.shotsFired==1,"cooldown prevents repeat");
+        sim.Skill(p);Require(p.skillTimer==6,"6 second cooldown");Require(sim.shotsFired==1,"one skill capsule");sim.Skill(p);Require(sim.shotsFired==1,"cooldown prevents repeat");
         for(int i=0;i<30;i++)sim.TickNetwork(1f/60,inputs);
         Require(sim.fighters[2].damageTaken==900,"600 direct plus 300 splash");Require(sim.fighters[3].damageTaken==300,"300 nearby splash");Require(p.charge==1200,"damage charges ultimate using existing rules");
         sim=new ArenaSimulation(roster,0,57,0,2,new[]{0,1,2,3});sim.covers.Clear();p=sim.fighters[0];p.position=Vector2.zero;p.aim=Vector2.right;p.aimDistance=7;
@@ -42,7 +42,7 @@ public static class PaengCombatValidator
         view.Sync(1);Require(view.ActiveBursts==0,"impact expires");p.charge=p.data.ultimateRequirement;sim.Ultimate(p);view.Sync(0);view.SetVisible(false);Require(view.ActiveBombs==0&&view.ActiveBursts==0,"pause clears effects");view.SetVisible(true);view.Sync(0);Require(view.ActiveBombs==1,"resume reconstructs only authoritative pending zone");view.Clear();view.Sync(0);Require(view.ActiveBombs==0&&view.ActiveBursts==0,"match/leave cleanup remains cleared on next frame");UnityEngine.Object.DestroyImmediate(root);
         var mapSim=new ArenaSimulation(roster,0,57,0,1,new[]{0,0});
         File.WriteAllText(Path.GetFullPath("../../work/paeng-test-map.json"),JsonUtility.ToJson(new MapGeometry{covers=mapSim.covers.ToArray()}));
-        Debug.Log("PAENG_ABILITIES_PASS direct=600 splash=300 cooldown=9 fuse=.9 radius=3.5 damage=1700 knockback=1.2 charge gating, exact marker, pooled expiry, pause and match cleanup");
+        Debug.Log("PAENG_ABILITIES_PASS direct=600 splash=300 cooldown=6 fuse=.9 radius=3.5 damage=1700 knockback=1.2 charge gating, exact marker, pooled expiry, pause and match cleanup");
     }
     [Serializable]public sealed class MapGeometry{public ArenaSimulation.Cover[] covers;}
 }

@@ -44,7 +44,7 @@ namespace PharmaBrawl
             public bool active;
             public int owner;
             public Vector2 position;
-            public float remaining, attackTimer;
+            public float remaining, attackTimer, hp, maxHp;
             public bool elite;
         }
         [Serializable] public sealed class Cover
@@ -235,7 +235,13 @@ namespace PharmaBrawl
             }
         }
         void Teleport(Fighter f,Vector2 p) {for(int j=10;j>0;j--){var n=Vector2.Lerp(f.position,p,j/10f);if(!Blocked(n)){Emit("blink",f.position,f.id);f.position=n;Emit("blink",n,f.id);break;}}}
-        void Summon(Fighter f,bool elite){foreach(var r in robots)if(!r.active){r.active=true;r.owner=f.id;r.position=f.position;for(int j=0;j<8;j++){var p=f.position+Rotate(Vector2.up,j*45)*.8f;if(!Blocked(p,.3f)){r.position=p;break;}}r.remaining=elite?15:10;r.elite=elite;r.attackTimer=.3f;return;}}
+        void Summon(Fighter f,bool elite){foreach(var r in robots)if(!r.active){r.active=true;r.owner=f.id;r.position=f.position;for(int j=0;j<8;j++){var p=f.position+Rotate(Vector2.up,j*45)*.8f;if(!Blocked(p,.3f)){r.position=p;break;}}r.remaining=elite?15:10;r.elite=elite;r.hp=r.maxHp=elite?1600:800;r.attackTimer=.3f;return;}}
+        public void DamageRobot(int owner,int index,float amount)
+        {
+            var r=robots[index];if(!r.active||fighters[owner].team==fighters[r.owner].team)return;
+            r.hp=Mathf.Max(0,r.hp-amount);Emit("hit",r.position,r.owner,.6f);
+            if(r.hp<=0){r.active=false;Emit("robotDestroyed",r.position,r.owner,r.elite?1.2f:.8f);}
+        }
         public static Vector2 Rotate(Vector2 p,float degrees){float r=degrees*Mathf.Deg2Rad;return new Vector2(p.x*Mathf.Cos(r)-p.y*Mathf.Sin(r),p.x*Mathf.Sin(r)+p.y*Mathf.Cos(r));}
         void Fire(Fighter f,Vector2 direction,float damage,float range,float poison,bool piercing=false,int kind=0)
         {
@@ -245,18 +251,20 @@ namespace PharmaBrawl
         {
             foreach(var z in zones)if(!z.active){z.active=true;z.owner=f.id;z.position=p;z.radius=radius;z.remaining=duration;z.damage=damage;z.kind=kind;z.pending=pending;z.tick=0;return;}
         }
-        void Cone(Fighter f,float range,float angle,float damage){for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(f.position,e.position)<range && Vector2.Angle(f.aim,e.position-f.position)<angle && LineClear(f.position,e.position))Damage(f.id,i,damage);}Emit("wave",f.position+f.aim*1.6f,f.id,2);}
-        void Beam(Fighter f){for(int i=0;i<fighters.Length;i++){var e=fighters[i];Vector2 delta=e.position-f.position;float forward=Vector2.Dot(delta,f.aim);if(e.Alive && e.team!=f.team && forward>0 && forward<35 && Mathf.Abs(Vector2.Dot(delta,Vector2.Perpendicular(f.aim)))<.8f)Damage(f.id,i,1900);}Emit("beam",f.position,f.id,35);}
+        void Cone(Fighter f,float range,float angle,float damage){for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(f.position,e.position)<range && Vector2.Angle(f.aim,e.position-f.position)<angle && LineClear(f.position,e.position))Damage(f.id,i,damage);}for(int i=0;i<robots.Length;i++){var r=robots[i];if(r.active&&Vector2.Distance(f.position,r.position)<range&&Vector2.Angle(f.aim,r.position-f.position)<angle&&LineClear(f.position,r.position))DamageRobot(f.id,i,damage);}Emit("wave",f.position+f.aim*1.6f,f.id,2);}
+        void Beam(Fighter f){for(int i=0;i<fighters.Length;i++){var e=fighters[i];Vector2 delta=e.position-f.position;float forward=Vector2.Dot(delta,f.aim);if(e.Alive && e.team!=f.team && forward>0 && forward<35 && Mathf.Abs(Vector2.Dot(delta,Vector2.Perpendicular(f.aim)))<.8f)Damage(f.id,i,1900);}for(int i=0;i<robots.Length;i++){var r=robots[i];Vector2 delta=r.position-f.position;float forward=Vector2.Dot(delta,f.aim);if(r.active&&forward>0&&forward<35&&Mathf.Abs(Vector2.Dot(delta,Vector2.Perpendicular(f.aim)))<.8f)DamageRobot(f.id,i,1900);}Emit("beam",f.position,f.id,35);}
         void Chain(Fighter f,int jumps,float damage,float range)
         {
             Vector2 point=f.position;int mask=0;
             for(int j=0;j<jumps;j++){int target=-1;float closest=range;for(int i=0;i<fighters.Length;i++){var e=fighters[i];float d=Vector2.Distance(point,e.position);if(e.Alive && e.team!=f.team && (mask&(1<<i))==0 && d<closest){target=i;closest=d;}}
-                if(target<0)break;mask|=1<<target;Damage(f.id,target,damage);point=fighters[target].position;Emit("lightning",point,f.id,1.7f);range=6;}
+                if(target<0){int robot=-1;for(int i=0;i<robots.Length;i++){var r=robots[i];float d=Vector2.Distance(point,r.position);if(r.active&&fighters[r.owner].team!=f.team&&(mask&(1<<(8+i)))==0&&d<closest){robot=i;closest=d;}}if(robot<0)break;mask|=1<<(8+robot);point=robots[robot].position;DamageRobot(f.id,robot,damage);}
+                else{mask|=1<<target;Damage(f.id,target,damage);point=fighters[target].position;}Emit("lightning",point,f.id,1.7f);range=6;}
         }
         void Area(Fighter f,Vector2 p,float radius,float damage,bool knockback)
         {
             for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(e.position,p)<radius){Damage(f.id,i,damage);if(knockback){Vector2 n=e.position+(e.position-p).normalized*1.2f;if(!Blocked(n))e.position=n;}}}
             foreach(var c in covers)if(c.destructible && c.Active && Vector2.Distance(c.position,p)<radius+1)c.hp-=damage;
+            for(int i=0;i<robots.Length;i++)if(robots[i].active&&Vector2.Distance(robots[i].position,p)<radius)DamageRobot(f.id,i,damage);
         }
         public void Damage(int owner,int target,float amount,bool charge=true)
         {
@@ -277,6 +285,8 @@ namespace PharmaBrawl
                     s.position+=s.direction*step;s.remaining-=step;
                     if(s.remaining<=0 || Mathf.Abs(s.position.x)>Width || Mathf.Abs(s.position.y)>Height){s.active=false;break;}
                     if(!s.piercing)foreach(var c in covers)if(c.Active && c.blocksShots && Mathf.Abs(s.position.x-c.position.x)<c.size.x*.5f+s.radius && Mathf.Abs(s.position.y-c.position.y)<c.size.y*.5f+s.radius){if(c.destructible)c.hp-=s.damage;Impact(s);break;}
+                    if(!s.active)break;
+                    for(int i=0;i<robots.Length&&s.active;i++){var r=robots[i];int bit=1<<(8+i);if(r.active&&fighters[r.owner].team!=fighters[s.owner].team&&(s.hitMask&bit)==0&&Vector2.Distance(r.position,s.position)<(r.elite?.65f:.45f)+s.radius){s.hitMask|=bit;DamageRobot(s.owner,i,s.damage);if(!s.piercing)Impact(s);}}
                     if(!s.active)break;
                     for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=fighters[s.owner].team && (s.hitMask&(1<<i))==0 && Vector2.Distance(e.position,s.position)<.5f+s.radius){s.hitMask|=1<<i;Damage(s.owner,i,s.damage);
                         if(s.poison>0 && e.Alive){e.poison=2.5f;e.poisonTick=.5f;e.poisonDamage=s.poison;e.poisonOwner=s.owner;}
