@@ -48,7 +48,7 @@ namespace PharmaBrawl
             var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=rocks?stone:impactMaterial;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.renderMode=rocks?ParticleSystemRenderMode.Mesh:ParticleSystemRenderMode.Stretch;if(rocks)renderer.mesh=debrisMesh;else {renderer.lengthScale=2.5f;renderer.velocityScale=.05f;}
             ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);return ps;
         }
-        static void Circle(LineRenderer ring,Vector3 center,float radius,Color color){ring.startColor=ring.endColor=color;for(int i=0;i<65;i++){float angle=i*Mathf.PI*2/64;ring.SetPosition(i,center+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius);}}
+        static void Circle(LineRenderer ring,Vector3 center,float radius,Color color){ring.enabled=false;}
         public void Emit(ArenaSimulation.CombatEvent e)
         {
             if(!visible||e.type!="explosion"||simulation.fighters[e.actor].data.kind!=AttackKind.Capsule)return;

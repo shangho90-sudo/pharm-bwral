@@ -34,7 +34,6 @@ namespace PharmaBrawl
         Text scoreBlue,scoreRed,timer,hpText,chargeText,skillText,status,feed,heroLabel;
         Image hpFill,chargeFill;
         Button skillButton,ultButton;
-        Transform aimLine;
         int selected,selectedMap;
         Light keyLight;
         ArenaMusic soundtrack;
@@ -192,7 +191,6 @@ namespace PharmaBrawl
             for(int i=0;i<zoneViews.Length;i++){zoneViews[i]=Shape("Pooled hazard disc",PrimitiveType.Cylinder,Vector3.zero,Vector3.one,cream,actorsRoot,false);zoneViews[i].gameObject.SetActive(false);dropViews[i]=Shape("Pooled falling capsule",PrimitiveType.Capsule,Vector3.zero,Vector3.one,cream,actorsRoot,false);dropViews[i].gameObject.SetActive(false);}
             for(int i=0;i<robotViews.Length;i++){var r=new GameObject("Medical support drone").transform;r.SetParent(actorsRoot,false);r.gameObject.AddComponent<PharmacyDroneView>().Initialize();robotViews[i]=r;r.gameObject.SetActive(false);}
             for(int i=0;i<fx.Length;i++){fx[i]=Shape("Pooled shockwave",PrimitiveType.Sphere,Vector3.zero,Vector3.one,cream,actorsRoot,false);fx[i].gameObject.SetActive(false);fxLife[i]=0;}
-            aimLine=Shape("Aim guide",PrimitiveType.Cube,Vector3.zero,new Vector3(.06f,.04f,4),blue,actorsRoot,false);
             playing=true;paused=false;mobileFire=false;touchMove=Vector2.zero;accumulator=0;realTime=0;titleScreen.SetActive(false);roomScreen.SetActive(false);lobby.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);hud.SetActive(true);
             heroLabel.text=roster[selected].displayName+"  /  "+roster[selected].role;status.text=sim.map.name+"  ·  FIRST TO 20";noticeTimer=4;
         }
@@ -284,7 +282,7 @@ namespace PharmaBrawl
                 healthBars[i].parent.rotation=cam.transform.rotation;nameLabels[i].canvas.transform.rotation=cam.transform.rotation;
                 healthBars[i].localScale=new Vector3(1.15f*f.hp/f.data.maxHp,.09f,.04f);healthBars[i].localPosition=new Vector3(-.575f*(1-f.hp/f.data.maxHp),0,-.03f);
             }
-            var player=sim.fighters[localPlayerId];portraitCam.transform.position=actors[localPlayerId].position+P(player.aim*3,1.65f);portraitCam.transform.LookAt(actors[localPlayerId].position+Vector3.up*1.4f);aimLine.gameObject.SetActive(player.Alive);float range=Mathf.Min(9,player.data.range);aimLine.position=P(player.position+player.aim*range*.5f,.2f);aimLine.rotation=Quaternion.LookRotation(P(player.aim));aimLine.localScale=new Vector3(.055f,.025f,range);
+            var player=sim.fighters[localPlayerId];portraitCam.transform.position=actors[localPlayerId].position+P(player.aim*3,1.65f);portraitCam.transform.LookAt(actors[localPlayerId].position+Vector3.up*1.4f);
             for(int i=0;i<shotViews.Length;i++){var s=sim.shots[i];var v=shotViews[i];v.gameObject.SetActive(s.active);if(!s.active)continue;v.position=P(s.position,1.1f);v.rotation=Quaternion.LookRotation(P(s.direction))*Quaternion.Euler(90,0,0);projectileMeshes[i].Paint(sim.fighters[s.owner].data.color,s.kind,sim.fighters[s.owner].data.kind);}
             for(int i=0;i<zoneViews.Length;i++){var z=sim.zones[i];bool paengBomb=z.active;var v=zoneViews[i];v.gameObject.SetActive(z.active&&!paengBomb);dropViews[i].gameObject.SetActive(z.active && z.pending&&!paengBomb);if(!z.active||paengBomb)continue;v.position=P(z.position,.18f);float pulse=z.pending?.9f+.1f*Mathf.Sin(Time.time*14):1;v.localScale=new Vector3(z.radius*2*pulse,.025f,z.radius*2*pulse);v.GetComponent<Renderer>().sharedMaterial=Mat(Glow(z.pending?new Color(1,.62f,.35f):sim.fighters[z.owner].data.color,.18f));if(z.pending){dropViews[i].position=P(z.position,1+z.remaining*5);dropViews[i].localScale=z.kind==3?new Vector3(1.3f,1.4f,1.3f):new Vector3(.35f,.6f,.35f);dropViews[i].GetComponent<Renderer>().sharedMaterial=Mat(sim.fighters[z.owner].data.color);}}
             for(int i=0;i<robotViews.Length;i++){var r=sim.robots[i];var v=robotViews[i];v.gameObject.SetActive(r.active);if(r.active){v.position=P(r.position);var owner=sim.fighters[r.owner];v.GetComponent<PharmacyDroneView>().Sync(sim,i,Time.deltaTime);}}
@@ -327,7 +325,7 @@ namespace PharmaBrawl
             playing=false;soundtrack.Paused=false;soundtrack.Play("menu");portraitCam.enabled=false;podiumCam.enabled=true;hud.SetActive(false);result.SetActive(true);bool win=sim.winner==sim.fighters[localPlayerId].team;
             resultView.Show(sim,localPlayerId);PlayTone(win?4:2);
             // Winning trio forms a podium and holds a celebratory pose.
-            foreach(var t in shotViews)t.gameObject.SetActive(false);foreach(var t in zoneViews)t.gameObject.SetActive(false);foreach(var t in dropViews)t.gameObject.SetActive(false);foreach(var t in robotViews)t.gameObject.SetActive(false);foreach(var t in fx)t.gameObject.SetActive(false);aimLine.gameObject.SetActive(false);
+            foreach(var t in shotViews)t.gameObject.SetActive(false);foreach(var t in zoneViews)t.gameObject.SetActive(false);foreach(var t in dropViews)t.gameObject.SetActive(false);foreach(var t in robotViews)t.gameObject.SetActive(false);foreach(var t in fx)t.gameObject.SetActive(false);
             foreach(var t in beamViews)t.gameObject.SetActive(false);
             int team=sim.winner<0?0:sim.winner;for(int i=0;i<sim.fighters.Length;i++){actors[i].gameObject.SetActive(sim.fighters[i].team==team);if(sim.fighters[i].team==team){actors[i].position=new Vector3((i%sim.TeamSize-(sim.TeamSize-1)*.5f)*2.5f,0,0);actors[i].rotation=Quaternion.Euler(0,180+(i%sim.TeamSize-(sim.TeamSize-1)*.5f)*12,0);foreach(Transform t in actors[i])if(t.name=="Arm")t.localRotation=Quaternion.Euler(0,0,t.localPosition.x<0?65:-65);}}
             PositionCamera(Vector2.zero,0);
