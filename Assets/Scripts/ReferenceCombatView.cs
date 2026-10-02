@@ -19,7 +19,7 @@ namespace PharmaBrawl
         public void Initialize(Font uiFont,ArenaMusic soundtrack,Action pause,Action useSkill,Action useUltimate)
         {
             font=uiFont;music=soundtrack;atlas=Resources.Load<Texture2D>("GameplayReference");
-            foreach(var r in new[]{new Rect(19,17,61,59),new Rect(93,15,145,68),new Rect(568,10,539,78),new Rect(708,79,257,35),new Rect(1513,12,143,42),new Rect(1396,62,260,46),new Rect(20,768,575,148),new Rect(1318,757,149,151),new Rect(1486,757,151,151),new Rect(644,889,385,36)})Art("Reference HUD artwork",r);
+            foreach(var r in new[]{new Rect(19,17,61,59),new Rect(93,15,145,68),new Rect(568,10,539,78),new Rect(708,79,257,35),new Rect(1513,12,143,42),new Rect(1396,62,260,46),new Rect(20,768,575,148),new Rect(1318,757,149,151),new Rect(1486,757,151,151),new Rect(644,889,385,36)}){if(RoomClient.TouchDevice&&((r.x>1300&&r.y>750)||(r.x==644&&r.y==889)))continue;Art("Reference HUD artwork",r);}
             Hotspot("Pause",new Rect(19,17,61,59),pause);Hotspot("Music",new Rect(1513,12,143,42),()=>{music.ToggleMute();UpdateMusic();});
             Fill(new Rect(647,44,63,33),Navy);blueScore=Label("00",new Rect(647,42,63,36),34,Color.white);
             Fill(new Rect(964,43,63,34),Navy);redScore=Label("00",new Rect(964,42,63,36),34,Color.white);
@@ -35,6 +35,7 @@ namespace PharmaBrawl
             skill=Hotspot("Skill RMB",new Rect(1318,757,149,151),useSkill);ultimate=Hotspot("Ultimate SPACE",new Rect(1486,757,151,151),useUltimate);
             cooldown=Fill(new Rect(1327,767,130,95),new Color(0,0,0,.58f)).gameObject;skillCooldown=Label("",new Rect(1327,771,130,85),36,Color.white);
             ultimateState=Label("",new Rect(1500,774,124,90),22,new Color(1,.87f,.2f));
+            if(RoomClient.TouchDevice){skill.gameObject.SetActive(false);ultimate.gameObject.SetActive(false);skillCooldown.gameObject.SetActive(false);ultimateState.gameObject.SetActive(false);}
             muteLabel=Fill(new Rect(1551,19,88,29),Navy).gameObject;musicState=Label("음악 OFF",new Rect(1547,17,96,33),19,Color.white);UpdateMusic();
         }
         void UpdateMusic(){muteLabel.SetActive(music.Muted);musicState.gameObject.SetActive(music.Muted);}
@@ -45,7 +46,7 @@ namespace PharmaBrawl
             mapName.text=(sim.map.theme==ArenaTheme.Desert?"약초 오아시스":sim.map.name)+" · 20킬 선승";
             heroName.text=f.data.displayName+" / "+f.data.role;hp.text=$"{Mathf.CeilToInt(f.hp)} / {f.data.maxHp:0} HP";hpBar.fillAmount=f.hp/f.data.maxHp;
             float q=f.charge/f.data.ultimateRequirement;chargeBar.fillAmount=q;charge.text=f.Alive?"궁극기 "+Mathf.FloorToInt(q*100)+"%":"부활 "+Mathf.CeilToInt(f.respawn)+"초";
-            skill.interactable=f.Alive && f.skillTimer<=0;ultimate.interactable=f.Alive && q>=1;cooldown.SetActive(f.skillTimer>0);skillCooldown.text=f.skillTimer>0?f.skillTimer.ToString("0.0"):"";ultimateState.text=q>=1?"READY":"";
+            skill.interactable=f.Alive && f.skillTimer<=0;ultimate.interactable=f.Alive && q>=1;cooldown.SetActive(!RoomClient.TouchDevice&&f.skillTimer>0);skillCooldown.text=f.skillTimer>0?f.skillTimer.ToString("0.0"):"";ultimateState.text=q>=1?"READY":"";
             killFeed.text=feed.StartsWith("PHASE")?"":feed;
             int hero=(int)f.data.kind;
             if(hero==0){portrait.texture=atlas;portrait.uvRect=new Rect(28/W,1-906/H,125/W,129/H);}

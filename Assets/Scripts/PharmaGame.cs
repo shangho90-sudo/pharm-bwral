@@ -50,6 +50,7 @@ namespace PharmaBrawl
         float accumulator, shake, noticeTimer;
         Vector2 touchMove,touchAim=Vector2.up;
         bool mobileFire;
+        MobileArenaControls mobileControls;
         AudioSource sfx;
         WeaponAudio weaponAudio;AbilityEffects abilityEffects;
         AudioClip[] tones;
@@ -196,6 +197,7 @@ namespace PharmaBrawl
             realTime+=Time.unscaledDeltaTime;
             if(Input.GetKeyDown(KeyCode.Escape)){paused=!paused;pausePanel.SetActive(paused);}
             soundtrack.Paused=paused;
+            if(paused&&mobileControls)mobileControls.ResetInput();
             if(Input.GetKeyDown(KeyCode.F2))ToggleMovementOverlay();
             if(paused && network.room==null)return;
             var f=sim.fighters[localPlayerId];
@@ -292,6 +294,7 @@ namespace PharmaBrawl
             float q=f.charge/f.data.ultimateRequirement;chargeFill.fillAmount=q;chargeText.text=q>=1?"ULTIMATE READY  ·  SPACE":$"ULTIMATE  {Mathf.FloorToInt(q*100)}%";
             skillText.text=f.skillTimer<=0?"SKILL  /  RMB":$"SKILL  {f.skillTimer:0.0}s";skillButton.interactable=f.Alive && f.skillTimer<=0;ultButton.interactable=f.Alive && q>=1;ultButton.GetComponent<Image>().color=q>=1?Color.Lerp(new Color(.75f,.5f,.1f),new Color(1,.85f,.25f),.5f+.5f*Mathf.Sin(Time.time*8)):new Color(.75f,.5f,.1f);
             combatView.UpdateState(sim,feed.text,localPlayerId);
+            if(mobileControls)mobileControls.UpdateState(f);
             if(!f.Alive){status.text=$"RESPAWNING IN {Mathf.CeilToInt(f.respawn)}  ·  TEAM SPAWN";noticeTimer=.2f;}
             else {noticeTimer-=Time.deltaTime;if(noticeTimer<=0)status.text=sim.map.name+"  ·  FIRST TO 20  ·  F2 이동 구역 표시";}
         }
@@ -392,30 +395,14 @@ namespace PharmaBrawl
             for(int i=0;i<sim.covers.Count;i++)sim.covers[i].hp=message.covers[i];foreach(var e in message.events)OnCombat(e);
         }
         void MakeMobileControls(){
-            var pad=Rect("Mobile keypad",hud.transform,new Vector2(-595,-100),new Vector2(300,280));
-            Vector2[] directions={Vector2.up,Vector2.down,Vector2.left,Vector2.right};string[] labels={"▲","▼","◀","▶"};Vector2[] positions={new Vector2(0,120),new Vector2(0,-120),new Vector2(-120,0),new Vector2(120,0)};
-            for(int i=0;i<4;i++){var b=Btn(pad,labels[i],positions[i],new Vector2(130,130),new Color(.025f,.1f,.2f,.85f),()=>{});var hold=b.gameObject.AddComponent<MobileMoveKey>();hold.game=this;hold.direction=directions[i];}
-            AddStick(hud.transform,new Vector2(600,-115),true);
-            Label(hud.transform,"조준 패드를 누른 채 발사",new Vector2(600,-13),new Vector2(320,40),21,cream,TextAnchor.MiddleCenter);
+            var root=Rect("Mobile circular controls",hud.transform,Vector2.zero,new Vector2(1600,900));
+            mobileControls=root.gameObject.AddComponent<MobileArenaControls>();mobileControls.Initialize(this,font);
         }
-        public void MobileMove(Vector2 direction,bool pressed){touchMove+=pressed?direction:-direction;}
+        public void MobileSkill(){if(playing&&!paused)skillRequested=true;}
+        public void MobileUltimate(){if(playing&&!paused)ultimateRequested=true;}
         void SelectMap(int index){selectedMap=index;selectionView.SelectArena(index);}
         void Select(int index){selected=index;selectionView.SelectHero(index);}
         void LateUpdate(){if(globalMusicButton)globalMusicButton.SetActive(!lobby.activeSelf && !result.activeSelf && !hud.activeSelf && !roomScreen.activeSelf);}
-        void AddStick(Transform parent,Vector2 position,bool attack)
-        {
-            var p=Panel(attack?"Attack joystick":"Move joystick",parent,position,new Vector2(170,170),new Color(.08f,.16f,.23f,.65f));var stick=p.gameObject.AddComponent<ArenaTouchStick>();stick.game=this;stick.attack=attack;Label(p.transform,attack?"조준 / 발사":"MOVE",Vector2.zero,new Vector2(165,40),15,cream,TextAnchor.MiddleCenter);
-        }
-        public void TouchInput(bool attack,Vector2 value,bool release){if(attack){if(value.sqrMagnitude>.01f)touchAim=value.normalized;mobileFire=!release && value.sqrMagnitude>.01f;}else touchMove=value;}
-    }
-    public sealed class MobileMoveKey:MonoBehaviour,IPointerDownHandler,IPointerUpHandler{public PharmaGame game;public Vector2 direction;bool held;public void OnPointerDown(PointerEventData e){if(!held){held=true;game.MobileMove(direction,true);}}public void OnPointerUp(PointerEventData e){if(held){held=false;game.MobileMove(direction,false);}}void OnDisable(){if(held){held=false;game.MobileMove(direction,false);}}}
-    public sealed class ArenaTouchStick : MonoBehaviour,IPointerDownHandler,IDragHandler,IPointerUpHandler
-    {
-        public PharmaGame game;public bool attack;
-        public void OnPointerDown(PointerEventData e)=>OnDrag(e);
-        public void OnDrag(PointerEventData e){RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform,e.position,e.pressEventCamera,out Vector2 p);game.TouchInput(attack,Vector2.ClampMagnitude(p/70,1),false);}
-        public void OnPointerUp(PointerEventData e)=>game.TouchInput(attack,Vector2.zero,true);
+        public void TouchInput(bool attack,Vector2 value,bool release){if(attack){if(value.sqrMagnitude>.01f)touchAim=value.normalized;mobileFire=!release && value.sqrMagnitude>.01f;}else touchMove=release?Vector2.zero:Vector2.ClampMagnitude(value,1);}
     }
 }
-
-
