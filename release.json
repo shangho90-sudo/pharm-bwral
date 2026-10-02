@@ -1,6 +1,6 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "74a1a03",
+  "sourceCommit": "3b13714177e23225724619ed3bc02855d5d8057c",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
@@ -33,21 +33,22 @@
   "cameraShake": "short gentle shake; persistent ON/OFF option in pause menu",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103086568,
-      "sha256": "c8cc1e80ca274d62b952d30e91b2f430d86e9e18f16b6f8aac25ca80c292d270"
+      "bytes": 103087939,
+      "sha256": "5defa675cf4f1416d4870f605d40c986fe6373afd917a520f5308b42716a2876"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
       "bytes": 77145,
-      "sha256": "9621f3f30ea073476962537842e767b4a70f285cdb6c0130fa0e83a1f6af71d4"
+      "sha256": "3e4696dd07492e072fe73dd710f74d70e2a2eb12b8dcf1f2a066c0cb060c16fc"
     },
     "Build/PharmaBrawl-Web.loader.js": {
       "bytes": 48779,
-      "sha256": "9df45a7fb16284b0adf7c50bfed6150b27991fe5e92f0008cf1a0a674b619d58"
+      "sha256": "1c1173f10b77f3416603e91459744ab66894a7a1e98e6c8d084b44ffe0a0e68d"
     },
     "Build/PharmaBrawl-Web.wasm.unityweb": {
-      "bytes": 6241826,
-      "sha256": "770e72d6ad56709616d63b70c6c526c3044418e568d5db3f743e3ce43085fe68"
+      "bytes": 6242190,
+      "sha256": "3cb79e92ffab75f914c755eac868dbc04aeaf106300620d9523936c2b0997569"
     }
   },
-  "abilityGuides": "direction lines, targeting circles, area boundary circles and fan outlines removed; actual combat effects and team halos preserved"
+  "abilityGuides": "only Artillery aim and landing-point markers; other direction/range overlays hidden",
+  "cheolhoAttack": "range 4.8, forward traveling purple energy pulse; walls still block damage"
 }
