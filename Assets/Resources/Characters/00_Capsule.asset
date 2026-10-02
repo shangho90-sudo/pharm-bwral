@@ -29,8 +29,8 @@ MonoBehaviour:
   skillCooldown: 9
   ultimateRequirement: 4000
   ultimateVoice: {fileID: 0}
-  characterPrefab: {fileID: 8047578312587967163, guid: c392c10fbb627264fa4095a3e7f187cd, type: 3}
-  weaponPrefab: {fileID: 919132149155446097, guid: 39fa0434a3b1c624cb71d690c9773199, type: 3}
+  characterPrefab: {fileID: 5936291664419968954, guid: a34720684509a8d47ac6e45eeec1310c, type: 3}
+  weaponPrefab: {fileID: 8583295438785227973, guid: 6b9ae7bf27ae6f7499affd67f3f8007c, type: 3}
   weaponGripPosition: {x: 0, y: 0, z: 0}
   weaponGripEuler: {x: 0, y: 0, z: 0}
   weaponLength: 1.3

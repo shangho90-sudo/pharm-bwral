@@ -23,6 +23,8 @@ namespace PharmaBrawl
             }
         }
         public void Emit(ArenaSimulation.CombatEvent evt){
+            // Capsule has its own reference-based muzzle/impact presentation.
+            if(model.fighters[evt.actor].data.kind==AttackKind.Capsule)return;
             bool skill=evt.type=="skill",ultimate=evt.type=="ultimate";
             if(!skill&&!ultimate&&evt.type!="wave"&&evt.type!="lightning"&&evt.type!="explosion"&&evt.type!="blink")return;
             var f=model.fighters[evt.actor];var e=pool[cursor++%pool.Length];e.actor=evt.actor;e.kind=(int)f.data.kind;e.ultimate=ultimate;e.follow=skill&&(e.kind==2||e.kind==3||e.kind==4||e.kind==8);e.duration=ultimate?1.15f:skill?.7f:.4f;e.remaining=e.duration;e.radius=ultimate?3.2f:skill?1.45f:Mathf.Max(1,evt.size);e.position=P(evt.position);e.aim=P(f.aim,0);e.color=Color.Lerp(f.data.color,Color.white,.3f);e.root.transform.position=e.position;e.root.SetActive(true);

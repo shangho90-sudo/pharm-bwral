@@ -20,8 +20,9 @@ namespace PharmaBrawl
         public void Paint(Color color,int kind)
         {
             foreach(var m in materials){m.color=Color.Lerp(Color.white,color,.3f);m.SetColor("_EmissionColor",color*.25f);}
-            trail.startColor=new Color(color.r,color.g,color.b,.7f);trail.endColor=new Color(color.r,color.g,color.b,0);
-            transform.localScale=Vector3.one*(kind==4?1.6f:1);
+            Color tracer=kind==1?new Color(1,.72f,.08f):color;
+            trail.startColor=new Color(tracer.r,tracer.g,tracer.b,.85f);trail.endColor=new Color(tracer.r,tracer.g,tracer.b,0);trail.startWidth=kind==1?.23f:.12f;
+            transform.localScale=Vector3.one*(kind==4?1.6f:kind==1?1.25f:1);
         }
         void OnDestroy(){if(materials!=null)foreach(var material in materials)if(material)Destroy(material);if(trail && trail.sharedMaterial)Destroy(trail.sharedMaterial);}
         void OnEnable(){if(trail)trail.Clear();}
