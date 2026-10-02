@@ -20,10 +20,10 @@ namespace PharmaBrawl
     }
     [Serializable] public sealed class FighterState
     {
-        public int hero,kills,deaths;public Vector2 position,aim;
+        public int hero,kills,deaths;public bool withdrawn;public Vector2 position,aim;
         public float hp,skillTimer,charge,respawn,damageDealt,damageTaken,healing;
-        public static FighterState From(ArenaSimulation.Fighter f)=>new FighterState{hero=(int)f.data.kind,kills=f.kills,deaths=f.deaths,position=f.position,aim=f.aim,hp=f.hp,skillTimer=f.skillTimer,charge=f.charge,respawn=f.respawn,damageDealt=f.damageDealt,damageTaken=f.damageTaken,healing=f.healing};
-        public void Apply(ArenaSimulation.Fighter f){f.kills=kills;f.deaths=deaths;f.position=position;f.aim=aim;f.hp=hp;f.skillTimer=skillTimer;f.charge=charge;f.respawn=respawn;f.damageDealt=damageDealt;f.damageTaken=damageTaken;f.healing=healing;}
+        public static FighterState From(ArenaSimulation.Fighter f)=>new FighterState{hero=(int)f.data.kind,withdrawn=f.withdrawn,kills=f.kills,deaths=f.deaths,position=f.position,aim=f.aim,hp=f.hp,skillTimer=f.skillTimer,charge=f.charge,respawn=f.respawn,damageDealt=f.damageDealt,damageTaken=f.damageTaken,healing=f.healing};
+        public void Apply(ArenaSimulation.Fighter f){f.withdrawn=withdrawn;f.kills=kills;f.deaths=deaths;f.position=position;f.aim=aim;f.hp=hp;f.skillTimer=skillTimer;f.charge=charge;f.respawn=respawn;f.damageDealt=damageDealt;f.damageTaken=damageTaken;f.healing=healing;}
     }
     [Serializable] public sealed class IndexedShot{public int index;public ArenaSimulation.Shot value;}
     [Serializable] public sealed class IndexedZone{public int index;public ArenaSimulation.Zone value;}

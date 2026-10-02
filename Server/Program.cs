@@ -17,7 +17,7 @@ var wsOptions=new WebSocketOptions{KeepAliveInterval=TimeSpan.FromSeconds(15),Ke
 foreach(var origin in origins)wsOptions.AllowedOrigins.Add(origin);
 app.UseWebSockets(wsOptions);
 var hub=new GameHub();
-app.MapGet("/health",()=>Results.Json(new{status="ok",protocol=2,tickRate=30,snapshotRate=15,maxPlayers=8,readyCheck=true,humanOnly=true,combatBalance="cooldowns-3-6-charge70-robots800-1600-poison8-3640"}));
+app.MapGet("/health",()=>Results.Json(new{status="ok",protocol=2,tickRate=30,snapshotRate=15,maxPlayers=8,readyCheck=true,humanOnly=true,continueAfterLeave=true,combatBalance="cooldowns-3-6-charge70-robots800-1600-poison8-3640"}));
 app.MapGet("/rooms",()=>Results.Text(GameHub.Json(new RoomList{rooms=hub.List()}),"application/json"));
 app.MapPost("/rooms",async(HttpContext c)=>{
     try{var request=await JsonSerializer.DeserializeAsync<CreateRequest>(c.Request.Body,GameHub.Options);var result=hub.Create(request);return Results.Text(GameHub.Json(result),"application/json");}
@@ -119,13 +119,13 @@ public sealed class Room
                 if(!active||c.seq<=p.seq)return;
                 if(!float.IsFinite(c.mx)||!float.IsFinite(c.mz)||!float.IsFinite(c.ax)||!float.IsFinite(c.az))return;
                 p.seq=c.seq;p.lastInput=Stopwatch.GetTimestamp();p.input=new(){human=true,move=Vector2.ClampMagnitude(new(c.mx,c.mz),1),aim=Vector2.ClampMagnitude(new(c.ax,c.az),35),attack=c.attack,skill=p.input.skill||c.skill,ultimate=p.input.ultimate||c.ultimate};break;
-            case "leave":p.peer?.socket.Abort();players.Remove(p);ResetReady();MigrateHost();Broadcast();break;
+            case "leave":if(active)sim.Withdraw(p.slot);p.input=default;p.peer?.socket.Abort();players.Remove(p);ResetReady();MigrateHost();Broadcast();break;
         }
     }
     public void Step()
     {
         int previousCount=players.Count;
-        foreach(var p in players.Where(p=>p.peer==null&&(DateTime.UtcNow-p.disconnected).TotalSeconds>30).ToArray())players.Remove(p);
+        foreach(var p in players.Where(p=>p.peer==null&&(DateTime.UtcNow-p.disconnected).TotalSeconds>30).ToArray()){if(sim!=null&&!sim.finished)sim.Withdraw(p.slot);players.Remove(p);}
         MigrateHost();if(previousCount!=players.Count){ResetReady();Broadcast();}
         if(sim==null||sim.finished)return;
         var inputs=new ArenaSimulation.HumanInput[battleTeamSize*2];for(int i=0;i<inputs.Length;i++)inputs[i].human=true;

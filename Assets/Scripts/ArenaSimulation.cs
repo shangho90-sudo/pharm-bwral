@@ -12,7 +12,7 @@ namespace PharmaBrawl
         [Serializable] public sealed class Fighter
         {
             public int id, team, kills, deaths;
-            public string nickname;public bool human;
+            public string nickname;public bool human,withdrawn;
             public CharacterDefinition data;
             public Vector2 position, aim = Vector2.up;
             public float aimDistance=7;
@@ -22,7 +22,7 @@ namespace PharmaBrawl
             public int burstRemaining;
             public float burstTimer, rapidRemaining;
             public float damageDealt, damageTaken, healing;
-            public bool Alive => hp > 0;
+            public bool Alive => hp > 0 && !withdrawn;
         }
         [Serializable] public sealed class Shot
         {
@@ -104,6 +104,7 @@ namespace PharmaBrawl
             for(int i=0;i<fighters.Length;i++)
             {
                 var f=fighters[i];
+                if(f.withdrawn)continue;
                 if(!f.Alive) { f.respawn-=dt; if(f.respawn<=0) {f.hp=f.data.maxHp;f.position=map.Spawn(i,TeamSize);f.quiet=0;f.poison=0;f.shield=1;respawns++;Emit("respawn",f.position,i);} continue; }
                 f.attackTimer-=dt; f.skillTimer-=dt; f.shield-=dt; f.haste-=dt; f.boost-=dt; f.quiet+=dt;
                 if(f.poison>0) {f.poison-=dt;f.poisonTick-=dt;if(f.poisonTick<=0){f.poisonTick=.5f;Damage(f.poisonOwner,i,f.poisonDamage,false);}}
@@ -119,6 +120,7 @@ namespace PharmaBrawl
             if(timeLeft<=0 || score[0]>=TargetScore || score[1]>=TargetScore) { finished=true;winner=score[0]==score[1]?-1:(score[0]>score[1]?0:1);Emit("finish",Vector2.zero,0); }
         }
         public void TickNetwork(float dt,HumanInput[] inputs){networkInputs=inputs;try{Tick(dt,Vector2.zero,Vector2.up,false,false,false,true);}finally{networkInputs=null;}}
+        public void Withdraw(int id){var f=fighters[id];f.withdrawn=true;f.hp=0;f.burstRemaining=0;f.rapidRemaining=f.poison=f.shield=f.haste=0;foreach(var s in shots)if(s.owner==id)s.active=false;foreach(var z in zones)if(z.owner==id)z.active=false;foreach(var r in robots)if(r.owner==id)r.active=false;Emit("withdraw",f.position,id);}
         public bool Blocked(Vector2 p,float radius=.48f)
         {
             if(Mathf.Abs(p.x)>Width-radius || Mathf.Abs(p.y)>Height-radius) return true;
