@@ -38,7 +38,7 @@
     "speed": 4.2,
     "damage": 620.0,
     "attackInterval": 0.85,
-    "range": 3.8,
+    "range": 4.8,
     "projectileSpeed": 16.0,
     "skillCooldown": 6,
     "ultimateRequirement": 2310
