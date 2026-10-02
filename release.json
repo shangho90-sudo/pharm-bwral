@@ -1,30 +1,32 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "d8b9f416eac776df3e4c2477bec8c629f5cc22d3",
+  "sourceCommit": "43a65cf8f2478f2b85dda5bdc29558cbd05a2a11",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
   "multiplayerProtocol": 2,
   "onlineRules": "balanced BLUE/RED teams, all guests ready, 1:1 to 4:4 humans only",
   "koreanNicknameInput": "native browser IME",
-  "paengLocomotion": "Tripo skeleton verified; mesh deformation tested over 90 frames",
+  "paengLocomotion": "new Tripo P1 character and Mixamo humanoid rig; authored Idle/Walk/Run Animator clips; native skin weights retained",
+  "paengAbilities": "pooled Tripo capsule bomb; authoritative .9 second fuse and 3.5 radius; orange impact, ground shockwave, cyan badge, recoil and separate impact/fade audio",
+  "paengAbilityValidation": "600+300 skill damage, 9 second cooldown, 1700 ultimate, 1.2 knockback, charge gating, cleanup and four matching two-client snapshots on public server",
   "kakaoImageSha256": "5934af75834b1ffb915d365a6dacfb5d7513759b5b0e8b1683e501b7d7e5dd97",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103150663,
-      "sha256": "a41bf62aa17d007d81e3c5b956df5bdfbdeb9f7d52b102ecde41f410aaff311d"
+      "bytes": 103063349,
+      "sha256": "b338fae73bdec6b199a1f9bed179ae1c3827acf46321ed94abfe3f0c5c2e121f"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
       "bytes": 77145,
-      "sha256": "c6434257adac6b73471c21d5e06536bb014cdb1df64b6d0c7b164d9f962f9212"
+      "sha256": "74a81786f349ad096d582d0999e6694a54e0a4cb512d5e76385e77ed3920a0f4"
     },
     "Build/PharmaBrawl-Web.loader.js": {
       "bytes": 48779,
-      "sha256": "61d6811876fe1cc7a85b1e81c7eb9e936f7ef30ac67fae644656f57962364617"
+      "sha256": "dbe5ba0c34e565762204060a3db3c6c972fd16910d85f7e98ad5e48067b889a5"
     },
     "Build/PharmaBrawl-Web.wasm.unityweb": {
-      "bytes": 6211602,
-      "sha256": "0140b6673dc402b42927ef795aaf2962e5f36fb94803188c8ea3335d6f263972"
+      "bytes": 6218104,
+      "sha256": "51644f7918e16f7567641e2fc2e91170b2737ea940bd5c8629793d6c15093f6e"
     }
   }
 }
