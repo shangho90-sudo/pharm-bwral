@@ -2,11 +2,22 @@ using System;
 using UnityEngine;
 namespace PharmaBrawl
 {
-    [Serializable] public sealed class RoomMember{public string id,nickname;public int slot,hero=-1;public bool host;}
+    [Serializable] public sealed class RoomMember{public string id,nickname;public int slot,team,hero=-1;public bool host,ready,connected;}
     [Serializable] public sealed class RoomInfo{public string id,name;public int map,teamSize,count;public bool playing;public RoomMember[] members;}
     [Serializable] public sealed class RoomList{public RoomInfo[] rooms;}
     [Serializable] public sealed class RoomJoin{public string roomId,token,playerId;}
-    [Serializable] public sealed class NetCommand{public string type,roomId,token;public int hero,map,seq;public float mx,mz,ax,az;public bool attack,skill,ultimate;}
+    [Serializable] public sealed class NetCommand{public string type,roomId,token;public int hero,map,team,seq;public float mx,mz,ax,az;public bool ready,attack,skill,ultimate;}
+    public static class RoomRules
+    {
+        public static string StartBlockReason(RoomInfo room){
+            if(room==null)return "";
+            if(room.playing)return "전투 진행 중";
+            int blue=0,red=0;foreach(var member in room.members??new RoomMember[0]){if(member.team==0)blue++;else red++;}
+            if(blue==0||blue!=red)return "BLUE와 RED 인원이 같아야 시작할 수 있습니다";
+            foreach(var member in room.members){if(!member.connected)return "연결되지 않은 참가자가 있습니다";if(member.hero<0)return "모든 참가자가 캐릭터를 선택해야 합니다";if(!member.host&&!member.ready)return "모든 참가자의 준비 완료를 기다리고 있습니다";}
+            return "";
+        }
+    }
     [Serializable] public sealed class FighterState
     {
         public int hero,kills,deaths;public Vector2 position,aim;

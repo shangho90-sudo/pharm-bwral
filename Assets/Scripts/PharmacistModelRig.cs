@@ -11,7 +11,7 @@ namespace PharmaBrawl
         void OnDestroy(){foreach(var material in runtimeMaterials)if(material)Destroy(material);}
         readonly List<Transform> bones=new List<Transform>();
         readonly List<Quaternion> restRotations=new List<Quaternion>();
-        Transform visual, rightHand, leftHand, rightHip, leftHip, weaponSocket, chest;
+        Transform visual, rightHand, leftHand, rightHip, leftHip, rightKnee, leftKnee, head, weaponSocket, chest;
         Quaternion weaponRotation;
         Vector3 previousPosition;
         float gait, speed, hurtRemaining;
@@ -42,7 +42,7 @@ namespace PharmaBrawl
                 skin.updateWhenOffscreen=true;
                 foreach(var bone in skin.bones)if(bone && unique.Add(bone))bones.Add(bone);
             }
-            foreach(var bone in bones){restRotations.Add(bone.localRotation);if(bone.name=="Chest")chest=bone;}
+            foreach(var bone in bones){restRotations.Add(bone.localRotation);if(bone.name=="Chest")chest=bone;if(bone.name=="Head")head=bone;if(bone.name=="RightLowerLeg")rightKnee=bone;if(bone.name=="LeftLowerLeg")leftKnee=bone;}
             // Locate hands geometrically rather than depending on vendor bone names.
             foreach(var bone in bones)
             {
@@ -58,6 +58,8 @@ namespace PharmaBrawl
                     if(p.x<0 && (!leftHip || p.y>transform.InverseTransformPoint(leftHip.position).y))leftHip=bone;
                 }
             }
+            // Prefer Tripo's anatomical thigh joints over geometric guesses.
+            foreach(var bone in bones){if(bone.name=="RightUpperLeg")rightHip=bone;if(bone.name=="LeftUpperLeg")leftHip=bone;}
             if(!rightHand){Debug.LogError("TRIPO_MISSING_HAND "+data.displayName);return;}
             rightHand=Palm(rightHand);
             leftHand=Palm(leftHand);
@@ -122,14 +124,17 @@ namespace PharmaBrawl
             Pose(Mathf.Sin(gait)*speed);
             hurtRemaining=Mathf.Max(0,hurtRemaining-dt);
             float flinch=Mathf.Sin(Mathf.Clamp01(hurtRemaining/.42f)*Mathf.PI);
-            if(visual){visual.localRotation=Quaternion.Euler(-28*flinch+speed*3,0,12*flinch-turnLean*.3f);visual.localPosition=visualRestPosition+new Vector3(0,(.06f*Mathf.Abs(Mathf.Sin(gait))*speed+.10f*flinch),-.22f*flinch);}
+            if(visual){visual.localRotation=Quaternion.Euler(-28*flinch+speed*7,0,12*flinch-turnLean*.3f+Mathf.Sin(gait)*speed*4);visual.localPosition=visualRestPosition+new Vector3(0,(.10f*Mathf.Abs(Mathf.Sin(gait))*speed+.10f*flinch),-.22f*flinch);}
         }
         void Pose(float walk)
         {
             for(int i=0;i<bones.Count;i++)bones[i].localRotation=restRotations[i];
-            if(chest)chest.localRotation*=Quaternion.Euler(0,turnLean+walk*7,-walk*3);
-            if(rightHip)rightHip.rotation=Quaternion.AngleAxis(walk*22,transform.right)*rightHip.rotation;
-            if(leftHip)leftHip.rotation=Quaternion.AngleAxis(-walk*22,transform.right)*leftHip.rotation;
+            if(chest)chest.localRotation*=Quaternion.Euler(speed*5,turnLean+walk*12,-walk*6);
+            if(head)head.localRotation*=Quaternion.Euler(0,-walk*5,walk*3);
+            if(rightHip)rightHip.rotation=Quaternion.AngleAxis(walk*34,transform.right)*rightHip.rotation;
+            if(leftHip)leftHip.rotation=Quaternion.AngleAxis(-walk*34,transform.right)*leftHip.rotation;
+            if(rightKnee)rightKnee.rotation=Quaternion.AngleAxis(Mathf.Max(0,-walk)*38,transform.right)*rightKnee.rotation;
+            if(leftKnee)leftKnee.rotation=Quaternion.AngleAxis(Mathf.Max(0,walk)*38,transform.right)*leftKnee.rotation;
             AimArm(rightHand,new Vector3(.36f,1.02f,.48f),Vector3.right);
             AimArm(leftHand,new Vector3(.08f,1.02f,.66f),Vector3.left);
             if(weaponSocket)weaponSocket.rotation=transform.rotation*weaponRotation;

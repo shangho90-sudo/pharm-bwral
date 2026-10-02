@@ -340,7 +340,7 @@ namespace PharmaBrawl
             TitleHotspot("EXIT",new Vector2(0,-293),new Vector2(318,80),ExitGame);
             lobby=Rect("Reference hero and arena selection",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;
             selectionView=lobby.AddComponent<ReferenceSelectionView>();
-            selectionView.Initialize(roster,font,soundtrack,ChooseHero,ChooseMap,StartMatch,()=>{network.Leave();lobby.SetActive(false);roomScreen.SetActive(true);selectionView.SetRoom(null,"");});
+            selectionView.Initialize(roster,font,soundtrack,ChooseHero,ChooseMap,StartMatch,()=>{network.Leave();lobby.SetActive(false);roomScreen.SetActive(true);selectionView.SetRoom(null,"");},ready=>network.Send(new NetCommand{type="ready",ready=ready}),team=>network.Send(new NetCommand{type="team",team=team}));
             roomScreen=Rect("Guest room browser",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;browserView=roomScreen.AddComponent<RoomBrowserView>();browserView.Initialize(font,network,()=>{roomScreen.SetActive(false);lobby.SetActive(true);selectionView.SetRoom(null,"");},()=>{roomScreen.SetActive(false);titleScreen.SetActive(true);});roomScreen.SetActive(false);
             var musicButton=Btn(canvas.transform,"",new Vector2(675,425),new Vector2(210,34),navy,()=>{soundtrack.ToggleMute();musicLabel.text=soundtrack.Muted?"음악 OFF":"음악 ON";});
             globalMusicButton=musicButton.gameObject;
@@ -386,7 +386,7 @@ namespace PharmaBrawl
         void ChooseMap(int index){if(network.room!=null)network.Send(new NetCommand{type="map",map=index});else SelectMap(index);}
         void OnRoom(RoomInfo room){if(networkRoomId!=room.id){networkRoomId=room.id;networkMatch=-1;playing=false;hud.SetActive(false);result.SetActive(false);}selectionView.SetRoom(room,network.playerId);selectedMap=room.map;selectionView.SelectArena(room.map);foreach(var member in room.members)if(member.id==network.playerId){localPlayerId=member.slot;if(member.hero>=0)Select(member.hero);}if(!playing&&!result.activeSelf){titleScreen.SetActive(false);roomScreen.SetActive(false);lobby.SetActive(true);}}
         void OnSnapshot(NetMessage message){
-            if(message.match!=networkMatch){networkMatch=message.match;inputSequence=0;var heroes=new int[message.fighters.Length];for(int i=0;i<heroes.Length;i++)heroes[i]=message.fighters[i].hero;preparedSimulation=new ArenaSimulation(roster,selected,42,message.room.map,message.room.teamSize,heroes);foreach(var member in message.room.members){preparedSimulation.fighters[member.slot].nickname=member.nickname;preparedSimulation.fighters[member.slot].human=true;}StartMatch();}
+            if(message.match!=networkMatch){networkMatch=message.match;inputSequence=0;var heroes=new int[message.fighters.Length];for(int i=0;i<heroes.Length;i++)heroes[i]=message.fighters[i].hero;preparedSimulation=new ArenaSimulation(roster,selected,42,message.room.map,message.fighters.Length/2,heroes);foreach(var member in message.room.members){preparedSimulation.fighters[member.slot].nickname=member.nickname;preparedSimulation.fighters[member.slot].human=true;}StartMatch();}
             if(sim==null)return;sim.timeLeft=message.timeLeft;sim.score[0]=message.score[0];sim.score[1]=message.score[1];sim.finished=message.finished;sim.winner=message.winner;
             for(int i=0;i<sim.fighters.Length;i++)message.fighters[i].Apply(sim.fighters[i]);
             foreach(var shot in sim.shots)shot.active=false;foreach(var shot in message.shots)sim.shots[shot.index]=shot.value;

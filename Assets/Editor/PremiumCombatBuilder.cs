@@ -6,7 +6,7 @@ using UnityEngine;
 public static class PremiumCombatBuilder
 {
     static void Require(bool ok,string message){if(!ok)throw new Exception("Premium combat validation: "+message);}
-    public static void BuildWeb(){Import();Validate();NetworkMatchValidator.BuildWeb();}
+    public static void BuildWeb(){Import();Validate();RigMotionValidator.Validate();NetworkMatchValidator.BuildWeb();}
     public static void Import(){
         AssetDatabase.Refresh();var image=(TextureImporter)AssetImporter.GetAtPath("Assets/Resources/RoomLobbyScreen.png");image.textureType=TextureImporterType.Default;image.maxTextureSize=2048;image.npotScale=TextureImporterNPOTScale.None;image.alphaSource=TextureImporterAlphaSource.None;image.mipmapEnabled=false;image.textureCompression=TextureImporterCompression.Uncompressed;image.SaveAndReimport();
         string folder="Assets/Art/Effects/MedicalBurst",path=folder+"/model.fbx";var importer=(ModelImporter)AssetImporter.GetAtPath(path);importer.importAnimation=false;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.ImportStandard;importer.materialLocation=ModelImporterMaterialLocation.External;importer.SaveAndReimport();Directory.CreateDirectory(folder+"/Textures");importer.ExtractTextures(folder+"/Textures");AssetDatabase.Refresh();

@@ -26,6 +26,7 @@ namespace PharmaBrawl
    Art("Premium room lobby",new Rect(0,0,W,H),new Rect(0,0,W,H));
    nickname=Input("닉네임",new Rect(130,331,474,52),PlayerPrefs.GetString("Nickname","약사"),"닉네임을 입력하세요",12);
    name=Input("방 이름",new Rect(130,442,474,56),"팽브롤 대전","방 이름을 입력하세요",24);
+   nickname.gameObject.AddComponent<BrowserTextInput>().Initialize(nickname);name.gameObject.AddComponent<BrowserTextInput>().Initialize(name);
    server=Input("게임 서버 주소",new Rect(695,332,844,49),client.endpoint,"서버 주소를 입력하세요",200);
    Art("Clean mode area",new Rect(126,556,483,75),new Rect(611,556,6,75));
    for(int i=0;i<4;i++){int pick=i+1;var r=new Rect(130+i*122,562,112,65);modes[i]=Art("Mode background",r,new Rect(130,562,112,65));Hotspot("Mode "+pick,r,()=>{teamSize=pick;UpdateModes();});}
