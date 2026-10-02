@@ -1,6 +1,6 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "ec2802cb9eb76300d18965ef653fbca8ff2ac0b2",
+  "sourceCommit": "b333972b7d7323f0bdf5ecef979d44bf130ae94a",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
@@ -20,9 +20,11 @@
   "referenceValidation": "Unity ability and cleanup validations; unchanged ability damage/range/duration; updated cooldown and charge thresholds",
   "combatBalance": {
     "assassinSkillCooldown": 3,
+    "poisonSkillCooldown": 8,
     "otherSkillCooldown": 6,
     "ultimateRequirementMultiplier": 0.7,
     "tankUltimateRequirement": 2310,
+    "poisonUltimateRequirement": 3640,
     "otherUltimateRequirement": 2800,
     "supportRobotHp": 800,
     "eliteRobotHp": 1600
@@ -30,8 +32,8 @@
   "cameraShake": "short gentle shake; persistent ON/OFF option in pause menu",
   "assets": {
     "Build/PharmaBrawl-Web.data.unityweb": {
-      "bytes": 103086333,
-      "sha256": "d15176a10abfb9a6b11657de9269435bec39a22daaeaebaadeee4823dec3488f"
+      "bytes": 103085957,
+      "sha256": "de9b75c6bea44e874d7d59d8c61568ca68b2547254be472fe0365c585d2422f7"
     },
     "Build/PharmaBrawl-Web.framework.js.unityweb": {
       "bytes": 77145,
