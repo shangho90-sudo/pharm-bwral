@@ -47,12 +47,13 @@ namespace PharmaBrawl
         GameObject movementOverlay;
         bool captureMap,captureSelect;
         bool playing,paused,skillRequested,ultimateRequested;
+        bool cameraShakeEnabled=true;Text shakeSetting;
         float accumulator, shake, noticeTimer;
         Vector2 touchMove,touchAim=Vector2.up;
         bool mobileFire;
         MobileArenaControls mobileControls;
         AudioSource sfx;
-        WeaponAudio weaponAudio;AbilityEffects abilityEffects;PaengAbilityView paengEffects;
+        WeaponAudio weaponAudio;AbilityEffects abilityEffects;PaengAbilityView paengEffects;LightningAbilityView lightningEffects;GoldenAbilityView goldenEffects;ReferenceAbilityView referenceEffects;
         int lastSnapshotTick=-1;
         AudioClip[] tones;
         bool smoke,capture,captureLobby,captureResult,captureModels;
@@ -182,6 +183,8 @@ namespace PharmaBrawl
             CreateMap(sim);soundtrack.Play(sim.map.key);for(int i=0;i<sim.fighters.Length;i++)actors[i]=MakeActor(sim.fighters[i]);
             var effectRoot=new GameObject("Character ability effects");effectRoot.transform.SetParent(actorsRoot,false);abilityEffects=effectRoot.AddComponent<AbilityEffects>();abilityEffects.Initialize(sim,localPlayerId);
             paengEffects=effectRoot.AddComponent<PaengAbilityView>();paengEffects.Initialize(sim);paengEffects.ExplosionEnded=p=>{if(!smoke)weaponAudio.CapsuleEnd(Vector2.Distance(p,sim.fighters[localPlayerId].position));};
+            lightningEffects=effectRoot.AddComponent<LightningAbilityView>();lightningEffects.Initialize(sim);lightningEffects.Impact=(p,u)=>{if(!smoke)weaponAudio.ElectricImpact(Vector2.Distance(p,sim.fighters[localPlayerId].position),u);};lightningEffects.Ended=p=>{if(!smoke)weaponAudio.ElectricEnd(Vector2.Distance(p,sim.fighters[localPlayerId].position));};
+            goldenEffects=effectRoot.AddComponent<GoldenAbilityView>();goldenEffects.Initialize(sim);referenceEffects=effectRoot.AddComponent<ReferenceAbilityView>();referenceEffects.Initialize(sim,actors);
             foreach(Transform t in actors[localPlayerId].GetComponentsInChildren<Transform>())t.gameObject.layer=8;
             for(int i=0;i<sim.fighters.Length;i++){beamViews[i]=Shape("Pooled ultimate beam",PrimitiveType.Cube,Vector3.zero,Vector3.one,roster[2].color,actorsRoot,false);beamViews[i].gameObject.SetActive(false);beamLife[i]=0;}
             portraitCam.enabled=true;podiumCam.enabled=false;
@@ -201,7 +204,7 @@ namespace PharmaBrawl
             soundtrack.Paused=paused;
             if(paused&&mobileControls)mobileControls.ResetInput();
             if(Input.GetKeyDown(KeyCode.F2))ToggleMovementOverlay();
-            if(paengEffects)paengEffects.SetVisible(!paused);if(paused && network.room==null)return;
+            if(paengEffects)paengEffects.SetVisible(!paused);if(lightningEffects)lightningEffects.SetVisible(!paused);if(goldenEffects)goldenEffects.SetVisible(!paused);if(referenceEffects)referenceEffects.SetVisible(!paused);if(paused && network.room==null)return;
             var f=sim.fighters[localPlayerId];
             Vector2 move=new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"))+touchMove;
             Vector2 aim=touchAim*f.data.range;
@@ -257,11 +260,11 @@ namespace PharmaBrawl
             float aspect=(float)Screen.width/Screen.height;cam.orthographicSize=referenceOasis?Mathf.Max(12.35f,21.956f/aspect):Mathf.Max(16,23/aspect);
             Vector3 target=new Vector3(0,28,-33.3691f);
             cam.transform.position=dt==0?target:Vector3.Lerp(cam.transform.position,target,1-Mathf.Exp(-dt*5));
-            if(shake>0 && !referenceOasis){shake-=dt;cam.transform.position+=new Vector3(Mathf.Sin(Time.time*73),0,Mathf.Cos(Time.time*61))*.10f*shake;}
+            if(shake>0){shake=Mathf.Max(0,shake-dt*3);if(cameraShakeEnabled)cam.transform.position+=new Vector3(Mathf.Sin(Time.time*73),0,Mathf.Cos(Time.time*61))*.10f*shake;}
         }
         void RenderGame()
         {
-            if(paengEffects)paengEffects.SetVisible(!paused);
+            if(paengEffects)paengEffects.SetVisible(!paused);if(lightningEffects)lightningEffects.SetVisible(!paused);if(goldenEffects)goldenEffects.SetVisible(!paused);if(referenceEffects)referenceEffects.SetVisible(!paused);
             PositionCamera(sim.fighters[localPlayerId].position,Time.deltaTime);
             for(int i=0;i<sim.fighters.Length;i++)
             {
@@ -271,9 +274,9 @@ namespace PharmaBrawl
                 healthBars[i].localScale=new Vector3(1.15f*f.hp/f.data.maxHp,.09f,.04f);healthBars[i].localPosition=new Vector3(-.575f*(1-f.hp/f.data.maxHp),0,-.03f);
             }
             var player=sim.fighters[localPlayerId];portraitCam.transform.position=actors[localPlayerId].position+P(player.aim*3,1.65f);portraitCam.transform.LookAt(actors[localPlayerId].position+Vector3.up*1.4f);aimLine.gameObject.SetActive(player.Alive);float range=Mathf.Min(9,player.data.range);aimLine.position=P(player.position+player.aim*range*.5f,.2f);aimLine.rotation=Quaternion.LookRotation(P(player.aim));aimLine.localScale=new Vector3(.055f,.025f,range);
-            for(int i=0;i<shotViews.Length;i++){var s=sim.shots[i];var v=shotViews[i];v.gameObject.SetActive(s.active);if(!s.active)continue;v.position=P(s.position,1.1f);v.rotation=Quaternion.LookRotation(P(s.direction))*Quaternion.Euler(90,0,0);projectileMeshes[i].Paint(sim.fighters[s.owner].data.color,s.kind);}
-            for(int i=0;i<zoneViews.Length;i++){var z=sim.zones[i];bool paengBomb=z.active&&z.kind==3&&sim.fighters[z.owner].data.kind==AttackKind.Capsule;var v=zoneViews[i];v.gameObject.SetActive(z.active&&!paengBomb);dropViews[i].gameObject.SetActive(z.active && z.pending&&!paengBomb);if(!z.active||paengBomb)continue;v.position=P(z.position,.18f);float pulse=z.pending?.9f+.1f*Mathf.Sin(Time.time*14):1;v.localScale=new Vector3(z.radius*2*pulse,.025f,z.radius*2*pulse);v.GetComponent<Renderer>().sharedMaterial=Mat(Glow(z.pending?new Color(1,.62f,.35f):sim.fighters[z.owner].data.color,.18f));if(z.pending){dropViews[i].position=P(z.position,1+z.remaining*5);dropViews[i].localScale=z.kind==3?new Vector3(1.3f,1.4f,1.3f):new Vector3(.35f,.6f,.35f);dropViews[i].GetComponent<Renderer>().sharedMaterial=Mat(sim.fighters[z.owner].data.color);}}
-            for(int i=0;i<robotViews.Length;i++){var r=sim.robots[i];var v=robotViews[i];v.gameObject.SetActive(r.active);if(r.active){v.position=P(r.position);var owner=sim.fighters[r.owner];v.rotation=Quaternion.LookRotation(P(owner.aim));v.localScale=Vector3.one*(r.elite?1.5f:1);}}
+            for(int i=0;i<shotViews.Length;i++){var s=sim.shots[i];var v=shotViews[i];v.gameObject.SetActive(s.active);if(!s.active)continue;v.position=P(s.position,1.1f);v.rotation=Quaternion.LookRotation(P(s.direction))*Quaternion.Euler(90,0,0);projectileMeshes[i].Paint(sim.fighters[s.owner].data.color,s.kind,sim.fighters[s.owner].data.kind);}
+            for(int i=0;i<zoneViews.Length;i++){var z=sim.zones[i];bool paengBomb=z.active;var v=zoneViews[i];v.gameObject.SetActive(z.active&&!paengBomb);dropViews[i].gameObject.SetActive(z.active && z.pending&&!paengBomb);if(!z.active||paengBomb)continue;v.position=P(z.position,.18f);float pulse=z.pending?.9f+.1f*Mathf.Sin(Time.time*14):1;v.localScale=new Vector3(z.radius*2*pulse,.025f,z.radius*2*pulse);v.GetComponent<Renderer>().sharedMaterial=Mat(Glow(z.pending?new Color(1,.62f,.35f):sim.fighters[z.owner].data.color,.18f));if(z.pending){dropViews[i].position=P(z.position,1+z.remaining*5);dropViews[i].localScale=z.kind==3?new Vector3(1.3f,1.4f,1.3f):new Vector3(.35f,.6f,.35f);dropViews[i].GetComponent<Renderer>().sharedMaterial=Mat(sim.fighters[z.owner].data.color);}}
+            for(int i=0;i<robotViews.Length;i++){var r=sim.robots[i];var v=robotViews[i];v.gameObject.SetActive(r.active);if(r.active){v.position=P(r.position);var owner=sim.fighters[r.owner];v.GetComponent<PharmacyDroneView>().Sync(sim,i,Time.deltaTime);}}
             for(int i=0;i<coverViews.Count;i++)coverViews[i].gameObject.SetActive(sim.covers[i].Active);
             for(int i=0;i<sim.fighters.Length;i++)if(beamLife[i]>0){beamLife[i]-=Time.deltaTime;beamViews[i].gameObject.SetActive(beamLife[i]>0);}
             for(int i=0;i<fx.Length;i++)if(fxLife[i]>0){fxLife[i]-=Time.deltaTime;float age=1-fxLife[i]/.45f;fx[i].localScale=new Vector3(1+age*fxSize[i]*2,.15f+age*.2f,1+age*fxSize[i]*2);fx[i].gameObject.SetActive(fxLife[i]>0);}
@@ -281,13 +284,15 @@ namespace PharmaBrawl
         void OnCombat(ArenaSimulation.CombatEvent e)
         {
             if(abilityEffects)abilityEffects.Emit(e);
-            if(paengEffects)paengEffects.Emit(e);
+            if(paengEffects)paengEffects.Emit(e);if(lightningEffects)lightningEffects.Emit(e);if(goldenEffects)goldenEffects.Emit(e);if(referenceEffects)referenceEffects.Emit(e);
+            if(e.type=="shoot")for(int i=0;i<sim.robots.Length;i++){var robot=sim.robots[i];if(robot.active&&robot.owner==e.actor&&Vector2.Distance(robot.position,e.position)<.4f)robotViews[i].GetComponent<PharmacyDroneView>().Fire();}
             if((e.type=="skill"||e.type=="ultimate")&&actors[e.actor])actors[e.actor].GetComponent<PharmacistModelRig>()?.BeginAbility(e.type=="ultimate");
             if(e.type=="explosion"&&sim.fighters[e.actor].data.kind==AttackKind.Capsule&&!smoke)weaponAudio.CapsuleImpact(e.size>3,Vector2.Distance(e.position,sim.fighters[localPlayerId].position));
             if((e.type=="skill"||e.type=="ultimate")&&!smoke)weaponAudio.Ability(sim.fighters[e.actor].data.kind,e.type=="ultimate",Vector2.Distance(e.position,sim.fighters[localPlayerId].position));
-            if(e.type=="beam" && beamViews[e.actor]){var b=beamViews[e.actor];b.position=P(e.position+sim.fighters[e.actor].aim*e.size*.5f,1.2f);b.rotation=Quaternion.LookRotation(P(sim.fighters[e.actor].aim));b.localScale=new Vector3(.55f,.4f,e.size);b.gameObject.SetActive(true);beamLife[e.actor]=.24f;}
+            if(e.type=="beam" && sim.fighters[e.actor].data.kind!=AttackKind.Arrow && beamViews[e.actor]){var b=beamViews[e.actor];b.position=P(e.position+sim.fighters[e.actor].aim*e.size*.5f,1.2f);b.rotation=Quaternion.LookRotation(P(sim.fighters[e.actor].aim));b.localScale=new Vector3(.55f,.4f,e.size);b.gameObject.SetActive(true);beamLife[e.actor]=.24f;}
             if(e.type=="death")for(int i=0;i<fx.Length;i++)if(fxLife[i]<=0 && fx[i]){fxLife[i]=.45f;fxSize[i]=e.size;fx[i].position=P(e.position,.5f);fx[i].GetComponent<Renderer>().sharedMaterial=Mat(Glow(sim.fighters[e.actor].data.color,.3f));fx[i].gameObject.SetActive(true);break;}
-            if(e.type=="ultimate"){shake=.8f;status.text=sim.fighters[e.actor].data.displayName+"  ULTIMATE!  "+sim.fighters[e.actor].data.voiceLine;noticeTimer=2.5f;var voice=sim.fighters[e.actor].data.ultimateVoice;if(voice)sfx.PlayOneShot(voice);}
+            if(e.type=="shoot"&&Mathf.Approximately(e.size,.3f)&&actors[e.actor])actors[e.actor].GetComponent<PharmacistModelRig>()?.BeginAttack();
+            if(e.type=="ultimate"){shake=.35f;status.text=sim.fighters[e.actor].data.displayName+"  ULTIMATE!  "+sim.fighters[e.actor].data.voiceLine;noticeTimer=2.5f;var voice=sim.fighters[e.actor].data.ultimateVoice;if(voice)sfx.PlayOneShot(voice);}
             else if(e.type=="death"){PlayTone(2);feed.text=sim.fighters[e.actor].data.displayName+"  DOWN  ·  +1 POINT";}
             else if(e.type=="shoot"){if(!smoke)weaponAudio.Fire(e.actor,sim.fighters[e.actor].data.kind,Vector2.Distance(e.position,sim.fighters[localPlayerId].position));}
             else if(e.type=="hit"){if(!smoke)weaponAudio.Hit(e.actor==localPlayerId);if(actors[e.actor])actors[e.actor].GetComponent<PharmacistModelRig>()?.ReactToHit();}
@@ -307,7 +312,7 @@ namespace PharmaBrawl
         void Finish()
         {
             if(abilityEffects)abilityEffects.Clear();
-            if(paengEffects)paengEffects.Clear();
+            if(paengEffects)paengEffects.Clear();if(lightningEffects)lightningEffects.Clear();if(goldenEffects)goldenEffects.Clear();if(referenceEffects)referenceEffects.Clear();
             playing=false;soundtrack.Paused=false;soundtrack.Play("menu");portraitCam.enabled=false;podiumCam.enabled=true;hud.SetActive(false);result.SetActive(true);bool win=sim.winner==sim.fighters[localPlayerId].team;
             resultView.Show(sim,localPlayerId);PlayTone(win?4:2);
             // Winning trio forms a podium and holds a celebratory pose.
@@ -347,7 +352,7 @@ namespace PharmaBrawl
             TitleHotspot("EXIT",new Vector2(0,-293),new Vector2(318,80),ExitGame);
             lobby=Rect("Reference hero and arena selection",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;
             selectionView=lobby.AddComponent<ReferenceSelectionView>();
-            selectionView.Initialize(roster,font,soundtrack,ChooseHero,ChooseMap,StartMatch,()=>{network.Leave();lobby.SetActive(false);roomScreen.SetActive(true);selectionView.SetRoom(null,"");},ready=>network.Send(new NetCommand{type="ready",ready=ready}),team=>network.Send(new NetCommand{type="team",team=team}));
+            selectionView.Initialize(roster,font,soundtrack,ChooseHero,ChooseMap,StartMatch,()=>{if(lightningEffects)lightningEffects.Clear();if(goldenEffects)goldenEffects.Clear();if(referenceEffects)referenceEffects.Clear();if(paengEffects)paengEffects.Clear();network.Leave();lobby.SetActive(false);roomScreen.SetActive(true);selectionView.SetRoom(null,"");},ready=>network.Send(new NetCommand{type="ready",ready=ready}),team=>network.Send(new NetCommand{type="team",team=team}));
             roomScreen=Rect("Guest room browser",canvas.transform,Vector2.zero,new Vector2(1600,900)).gameObject;browserView=roomScreen.AddComponent<RoomBrowserView>();browserView.Initialize(font,network,()=>{roomScreen.SetActive(false);lobby.SetActive(true);selectionView.SetRoom(null,"");},()=>{roomScreen.SetActive(false);titleScreen.SetActive(true);});roomScreen.SetActive(false);
             var musicButton=Btn(canvas.transform,"",new Vector2(675,425),new Vector2(210,34),navy,()=>{soundtrack.ToggleMute();musicLabel.text=soundtrack.Muted?"음악 OFF":"음악 ON";});
             globalMusicButton=musicButton.gameObject;
@@ -380,7 +385,9 @@ namespace PharmaBrawl
             pausePanel=Panel("Pause",canvas.transform,Vector2.zero,new Vector2(740,430),new Color(navy.r,navy.g,navy.b,.98f)).gameObject;
             Label(pausePanel.transform,"PAUSED",new Vector2(0,135),new Vector2(650,80),44,cream,TextAnchor.MiddleCenter);
             Label(pausePanel.transform,"공격 / 피격 없이 3.5초 → 자동 회복\n사망 → 4초 뒤 부활\n적에게 피해 → 궁극기 충전\n상자 파괴 가능 · 벽/컨테이너 이동 불가\n수풀/얼음 통과 가능 · F2 이동 구역 표시",new Vector2(0,12),new Vector2(650,185),19,cream,TextAnchor.MiddleCenter);
-            Btn(pausePanel.transform,"RESUME",new Vector2(0,-142),new Vector2(270,60),new Color(.06f,.55f,.49f),()=>{paused=false;pausePanel.SetActive(false);});
+            Btn(pausePanel.transform,"RESUME",new Vector2(-155,-142),new Vector2(270,60),new Color(.06f,.55f,.49f),()=>{paused=false;pausePanel.SetActive(false);});
+            cameraShakeEnabled=PlayerPrefs.GetInt("CameraShake",1)==1;
+            var shakeButton=Btn(pausePanel.transform,"화면 흔들림 "+(cameraShakeEnabled?"ON":"OFF"),new Vector2(155,-142),new Vector2(270,60),new Color(.16f,.35f,.6f),()=>{cameraShakeEnabled=!cameraShakeEnabled;PlayerPrefs.SetInt("CameraShake",cameraShakeEnabled?1:0);shakeSetting.text="화면 흔들림 "+(cameraShakeEnabled?"ON":"OFF");});shakeSetting=shakeButton.GetComponentInChildren<Text>();
             lobby.SetActive(false);hud.SetActive(false);result.SetActive(false);pausePanel.SetActive(false);
         }
         void TitleHotspot(string name,Vector2 position,Vector2 size,Action action)

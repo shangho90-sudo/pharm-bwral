@@ -30,7 +30,7 @@ MonoBehaviour:
   ultimateRequirement: 3300
   ultimateVoice: {fileID: 0}
   characterPrefab: {fileID: 7235624458814891958, guid: 751c28ec68f43694dae155954dffb8d0, type: 3}
-  weaponPrefab: {fileID: 919132149155446097, guid: 12979a494a72655448fdf459376c51ca, type: 3}
+  weaponPrefab: {fileID: 7905977276954481339, guid: 51c11c15090dd8744835266492e2a2b0, type: 3}
   weaponGripPosition: {x: 0, y: 0, z: 0}
   weaponGripEuler: {x: 0, y: 0, z: 0}
   weaponLength: 1.3
