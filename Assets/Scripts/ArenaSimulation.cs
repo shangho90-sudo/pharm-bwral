@@ -44,7 +44,7 @@ namespace PharmaBrawl
         {
             public bool active;
             public int owner;
-            public Vector2 position;
+            public Vector2 position, aim = Vector2.up;
             public float remaining, attackTimer, hp, maxHp;
             public bool elite;
         }
@@ -214,7 +214,7 @@ namespace PharmaBrawl
                 case AttackKind.Assassin: Teleport(f,f.position+f.aim*4);break;
                 case AttackKind.Summoner: Summon(f,false);break;
                 case AttackKind.Fan: f.empowered=true;break;
-                case AttackKind.Poison: MakeZone(f,TargetPoint(f,7),2.5f,5,170,2);break;
+                case AttackKind.Poison: MakeZone(f,TargetPoint(f,7),2.5f,4,170,2);break;
             }
         }
         public void Ultimate(Fighter f)
@@ -235,7 +235,7 @@ namespace PharmaBrawl
                     int target=NearestEnemy(f,11);if(target>=0){Teleport(f,fighters[target].position-fighters[target].aim*1.1f);Area(f,f.position,2,1800,false);}break;
                 case AttackKind.Summoner: Summon(f,true);break;
                 case AttackKind.Fan: for(int j=-8;j<=8;j++)Fire(f,Rotate(f.aim,j*5),300,12,0);break;
-                case AttackKind.Poison: MakeZone(f,TargetPoint(f,8),4.5f,8,220,2);break;
+                case AttackKind.Poison: MakeZone(f,TargetPoint(f,8),4.5f,5,220,2);break;
             }
         }
         void Teleport(Fighter f,Vector2 p) {for(int j=10;j>0;j--){var n=Vector2.Lerp(f.position,p,j/10f);if(!Blocked(n)){Emit("blink",f.position,f.id);f.position=n;Emit("blink",n,f.id);break;}}}
@@ -249,7 +249,7 @@ namespace PharmaBrawl
             }
             // A fourth summon refreshes the oldest owned robot instead of wasting the cast.
             var r=count>=MaxRobotsPerOwner?oldest:free;if(r==null)return;
-            r.active=true;r.owner=f.id;r.position=f.position;
+            r.active=true;r.owner=f.id;r.position=f.position;r.aim=f.aim;
             for(int j=0;j<8;j++){
                 var p=f.position+Rotate(Vector2.up,(j+count*3)*45)*1.1f;
                 if(Blocked(p,.3f))continue;
@@ -325,9 +325,23 @@ namespace PharmaBrawl
         }
         void UpdateRobots(float dt)
         {
-            foreach(var r in robots)if(r.active){r.remaining-=dt;if(r.remaining<=0){r.active=false;continue;}var f=fighters[r.owner];int t=NearestEnemy(f,15);if(t<0)continue;var delta=fighters[t].position-r.position;
-                if(delta.magnitude>5){Vector2 direction=Navigate(r.position,fighters[t].position,fighters.Length+System.Array.IndexOf(robots,r),dt);Vector2 p=r.position+direction*3*dt;if(!Blocked(p,.3f))r.position=p;}r.attackTimer-=dt;
-                if(r.attackTimer<=0 && delta.magnitude<9 && LineClear(r.position,fighters[t].position)){r.attackTimer=r.elite?.35f:.8f;Vector2 old=f.position;f.position=r.position;Fire(f,delta.normalized,r.elite?240:160,9,0);f.position=old;Emit("shoot",r.position,f.id);}}
+            foreach(var r in robots)if(r.active){
+                r.remaining-=dt;if(r.remaining<=0){r.active=false;continue;}
+                var f=fighters[r.owner];int target=-1;float nearest=15;
+                foreach(var enemy in fighters)if(enemy.Alive && enemy.team!=f.team){float distance=Vector2.Distance(r.position,enemy.position);if(distance<nearest){nearest=distance;target=enemy.id;}}
+                r.attackTimer-=dt;if(target<0)continue;
+                var delta=fighters[target].position-r.position;
+                if(delta.magnitude>5){
+                    Vector2 direction=Navigate(r.position,fighters[target].position,fighters.Length+System.Array.IndexOf(robots,r),dt);
+                    Vector2 movement=direction*(r.elite?4.5f:3)*dt;
+                    int steps=Mathf.Max(1,Mathf.CeilToInt(movement.magnitude/.2f));movement/=steps;
+                    for(int step=0;step<steps;step++){var p=r.position+movement;if(!Blocked(p,.3f))r.position=p;}
+                }
+                delta=fighters[target].position-r.position;if(delta.sqrMagnitude>.0001f)r.aim=delta.normalized;
+                if(r.attackTimer<=0 && delta.magnitude<9 && LineClear(r.position,fighters[target].position)){
+                    r.attackTimer=r.elite?.35f:.8f;Vector2 old=f.position;f.position=r.position;Fire(f,r.aim,r.elite?240:160,9,0);f.position=old;Emit("shoot",r.position,f.id);
+                }
+            }
         }
     }
 }

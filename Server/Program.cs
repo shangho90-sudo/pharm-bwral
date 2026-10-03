@@ -18,7 +18,7 @@ var wsOptions=new WebSocketOptions{KeepAliveInterval=TimeSpan.FromSeconds(15),Ke
 foreach(var origin in origins)wsOptions.AllowedOrigins.Add(origin);
 app.UseWebSockets(wsOptions);
 var hub=new GameHub();
-app.MapGet("/health",()=>Results.Json(new{status="ok",protocol=2,tickRate=30,snapshotRate=15,maxPlayers=8,readyCheck=true,humanOnly=true,continueAfterLeave=true,maxRobotsPerPlayer=3,respawnInvulnerabilitySeconds=2,combatBalance="cooldowns-3-6-charge70-robots800-1600-poison8-3640"}));
+app.MapGet("/health",()=>Results.Json(new{status="ok",protocol=2,tickRate=30,snapshotRate=15,maxPlayers=8,readyCheck=true,humanOnly=true,continueAfterLeave=true,maxRobotsPerPlayer=3,respawnInvulnerabilitySeconds=2,eliteRobotSpeed=4.5,poisonSkillSeconds=4,poisonUltimateSeconds=5,combatBalance="cooldowns-3-6-charge70-robots800-1600-poison8-3640"}));
 app.MapGet("/rooms",()=>Results.Text(GameHub.Json(new RoomList{rooms=hub.List()}),"application/json"));
 app.MapPost("/rooms",async(HttpContext c)=>{
     try{var request=await JsonSerializer.DeserializeAsync<CreateRequest>(c.Request.Body,GameHub.Options);var result=hub.Create(request);return Results.Text(GameHub.Json(result),"application/json");}

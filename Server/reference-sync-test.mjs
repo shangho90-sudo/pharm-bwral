@@ -31,6 +31,7 @@ try{
  if([2,4,8].includes(hero)){input(undefined,true);await pause(250);input();}
  const cooldown=skill.fighters[0].skillTimer;const expectedCooldown=hero===6?3:hero===9?8:6;assert(cooldown>expectedCooldown-.2&&cooldown<=expectedCooldown);
  if(hero===0)assert(skill.shots.some(s=>s.value.owner===0&&s.value.kind===1&&s.value.damage===600));
+ if(hero===9){const zone=skill.zones.find(z=>z.value.owner===0&&z.value.kind===2).value;assert(zone.remaining>3.8&&zone.remaining<=4);}
  if(hero===7){
   const summoned=skill.robots.find(r=>r.value.owner===0&&!r.value.elite);assert.equal(summoned.value.hp,800);assert.equal(summoned.value.maxHp,800);
   let guestSeq=0;const end=Date.now()+6500;let damageSnapshot;
@@ -52,7 +53,7 @@ try{
  if(hero===6)assert.equal(ultimate.events.filter(e=>e.type==='blink').length,2);
  if(hero===7){const robot=ultimate.robots.find(r=>r.value.elite).value;assert(robot.remaining>14.8&&robot.remaining<=15);assert.equal(robot.hp,1600);assert.equal(robot.maxHp,1600);}
  if(hero===8)assert.equal(ultimate.shots.filter(s=>s.value.owner===0&&s.value.damage===300).length,17);
- if(hero===9){const zone=ultimate.zones.find(z=>z.value.owner===0&&z.value.kind===2).value;assert.equal(zone.radius,4.5);assert(zone.remaining>7.8&&zone.remaining<=8);}
+ if(hero===9){const zone=ultimate.zones.find(z=>z.value.owner===0&&z.value.kind===2).value;assert.equal(zone.radius,4.5);assert(zone.remaining>4.8&&zone.remaining<=5);}
  await pause(250);const updated=snap(host);
  if(hero===0)await wait(()=>host.messages.some(m=>m.tick>=ultimate.tick&&m.events?.some(e=>e.type==='explosion'&&e.actor===0&&e.size===3.5)),2000);
  for(const message of [skill,ultimate,updated]){const other=await wait(()=>guest.messages.find(m=>m.type==='snapshot'&&m.tick===message.tick));for(const field of ['events','shots','zones','robots','fighters'])assert.deepEqual(other[field],message[field]);}
