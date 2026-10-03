@@ -1,6 +1,6 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "46b1abceba02c1a711872fc8c2158516bb8b5a6d",
+  "sourceCommit": "16664f9dcfd4d0997cb6cfaaf4998bb4d4b241d0",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
@@ -53,5 +53,14 @@
   "cheolhoAttack": "range 4.8, forward traveling purple energy pulse; walls still block damage",
   "spectacularAbilities": "All ten skills and ten ultimates: animated Tripo meshes, colored comet sparks, smoke and activation/impact flares; no targeting lines or range guides; pooled and 30Hz emission budget",
   "tripoSpectacularCredits": 105,
-  "spectacularValidation": "20 visual/combat isolation/cleanup tests and 40 map matches passed"
+  "spectacularValidation": "20 visual/combat isolation/cleanup/pool reuse tests and 40 map matches passed",
+  "referenceAbilityStyle": "20 effects with reference palette: glowing capsules, electric crystals, golden lances, 8-model ultimates, three layered white-core vortex ribbons and tapered trails",
+  "artilleryMarkers": {
+    "radius": 0.85,
+    "width": 0.14,
+    "previousRadius": 0.38,
+    "segments": 48,
+    "damageRangeChanged": false
+  },
+  "referenceStyleExtraTripoCredits": 0
 }
