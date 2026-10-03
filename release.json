@@ -1,6 +1,6 @@
 {
   "sourceBranch": "codex/four-arenas-music",
-  "sourceCommit": "16664f9dcfd4d0997cb6cfaaf4998bb4d4b241d0",
+  "sourceCommit": "31b4f11fe8becd128d6d9cade43a609990c2293b",
   "unityVersion": "6000.6.1f1",
   "multiplayerEndpoint": "https://paengbrawl-rooms-production.up.railway.app",
   "mobileControls": "independent circular 360-degree move and attack pads",
@@ -62,5 +62,9 @@
     "segments": 48,
     "damageRangeChanged": false
   },
-  "referenceStyleExtraTripoCredits": 0
+  "referenceStyleExtraTripoCredits": 0,
+  "maxRobotsPerPlayer": 3,
+  "respawnInvulnerabilitySeconds": 2,
+  "respawnVisual": "character and weapon blink at 0.1-second intervals; restored on expiry and result screen",
+  "abilityAudio": "20 distinct Runway skill/ultimate cues with individual volume balance; 30 credits"
 }
