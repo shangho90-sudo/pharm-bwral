@@ -278,6 +278,7 @@ namespace PharmaBrawl
             for(int i=0;i<sim.fighters.Length;i++)
             {
                 var f=sim.fighters[i];actors[i].gameObject.SetActive(f.Alive);if(!f.Alive)continue;
+                actors[i].GetComponent<PharmacistModelRig>()?.SetRespawnProtection(f.respawnProtection);
                 actors[i].position=network.room==null?P(f.position):Vector3.Lerp(actors[i].position,P(f.position),1-Mathf.Exp(-Time.deltaTime*24));actors[i].rotation=Quaternion.LookRotation(P(f.aim));
                 healthBars[i].parent.rotation=cam.transform.rotation;nameLabels[i].canvas.transform.rotation=cam.transform.rotation;
                 healthBars[i].localScale=new Vector3(1.15f*f.hp/f.data.maxHp,.09f,.04f);healthBars[i].localPosition=new Vector3(-.575f*(1-f.hp/f.data.maxHp),0,-.03f);
@@ -327,6 +328,7 @@ namespace PharmaBrawl
             // Winning trio forms a podium and holds a celebratory pose.
             foreach(var t in shotViews)t.gameObject.SetActive(false);foreach(var t in zoneViews)t.gameObject.SetActive(false);foreach(var t in dropViews)t.gameObject.SetActive(false);foreach(var t in robotViews)t.gameObject.SetActive(false);foreach(var t in fx)t.gameObject.SetActive(false);
             foreach(var t in beamViews)t.gameObject.SetActive(false);
+            foreach(var actor in actors)if(actor)actor.GetComponent<PharmacistModelRig>()?.SetRespawnProtection(0);
             int team=sim.winner<0?0:sim.winner;for(int i=0;i<sim.fighters.Length;i++){actors[i].gameObject.SetActive(sim.fighters[i].team==team);if(sim.fighters[i].team==team){actors[i].position=new Vector3((i%sim.TeamSize-(sim.TeamSize-1)*.5f)*2.5f,0,0);actors[i].rotation=Quaternion.Euler(0,180+(i%sim.TeamSize-(sim.TeamSize-1)*.5f)*12,0);foreach(Transform t in actors[i])if(t.name=="Arm")t.localRotation=Quaternion.Euler(0,0,t.localPosition.x<0?65:-65);}}
             PositionCamera(Vector2.zero,0);
         }

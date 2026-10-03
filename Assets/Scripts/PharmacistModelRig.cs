@@ -22,6 +22,15 @@ namespace PharmaBrawl
         Transform muzzle;
         float castRemaining,castDuration;
         bool ultimateCast;
+        Renderer[] bodyRenderers;
+        bool bodyVisible=true;
+        public void SetRespawnProtection(float seconds)
+        {
+            bool visible=seconds<=0 || Mathf.FloorToInt(seconds*10)%2==0;
+            if(visible==bodyVisible)return;
+            bodyVisible=visible;
+            if(bodyRenderers!=null)foreach(var renderer in bodyRenderers)if(renderer)renderer.enabled=visible;
+        }
         public void BeginAttack(){if(castRemaining>.12f)return;ultimateCast=false;castDuration=.12f;castRemaining=castDuration;}
         public void BeginAbility(bool ultimate){ultimateCast=ultimate;castDuration=ultimate?.5f:.24f;castRemaining=castDuration;}
         public bool HasLocomotionAnimator => locomotionAnimator && locomotionAnimator.enabled;
@@ -101,6 +110,7 @@ namespace PharmaBrawl
                 weapon.localPosition=-grip*gunScale;
                 foreach(var collider in weapon.GetComponentsInChildren<Collider>())Destroy(collider);
             }
+            bodyRenderers=visual.GetComponentsInChildren<Renderer>(true);
             previousPosition=transform.position;previousYaw=transform.eulerAngles.y;
             var flash=MedicalVfx.Quad();flash.name="Pooled weapon flash";muzzle=flash.transform;muzzle.SetParent(transform,false);var flashMaterial=MedicalVfx.Material(0);flashMaterial.color=Color.Lerp(data.color,Color.white,.6f);runtimeMaterials.Add(flashMaterial);flash.GetComponent<Renderer>().sharedMaterial=flashMaterial;flash.SetActive(false);
             if(locomotionAnimator){locomotionAnimator.Rebind();locomotionAnimator.SetFloat("Speed",0);locomotionAnimator.Update(0);}

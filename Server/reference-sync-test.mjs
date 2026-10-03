@@ -57,6 +57,16 @@ try{
  if(hero===0)await wait(()=>host.messages.some(m=>m.tick>=ultimate.tick&&m.events?.some(e=>e.type==='explosion'&&e.actor===0&&e.size===3.5)),2000);
  for(const message of [skill,ultimate,updated]){const other=await wait(()=>guest.messages.find(m=>m.type==='snapshot'&&m.tick===message.tick));for(const field of ['events','shots','zones','robots','fighters'])assert.deepEqual(other[field],message[field]);}
  console.log('REFERENCE_TWO_CLIENT_SYNC_PASS',JSON.stringify({hero,cooldown,matchingSnapshots:3,server:base}));
+ if(process.env.VERIFY_RESPAWN){
+  const deaths=snap(host).fighters[1].deaths,end=Date.now()+20000;
+  while(snap(host).fighters[1].deaths<=deaths){assert(Date.now()<end,'Respawn QA could not cause defeat');input(undefined,true);await pause(60);}
+  const protectedSnapshot=await wait(()=>{const s=snap(host);return s.fighters[1].hp>0&&s.fighters[1].respawnProtection>1.5?s:null;},6500);
+  const protectedHp=protectedSnapshot.fighters[1].hp,damageTaken=protectedSnapshot.fighters[1].damageTaken;
+  while(snap(host).fighters[1].respawnProtection>.15){const f=snap(host).fighters[1];assert.equal(f.hp,protectedHp);assert.equal(f.damageTaken,damageTaken);input(undefined,true);await pause(60);}
+  const matching=await wait(()=>guest.messages.find(m=>m.type==='snapshot'&&m.tick===protectedSnapshot.tick));assert.deepEqual(matching.fighters,protectedSnapshot.fighters);
+  await wait(()=>snap(host).fighters[1].respawnProtection===0&&snap(host).fighters[1].hp<protectedHp,10000);input();
+  console.log('RESPAWN_TWO_CLIENT_LIVE_PASS protected HP/stats stable under fire, synchronized protection, damage resumes after expiry');
+ }
 
 }finally{for(const c of [host,guest])if(c.socket.readyState===1){c.send({type:'leave'});c.socket.close();}}
 }

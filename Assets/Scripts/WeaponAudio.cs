@@ -9,6 +9,9 @@ namespace PharmaBrawl
         readonly AudioClip[] shots = new AudioClip[10];
         readonly float[] nextShot = new float[8];
         readonly AudioClip[] skills=new AudioClip[10],ultimates=new AudioClip[10];
+        // Balance independently generated cues by decoded RMS while retaining their transients.
+        static readonly float[] skillGain={3.35f,.44f,1.26f,1.82f,.63f,.65f,1.45f,.61f,1.23f,2.21f};
+        static readonly float[] ultimateGain={.71f,.64f,.57f,.62f,.48f,.51f,.65f,.59f,1.06f,.47f};
         AudioClip hit;
         AudioSource source;
         float nextHit;
@@ -35,7 +38,7 @@ namespace PharmaBrawl
             nextHit=Time.unscaledTime+.09f;
             if(hit)source.PlayOneShot(hit,local?.8f:.22f);
         }
-        public void Ability(AttackKind kind,bool ultimate,float distance){var clip=ultimate?ultimates[(int)kind]:skills[(int)kind];if(clip)source.PlayOneShot(clip,Mathf.Lerp(ultimate?1:.8f,.2f,Mathf.Clamp01(distance/20)));}
+        public void Ability(AttackKind kind,bool ultimate,float distance){int index=(int)kind;var clip=ultimate?ultimates[index]:skills[index];float gain=ultimate?ultimateGain[index]:skillGain[index];if(clip)source.PlayOneShot(clip,gain*Mathf.Lerp(ultimate?1:.8f,.2f,Mathf.Clamp01(distance/20)));}
         public void CapsuleImpact(bool ultimate,float distance){source.PlayOneShot(capsuleImpact,Mathf.Lerp(ultimate?1:.65f,.12f,Mathf.Clamp01(distance/20)));}
         public void CapsuleEnd(float distance){source.PlayOneShot(capsuleEnd,Mathf.Lerp(.16f,.03f,Mathf.Clamp01(distance/20)));}
         public void ElectricImpact(float distance,bool ultimate){if(Time.unscaledTime<nextElectric)return;nextElectric=Time.unscaledTime+.06f;source.PlayOneShot(electricImpact,Mathf.Lerp(ultimate?.8f:.5f,.08f,Mathf.Clamp01(distance/20)));}

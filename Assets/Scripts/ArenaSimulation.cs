@@ -8,7 +8,8 @@ namespace PharmaBrawl
     public sealed class ArenaSimulation
     {
         public const float Width = 18, Height = 13, MatchDuration = 180;
-        public const int TargetScore = 20;
+        public const int TargetScore = 20, MaxRobotsPerOwner = 3;
+        public const float RespawnProtectionSeconds = 2;
         [Serializable] public sealed class Fighter
         {
             public int id, team, kills, deaths;
@@ -16,7 +17,7 @@ namespace PharmaBrawl
             public CharacterDefinition data;
             public Vector2 position, aim = Vector2.up;
             public float aimDistance=7;
-            public float hp, attackTimer, skillTimer, charge, respawn, quiet, shield, haste, poison, poisonTick, poisonDamage, boost;
+            public float hp, attackTimer, skillTimer, charge, respawn, respawnProtection, quiet, shield, haste, poison, poisonTick, poisonDamage, boost;
             public int poisonOwner;
             public bool empowered;
             public int burstRemaining;
@@ -105,7 +106,8 @@ namespace PharmaBrawl
             {
                 var f=fighters[i];
                 if(f.withdrawn)continue;
-                if(!f.Alive) { f.respawn-=dt; if(f.respawn<=0) {f.hp=f.data.maxHp;f.position=map.Spawn(i,TeamSize);f.quiet=0;f.poison=0;f.shield=1;respawns++;Emit("respawn",f.position,i);} continue; }
+                if(!f.Alive) { f.respawn-=dt; if(f.respawn<=0) {f.hp=f.data.maxHp;f.position=map.Spawn(i,TeamSize);f.quiet=0;f.poison=0;f.shield=0;f.respawnProtection=RespawnProtectionSeconds;respawns++;Emit("respawn",f.position,i);} continue; }
+                f.respawnProtection=Mathf.Max(0,f.respawnProtection-dt);
                 f.attackTimer-=dt; f.skillTimer-=dt; f.shield-=dt; f.haste-=dt; f.boost-=dt; f.quiet+=dt;
                 if(f.poison>0) {f.poison-=dt;f.poisonTick-=dt;if(f.poisonTick<=0){f.poisonTick=.5f;Damage(f.poisonOwner,i,f.poisonDamage,false);}}
                 if(!f.Alive) continue;
@@ -120,7 +122,7 @@ namespace PharmaBrawl
             if(timeLeft<=0 || score[0]>=TargetScore || score[1]>=TargetScore) { finished=true;winner=score[0]==score[1]?-1:(score[0]>score[1]?0:1);Emit("finish",Vector2.zero,0); }
         }
         public void TickNetwork(float dt,HumanInput[] inputs){networkInputs=inputs;try{Tick(dt,Vector2.zero,Vector2.up,false,false,false,true);}finally{networkInputs=null;}}
-        public void Withdraw(int id){var f=fighters[id];f.withdrawn=true;f.hp=0;f.burstRemaining=0;f.rapidRemaining=f.poison=f.shield=f.haste=0;foreach(var s in shots)if(s.owner==id)s.active=false;foreach(var z in zones)if(z.owner==id)z.active=false;foreach(var r in robots)if(r.owner==id)r.active=false;Emit("withdraw",f.position,id);}
+        public void Withdraw(int id){var f=fighters[id];f.withdrawn=true;f.hp=0;f.burstRemaining=0;f.rapidRemaining=f.poison=f.shield=f.haste=f.respawnProtection=0;foreach(var s in shots)if(s.owner==id)s.active=false;foreach(var z in zones)if(z.owner==id)z.active=false;foreach(var r in robots)if(r.owner==id)r.active=false;Emit("withdraw",f.position,id);}
         public bool Blocked(Vector2 p,float radius=.48f)
         {
             if(Mathf.Abs(p.x)>Width-radius || Mathf.Abs(p.y)>Height-radius) return true;
@@ -237,7 +239,25 @@ namespace PharmaBrawl
             }
         }
         void Teleport(Fighter f,Vector2 p) {for(int j=10;j>0;j--){var n=Vector2.Lerp(f.position,p,j/10f);if(!Blocked(n)){Emit("blink",f.position,f.id);f.position=n;Emit("blink",n,f.id);break;}}}
-        void Summon(Fighter f,bool elite){foreach(var r in robots)if(!r.active){r.active=true;r.owner=f.id;r.position=f.position;for(int j=0;j<8;j++){var p=f.position+Rotate(Vector2.up,j*45)*.8f;if(!Blocked(p,.3f)){r.position=p;break;}}r.remaining=elite?15:10;r.elite=elite;r.hp=r.maxHp=elite?1600:800;r.attackTimer=.3f;return;}}
+        void Summon(Fighter f,bool elite)
+        {
+            int count=0;Robot oldest=null,free=null;
+            foreach(var robot in robots){
+                if(!robot.active){if(free==null)free=robot;continue;}
+                if(robot.owner!=f.id)continue;
+                count++;if(oldest==null || robot.remaining<oldest.remaining)oldest=robot;
+            }
+            // A fourth summon refreshes the oldest owned robot instead of wasting the cast.
+            var r=count>=MaxRobotsPerOwner?oldest:free;if(r==null)return;
+            r.active=true;r.owner=f.id;r.position=f.position;
+            for(int j=0;j<8;j++){
+                var p=f.position+Rotate(Vector2.up,(j+count*3)*45)*1.1f;
+                if(Blocked(p,.3f))continue;
+                bool occupied=false;foreach(var other in robots)if(other!=r && other.active && Vector2.Distance(p,other.position)<.65f){occupied=true;break;}
+                if(!occupied){r.position=p;break;}
+            }
+            r.remaining=elite?15:10;r.elite=elite;r.hp=r.maxHp=elite?1600:800;r.attackTimer=.3f;
+        }
         public void DamageRobot(int owner,int index,float amount)
         {
             var r=robots[index];if(!r.active||fighters[owner].team==fighters[r.owner].team)return;
@@ -264,17 +284,17 @@ namespace PharmaBrawl
         }
         void Area(Fighter f,Vector2 p,float radius,float damage,bool knockback)
         {
-            for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=f.team && Vector2.Distance(e.position,p)<radius){Damage(f.id,i,damage);if(knockback){Vector2 n=e.position+(e.position-p).normalized*1.2f;if(!Blocked(n))e.position=n;}}}
+            for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.respawnProtection<=0 && e.team!=f.team && Vector2.Distance(e.position,p)<radius){Damage(f.id,i,damage);if(knockback){Vector2 n=e.position+(e.position-p).normalized*1.2f;if(!Blocked(n))e.position=n;}}}
             foreach(var c in covers)if(c.destructible && c.Active && Vector2.Distance(c.position,p)<radius+1)c.hp-=damage;
             for(int i=0;i<robots.Length;i++)if(robots[i].active&&Vector2.Distance(robots[i].position,p)<radius)DamageRobot(f.id,i,damage);
         }
         public void Damage(int owner,int target,float amount,bool charge=true)
         {
-            var f=fighters[owner];var e=fighters[target];if(!e.Alive || f.team==e.team)return;
+            var f=fighters[owner];var e=fighters[target];if(!e.Alive || e.respawnProtection>0 || f.team==e.team)return;
             amount=Mathf.Min(e.hp,amount*(e.shield>0?.45f:1));e.hp-=amount;e.quiet=0;e.damageTaken+=amount;f.damageDealt+=amount;
             if(charge)f.charge=Mathf.Min(f.data.ultimateRequirement,f.charge+amount);
             Emit("hit",e.position,target,.6f);
-            if(e.hp<=0){e.hp=0;e.deaths++;f.kills++;e.respawn=4;e.poison=0;e.shield=0;e.haste=0;e.boost=0;e.empowered=false;e.burstRemaining=0;e.rapidRemaining=0;score[f.team]++;Emit("death",e.position,target,1.7f);}
+            if(e.hp<=0){e.hp=0;e.deaths++;f.kills++;e.respawn=4;e.respawnProtection=0;e.poison=0;e.shield=0;e.haste=0;e.boost=0;e.empowered=false;e.burstRemaining=0;e.rapidRemaining=0;score[f.team]++;Emit("death",e.position,target,1.7f);}
         }
         void UpdateShots(float dt)
         {
@@ -291,7 +311,7 @@ namespace PharmaBrawl
                     for(int i=0;i<robots.Length&&s.active;i++){var r=robots[i];int bit=1<<(8+i);if(r.active&&fighters[r.owner].team!=fighters[s.owner].team&&(s.hitMask&bit)==0&&Vector2.Distance(r.position,s.position)<(r.elite?.65f:.45f)+s.radius){s.hitMask|=bit;DamageRobot(s.owner,i,s.damage);if(!s.piercing)Impact(s);}}
                     if(!s.active)break;
                     for(int i=0;i<fighters.Length;i++){var e=fighters[i];if(e.Alive && e.team!=fighters[s.owner].team && (s.hitMask&(1<<i))==0 && Vector2.Distance(e.position,s.position)<.5f+s.radius){s.hitMask|=1<<i;Damage(s.owner,i,s.damage);
-                        if(s.poison>0 && e.Alive){e.poison=2.5f;e.poisonTick=.5f;e.poisonDamage=s.poison;e.poisonOwner=s.owner;}
+                        if(s.poison>0 && e.Alive && e.respawnProtection<=0){e.poison=2.5f;e.poisonTick=.5f;e.poisonDamage=s.poison;e.poisonOwner=s.owner;}
                         if(fighters[s.owner].data.kind==AttackKind.Lightning && s.kind==0){Emit("lightning",e.position,s.owner);}
                         if(!s.piercing){Impact(s);break;}}
                     }

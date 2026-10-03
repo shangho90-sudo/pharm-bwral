@@ -1,0 +1,147 @@
+{
+  "provider": "Runway",
+  "generatedAt": "2026-10-03",
+  "creditsUsed": 30,
+  "sounds": [
+    {
+      "key": "CapsuleSkill",
+      "taskId": "934a2647-9b51-4446-8246-6b80e7ee9021",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/CapsuleSkill.mp3"
+    },
+    {
+      "key": "CapsuleUltimate",
+      "taskId": "c96c3efe-9253-4389-a710-77ce862160dd",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/CapsuleUltimate.mp3"
+    },
+    {
+      "key": "LightningSkill",
+      "taskId": "19a88af3-fa69-4b5b-9b1b-8b303891ee6c",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/LightningSkill.mp3"
+    },
+    {
+      "key": "LightningUltimate",
+      "taskId": "527c866e-8479-4301-a5d2-1493338ed0c9",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/LightningUltimate.mp3"
+    },
+    {
+      "key": "ArrowSkill",
+      "taskId": "4b3e66bb-e486-4363-847e-486178e81be8",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/ArrowSkill.mp3"
+    },
+    {
+      "key": "ArrowUltimate",
+      "taskId": "a5483d2f-eb1a-4c8c-b782-a5bff701f3a3",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/ArrowUltimate.mp3"
+    },
+    {
+      "key": "WaveSkill",
+      "taskId": "e79b370a-1ac7-4b2e-abb1-1940e34e7a5c",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/WaveSkill.mp3"
+    },
+    {
+      "key": "WaveUltimate",
+      "taskId": "ecdabf96-03da-4551-bede-a2c11bb9be4b",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/WaveUltimate.mp3"
+    },
+    {
+      "key": "BurstSkill",
+      "taskId": "12af9248-3da4-4916-97d8-e6672357b628",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/BurstSkill.mp3"
+    },
+    {
+      "key": "BurstUltimate",
+      "taskId": "ccacaf38-faa4-4b9a-9496-63cbc2e54b42",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/BurstUltimate.mp3"
+    },
+    {
+      "key": "ArtillerySkill",
+      "taskId": "39b69480-ae2b-403a-af14-c3dc972dc928",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/ArtillerySkill.mp3"
+    },
+    {
+      "key": "ArtilleryUltimate",
+      "taskId": "9d172c49-1b2d-446a-a6e9-82c778005f76",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/ArtilleryUltimate.mp3"
+    },
+    {
+      "key": "AssassinSkill",
+      "taskId": "5528b1a0-7a8c-4485-8e62-636ca8706693",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/AssassinSkill.mp3"
+    },
+    {
+      "key": "AssassinUltimate",
+      "taskId": "56fce696-92d3-49b4-ad99-f57568c17c85",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/AssassinUltimate.mp3"
+    },
+    {
+      "key": "SummonerSkill",
+      "taskId": "0afd9615-2c9a-48ac-a96e-c9b69bee300b",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/SummonerSkill.mp3"
+    },
+    {
+      "key": "SummonerUltimate",
+      "taskId": "82bafb27-7e4b-4c89-9d9e-936996b7e40f",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/SummonerUltimate.mp3"
+    },
+    {
+      "key": "FanSkill",
+      "taskId": "4fc924eb-607a-4817-9ed0-5206e1763dac",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/FanSkill.mp3"
+    },
+    {
+      "key": "FanUltimate",
+      "taskId": "dd14a354-fc5c-47a3-8896-14709cb5c6c5",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/FanUltimate.mp3"
+    },
+    {
+      "key": "PoisonSkill",
+      "taskId": "aee41c5d-2c6c-49aa-a7d5-b720d4ee71cd",
+      "durationSeconds": 1,
+      "credits": 1,
+      "file": "Assets/Resources/SFX/PoisonSkill.mp3"
+    },
+    {
+      "key": "PoisonUltimate",
+      "taskId": "b5564ce1-321d-4d1b-aaa7-3832ad3b4f0a",
+      "durationSeconds": 2,
+      "credits": 2,
+      "file": "Assets/Resources/SFX/PoisonUltimate.mp3"
+    }
+  ]
+}
