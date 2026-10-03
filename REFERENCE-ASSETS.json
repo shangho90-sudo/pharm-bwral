@@ -1,0 +1,22 @@
+{
+  "supportRobot": {
+    "taskId": "b78742e7-42ac-44cb-a2f5-09b08bb179b8",
+    "credits": 40,
+    "faces": 3892,
+    "prefab": "Assets/Resources/Robots/Support.prefab"
+  },
+  "eliteRobot": {
+    "taskId": "f30f1806-b842-4a6b-b9ed-0af07c7cbe0c",
+    "credits": 40,
+    "faces": 5880,
+    "prefab": "Assets/Resources/Robots/Elite.prefab"
+  },
+  "model": "Tripo P1-20260311",
+  "conversion": "GLB to FBX, embedded textures extracted and compressed to 512 pixels, rigid mechanical body aim and recoil; no humanoid rig claimed",
+  "reused": "Existing Tripo capsule, characters and medical weapon meshes",
+  "generatedTexture": "Assets/Resources/VFX/MedicalAtlas.png: image_gen transparent grayscale 2x2 starburst, smoke, streak and ring atlas",
+  "combat": "ArenaSimulation.cs and server code unchanged; client only presentation",
+  "server": "https://paengbrawl-rooms-production.up.railway.app",
+  "protocol": 2,
+  "publicServerTests": "Nine characters: real skill and damage-charged ultimate; 3 matching snapshots of events/fighters/projectiles/zones/robots per character across two WebSocket clients"
+}

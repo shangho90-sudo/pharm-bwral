@@ -3,16 +3,38 @@ using UnityEngine;
 
 namespace PharmaBrawl
 {
-    // Works with the actual skinned bones returned by Tripo, including rigs whose
-    // joint names differ from Mixamo. No paid retarget clips are required.
+    // Imported locomotion drives animated Tripo rigs. Other characters retain
+    // the procedural fallback until their own clips are available.
     public sealed class PharmacistModelRig : MonoBehaviour
     {
+        readonly List<Material> runtimeMaterials=new List<Material>();
+        void OnDestroy(){foreach(var material in runtimeMaterials)if(material)Destroy(material);}
         readonly List<Transform> bones=new List<Transform>();
         readonly List<Quaternion> restRotations=new List<Quaternion>();
-        Transform visual, rightHand, leftHand, rightHip, leftHip, weaponSocket;
+        Transform visual, rightHand, leftHand, rightHip, leftHip, rightKnee, leftKnee, head, weaponSocket, chest;
         Quaternion weaponRotation;
         Vector3 previousPosition;
-        float gait, speed;
+        float gait, speed, hurtRemaining;
+        Vector3 visualRestPosition;
+        float previousYaw,turnLean;
+        Animator locomotionAnimator;
+        int reportedMotion=-1;
+        Transform muzzle;
+        float castRemaining,castDuration;
+        bool ultimateCast;
+        Renderer[] bodyRenderers;
+        bool bodyVisible=true;
+        public void SetRespawnProtection(float seconds)
+        {
+            bool visible=seconds<=0 || Mathf.FloorToInt(seconds*10)%2==0;
+            if(visible==bodyVisible)return;
+            bodyVisible=visible;
+            if(bodyRenderers!=null)foreach(var renderer in bodyRenderers)if(renderer)renderer.enabled=visible;
+        }
+        public void BeginAttack(){if(castRemaining>.12f)return;ultimateCast=false;castDuration=.12f;castRemaining=castDuration;}
+        public void BeginAbility(bool ultimate){ultimateCast=ultimate;castDuration=ultimate?.5f:.24f;castRemaining=castDuration;}
+        public bool HasLocomotionAnimator => locomotionAnimator && locomotionAnimator.enabled;
+        public void ReactToHit(){hurtRemaining=.42f;}
         public bool HasHandSocket => rightHand && weaponSocket;
 
         public void Initialize(CharacterDefinition data)
@@ -20,19 +42,28 @@ namespace PharmaBrawl
             visual=new GameObject("Tripo / "+data.displayName).transform;
             visual.SetParent(transform,false);
             Instantiate(data.characterPrefab,visual);
-            foreach(var animator in visual.GetComponentsInChildren<Animator>())animator.enabled=false;
+            foreach(var renderer in visual.GetComponentsInChildren<Renderer>())foreach(var material in renderer.materials){
+                runtimeMaterials.Add(material);material.SetFloat("_Metallic",0);material.SetFloat("_Glossiness",.15f);material.DisableKeyword("_METALLICGLOSSMAP");
+                material.EnableKeyword("_EMISSION");material.SetTexture("_EmissionMap",material.mainTexture);material.SetColor("_EmissionColor",new Color(.3f,.3f,.3f));
+            }
+            foreach(var animator in visual.GetComponentsInChildren<Animator>()){
+                animator.enabled=animator.runtimeAnimatorController!=null;
+                if(animator.enabled){locomotionAnimator=animator;animator.applyRootMotion=false;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;}
+            }
             foreach(var collider in visual.GetComponentsInChildren<Collider>())Destroy(collider);
+            if(locomotionAnimator){locomotionAnimator.Rebind();locomotionAnimator.Update(0);}
             Bounds bounds=BoundsOf(visual);
-            float scale=2.3f/Mathf.Max(.01f,bounds.size.y);
+            float scale=2.8f/Mathf.Max(.01f,bounds.size.y);
             visual.localScale=Vector3.one*scale;
             visual.localPosition=new Vector3(-bounds.center.x*scale,-bounds.min.y*scale,-bounds.center.z*scale);
+            visualRestPosition=visual.localPosition;
             var unique=new HashSet<Transform>();
             foreach(var skin in visual.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 skin.updateWhenOffscreen=true;
                 foreach(var bone in skin.bones)if(bone && unique.Add(bone))bones.Add(bone);
             }
-            foreach(var bone in bones)restRotations.Add(bone.localRotation);
+            foreach(var bone in bones){restRotations.Add(bone.localRotation);if(bone.name=="Chest")chest=bone;if(bone.name=="Head")head=bone;if(bone.name=="RightLowerLeg")rightKnee=bone;if(bone.name=="LeftLowerLeg")leftKnee=bone;}
             // Locate hands geometrically rather than depending on vendor bone names.
             foreach(var bone in bones)
             {
@@ -48,9 +79,16 @@ namespace PharmaBrawl
                     if(p.x<0 && (!leftHip || p.y>transform.InverseTransformPoint(leftHip.position).y))leftHip=bone;
                 }
             }
-            if(!rightHand){Debug.LogError("TRIPO_MISSING_HAND "+data.displayName);return;}
+            // Prefer Tripo's anatomical thigh joints over geometric guesses.
+            foreach(var bone in bones){if(bone.name=="RightUpperLeg")rightHip=bone;if(bone.name=="LeftUpperLeg")leftHip=bone;}
             rightHand=Palm(rightHand);
             leftHand=Palm(leftHand);
+            // Mixamo hands must use the palm joint, never a finger or forearm.
+            foreach(var bone in visual.GetComponentsInChildren<Transform>()){
+                if(bone.name.EndsWith("RightHand",System.StringComparison.Ordinal))rightHand=bone;
+                if(bone.name.EndsWith("LeftHand",System.StringComparison.Ordinal))leftHand=bone;
+            }
+            if(!rightHand){Debug.LogError("TRIPO_MISSING_HAND "+data.displayName);return;}
             weaponSocket=new GameObject("Weapon grip / Right hand").transform;
             weaponSocket.SetParent(rightHand,false);
             weaponSocket.localPosition=data.weaponGripPosition;
@@ -72,7 +110,10 @@ namespace PharmaBrawl
                 weapon.localPosition=-grip*gunScale;
                 foreach(var collider in weapon.GetComponentsInChildren<Collider>())Destroy(collider);
             }
-            previousPosition=transform.position;
+            bodyRenderers=visual.GetComponentsInChildren<Renderer>(true);
+            previousPosition=transform.position;previousYaw=transform.eulerAngles.y;
+            var flash=MedicalVfx.Quad();flash.name="Pooled weapon flash";muzzle=flash.transform;muzzle.SetParent(transform,false);var flashMaterial=MedicalVfx.Material(0);flashMaterial.color=Color.Lerp(data.color,Color.white,.6f);runtimeMaterials.Add(flashMaterial);flash.GetComponent<Renderer>().sharedMaterial=flashMaterial;flash.SetActive(false);
+            if(locomotionAnimator){locomotionAnimator.Rebind();locomotionAnimator.SetFloat("Speed",0);locomotionAnimator.Update(0);}
             Pose(0);
         }
         static Transform Palm(Transform tip)
@@ -101,16 +142,38 @@ namespace PharmaBrawl
         }
         void LateUpdate()
         {
-            float dt=Mathf.Max(.0001f,Time.deltaTime);
+            UpdatePose(Time.deltaTime);
+        }
+        public void UpdatePose(float deltaTime)
+        {
+            float dt=Mathf.Max(.0001f,deltaTime);
             speed=Mathf.Lerp(speed,Mathf.Clamp01(Vector3.Distance(transform.position,previousPosition)/(dt*5)),1-Mathf.Exp(-dt*12));
             previousPosition=transform.position;gait+=dt*9*speed;
+            if(locomotionAnimator){
+                locomotionAnimator.SetFloat("Speed",speed);
+                if(!Application.isPlaying)locomotionAnimator.Update(dt);
+                int motion=speed<.1f?0:speed<.65f?1:2;
+                if(Application.isPlaying && motion!=reportedMotion){reportedMotion=motion;Debug.Log("PAENG_ANIMATION "+new[]{"idle","walk","run"}[motion]);}
+            }
+            float yaw=transform.eulerAngles.y;turnLean=Mathf.Lerp(turnLean,Mathf.Clamp(Mathf.DeltaAngle(previousYaw,yaw)/dt*.04f,-18,18),1-Mathf.Exp(-dt*10));previousYaw=yaw;
             Pose(Mathf.Sin(gait)*speed);
+            hurtRemaining=Mathf.Max(0,hurtRemaining-dt);
+            float flinch=Mathf.Sin(Mathf.Clamp01(hurtRemaining/.42f)*Mathf.PI);
+            castRemaining=Mathf.Max(0,castRemaining-dt);float cast=castDuration>0?Mathf.Sin(castRemaining/castDuration*Mathf.PI):0;
+            if(muzzle){muzzle.gameObject.SetActive(castRemaining>0);muzzle.position=weaponSocket.position+transform.forward*.8f;if(Camera.main)muzzle.rotation=Camera.main.transform.rotation;muzzle.localScale=Vector3.one*(ultimateCast?.9f:.55f)*cast;}
+            if(visual){visual.localRotation=Quaternion.Euler(-28*flinch+speed*7-cast*(ultimateCast?13:8),0,12*flinch-turnLean*.3f+Mathf.Sin(gait)*speed*4);visual.localPosition=visualRestPosition+new Vector3(0,(.10f*Mathf.Abs(Mathf.Sin(gait))*speed+.10f*flinch),-.22f*flinch-.09f*cast);}
         }
         void Pose(float walk)
         {
+            if(!locomotionAnimator){
             for(int i=0;i<bones.Count;i++)bones[i].localRotation=restRotations[i];
-            if(rightHip)rightHip.rotation=Quaternion.AngleAxis(walk*22,transform.right)*rightHip.rotation;
-            if(leftHip)leftHip.rotation=Quaternion.AngleAxis(-walk*22,transform.right)*leftHip.rotation;
+            if(chest)chest.localRotation*=Quaternion.Euler(speed*5,turnLean+walk*12,-walk*6);
+            if(head)head.localRotation*=Quaternion.Euler(0,-walk*5,walk*3);
+            if(rightHip)rightHip.rotation=Quaternion.AngleAxis(walk*34,transform.right)*rightHip.rotation;
+            if(leftHip)leftHip.rotation=Quaternion.AngleAxis(-walk*34,transform.right)*leftHip.rotation;
+            if(rightKnee)rightKnee.rotation=Quaternion.AngleAxis(Mathf.Max(0,-walk)*38,transform.right)*rightKnee.rotation;
+            if(leftKnee)leftKnee.rotation=Quaternion.AngleAxis(Mathf.Max(0,walk)*38,transform.right)*leftKnee.rotation;
+            }
             AimArm(rightHand,new Vector3(.36f,1.02f,.48f),Vector3.right);
             AimArm(leftHand,new Vector3(.08f,1.02f,.66f),Vector3.left);
             if(weaponSocket)weaponSocket.rotation=transform.rotation*weaponRotation;
@@ -131,5 +194,8 @@ namespace PharmaBrawl
             shoulder.rotation=Quaternion.FromToRotation(elbow.position-start,elbowTarget-start)*shoulder.rotation;
             elbow.rotation=Quaternion.FromToRotation(hand.position-elbow.position,target-elbow.position)*elbow.rotation;
         }
+        void OnDisable(){castRemaining=0;if(muzzle)muzzle.gameObject.SetActive(false);speed=0;}
+        void OnEnable(){previousPosition=transform.position;}
     }
 }
+

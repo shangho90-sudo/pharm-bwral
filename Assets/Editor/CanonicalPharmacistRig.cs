@@ -73,7 +73,8 @@ public static class CanonicalPharmacistRig
         {
             string path=folder+$"/CartoonMaterial-{i}.mat";mats[i]=AssetDatabase.LoadAssetAtPath<Material>(path);
             if(!mats[i]){mats[i]=new Material(skin.sharedMaterials[i]);AssetDatabase.CreateAsset(mats[i],path);}
-            mats[i].SetFloat("_Metallic",0);mats[i].SetFloat("_Glossiness",.22f);mats[i].DisableKeyword("_METALLICGLOSSMAP");mats[i].DisableKeyword("_NORMALMAP");EditorUtility.SetDirty(mats[i]);
+            else mats[i].CopyPropertiesFromMaterial(skin.sharedMaterials[i]);
+            mats[i].SetFloat("_Metallic",0);mats[i].SetFloat("_Glossiness",.22f);mats[i].DisableKeyword("_METALLICGLOSSMAP");mats[i].DisableKeyword("_NORMALMAP");mats[i].SetTexture("_BumpMap",null);mats[i].SetTexture("_MetallicGlossMap",null);EditorUtility.SetDirty(mats[i]);
         }
         renderer.sharedMaterials=mats;
         var skeleton=new List<SkeletonBone>();

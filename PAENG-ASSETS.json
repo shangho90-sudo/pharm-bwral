@@ -1,0 +1,32 @@
+{
+  "reference": "first character of the supplied pharmacist T-pose sheet",
+  "generationModel": "P1-20260311",
+  "faceLimit": 6000,
+  "activeRigModel": "v1.0-20240301",
+  "activeRigSpecification": "mixamo",
+  "activePrefab": "Assets/Art/Characters/PaengAnimated/Pharmacist.prefab",
+  "locomotion": "Unity-authored Idle, Walk and Run clips on original Tripo bones and skin weights",
+  "formatConversion": "local Blender GLB to FBX, no Tripo conversion fee",
+  "cleanup": "removed the unweighted Icosphere debug mesh from the Tripo rig result",
+  "reusedWeapon": "Assets/Art/Weapons/00/model.fbx with its existing base-color texture",
+  "reusedCapsule": "Assets/Resources/Projectiles/Capsule.prefab",
+  "creditsConsumed": 100,
+  "creditsBreakdown": [
+    {"taskId":"b028e71a-19f3-45de-bad3-c0007260938b","type":"image_to_model","credits":50},
+    {"taskId":"65163da8-c3c4-4d16-bfd9-6a41a7b6b05a","type":"animate_prerigcheck","credits":0},
+    {"taskId":"744e4bee-8044-40c7-b2b2-bcc2c6244c84","type":"animate_rig","credits":25,"used":false,"reason":"generic limbs were unsuitable for humanoid locomotion"},
+    {"taskId":"20e0fe0b-ae34-4e61-a8c0-c3e251f4d696","type":"animate_rig","credits":25,"used":true}
+  ],
+  "failedRefundedTasks": [
+    "e2e0a2cb-af04-40e4-9717-b00f7d9662ad",
+    "8b5d2cb6-a5ad-490e-9837-5dc2d4f799f6",
+    "e64bde23-d9ab-44af-a133-0e56f66165d3",
+    "f61c2786-b39b-4607-af56-88df231abf41",
+    "794fcaf0-5863-4503-a6b5-e2f0eeeba47c",
+    "8f1cd160-b824-4293-b28a-4c364e7eeff4",
+    "9db7fa0d-40ad-41e0-9f3d-f7fad59f3ed1"
+  ],
+  "balanceAfter": 1615,
+  "serverChangesRequired": false,
+  "protocol": 2
+}

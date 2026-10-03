@@ -26,11 +26,11 @@ MonoBehaviour:
   attackInterval: 0.7
   range: 9
   projectileSpeed: 16
-  skillCooldown: 9
-  ultimateRequirement: 4000
+  skillCooldown: 6
+  ultimateRequirement: 2800
   ultimateVoice: {fileID: 0}
   characterPrefab: {fileID: 976163527350579319, guid: 0b1f74b647926ce40aa9981c06fb0f7a, type: 3}
-  weaponPrefab: {fileID: 919132149155446097, guid: 61bb7a99dd6e6664ca4a9db22923472d, type: 3}
+  weaponPrefab: {fileID: 1185868271515267772, guid: 9b70d32b4d3aff849b7218fd619d9c95, type: 3}
   weaponGripPosition: {x: 0, y: 0, z: 0}
   weaponGripEuler: {x: 0, y: 0, z: 0}
   weaponLength: 1.3

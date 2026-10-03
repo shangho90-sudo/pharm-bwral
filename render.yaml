@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: pharm-bwral-server
+    runtime: docker
+    dockerfilePath: Server/Dockerfile
+    dockerContext: .
+    plan: starter
+    numInstances: 1
+    healthCheckPath: /health
+    envVars:
+      - key: GAME_ORIGINS
+        value: https://shangho90-sudo.github.io

@@ -1,0 +1,191 @@
+{
+  "provider": "Runway",
+  "generation": "Weapon and ability audio v2",
+  "credits": 44,
+  "tasks": [
+    {
+      "key": "Capsule",
+      "id": "539ea6ff-755c-4f05-93c9-6374b9eb6eb2",
+      "credits": 1
+    },
+    {
+      "key": "Lightning",
+      "id": "81c763a8-9c63-44dc-8f10-a19bba21e02d",
+      "credits": 1
+    },
+    {
+      "key": "Arrow",
+      "id": "f5c2104c-5174-4cc5-8c45-e4b6a5c7073e",
+      "credits": 1
+    },
+    {
+      "key": "Wave",
+      "id": "e9c0611c-86f5-409e-9a02-246e084234f6",
+      "credits": 1
+    },
+    {
+      "key": "Burst",
+      "id": "180d707e-314b-42c7-97a5-53f973e73ed3",
+      "credits": 1
+    },
+    {
+      "key": "Artillery",
+      "id": "3030eac8-2c7b-49d0-bf3c-71565d9652db",
+      "credits": 1
+    },
+    {
+      "key": "Assassin",
+      "id": "da315b8f-f63f-4249-8915-e926bd230c24",
+      "credits": 1
+    },
+    {
+      "key": "Summoner",
+      "id": "a3d40d13-b4e3-4866-b3c3-4d8db4e67af6",
+      "credits": 1
+    },
+    {
+      "key": "Fan",
+      "id": "0e3bb668-f9cc-4498-8c5f-97c9052a9a6f",
+      "credits": 1
+    },
+    {
+      "key": "Poison",
+      "id": "2156fcc1-3025-45b8-ab00-b3bbe0acecb5",
+      "credits": 1
+    },
+    {
+      "key": "CapsuleSkill",
+      "id": "d6670776-f256-44ad-8f7f-3f3d8ddfb6b2",
+      "credits": 1
+    },
+    {
+      "key": "CapsuleUltimate",
+      "id": "65c3b10f-56d1-47d0-acdd-0ed72d564c36",
+      "credits": 2
+    },
+    {
+      "key": "LightningSkill",
+      "id": "c9320097-dd22-4715-ad2f-4f1622c23c5f",
+      "credits": 1
+    },
+    {
+      "key": "LightningUltimate",
+      "id": "7d2bb256-915d-4bca-b80c-b1ce638d3622",
+      "credits": 2
+    },
+    {
+      "key": "ArrowSkill",
+      "id": "b83d8d54-9581-40cf-853b-1633178ac459",
+      "credits": 1
+    },
+    {
+      "key": "ArrowUltimate",
+      "id": "3569f9b5-5d0b-4a27-b9c7-1c68d0dab6e3",
+      "credits": 2
+    },
+    {
+      "key": "WaveSkill",
+      "id": "bf28a043-5bbc-4f3a-a423-c84e71abf1b5",
+      "credits": 1
+    },
+    {
+      "key": "WaveUltimate",
+      "id": "a695bb42-ef11-4c37-850d-2fa523a08f17",
+      "credits": 2
+    },
+    {
+      "key": "BurstSkill",
+      "id": "c6fc86ee-7c85-4ac9-a6aa-d7b10d0077db",
+      "credits": 1
+    },
+    {
+      "key": "BurstUltimate",
+      "id": "2ee395c4-f472-4d1b-9cb2-8904e8dc19eb",
+      "credits": 2
+    },
+    {
+      "key": "ArtillerySkill",
+      "id": "4fec1a00-848b-43a6-9000-b41e60e8f8be",
+      "credits": 1
+    },
+    {
+      "key": "ArtilleryUltimate",
+      "id": "9ec3332a-2f40-4d2f-88bc-c6c3ddd4ccf6",
+      "credits": 2
+    },
+    {
+      "key": "AssassinSkill",
+      "id": "24792871-d75c-4794-aac6-f8b9a69fc771",
+      "credits": 1
+    },
+    {
+      "key": "AssassinUltimate",
+      "id": "fe43584a-d610-41bf-92e2-c993310d12ba",
+      "credits": 2
+    },
+    {
+      "key": "SummonerSkill",
+      "id": "0ccb5f61-c877-43d6-9c21-fd92e1301e33",
+      "credits": 1
+    },
+    {
+      "key": "SummonerUltimate",
+      "id": "238b9ce9-bbc3-4a93-a5fd-6bb5b586efed",
+      "credits": 2
+    },
+    {
+      "key": "FanSkill",
+      "id": "c4601ca8-068c-4282-aaf5-faa8beb19ca0",
+      "credits": 1
+    },
+    {
+      "key": "FanUltimate",
+      "id": "51e8bd5d-d67b-4dd3-be2d-c39acb1790ba",
+      "credits": 2
+    },
+    {
+      "key": "PoisonSkill",
+      "id": "5b729e17-05fd-477f-8ab2-1341cd2d5b1a",
+      "credits": 1
+    },
+    {
+      "key": "PoisonUltimate",
+      "id": "8a0c9a47-9c7a-4584-b8b9-8d28e8aca41b",
+      "credits": 2
+    },
+    {
+      "key": "Wave",
+      "id": "9fb11bd0-b6d9-4b46-a4ea-4e520b41bae5",
+      "credits": 1
+    },
+    {
+      "key": "WaveSkill",
+      "id": "2b07b66b-2ee4-43cb-a3fd-dca22ec0bafa",
+      "credits": 1
+    },
+    {
+      "key": "WaveUltimate",
+      "id": "5fb205d2-efcb-46af-8092-6694d96828bb",
+      "credits": 2
+    }
+  ],
+  "tripo": {
+    "model": "P1-20260311",
+    "input": "Low poly medical energy burst with star rays, capsules and a medical plus",
+    "credits": 50,
+    "tasks": [
+      {
+        "id": "42a7aa7f-138c-441c-9ce9-bb2a5b805b26",
+        "operation": "text_to_model",
+        "credits": 40
+      },
+      {
+        "id": "db3694a3-b392-4fd4-9f4c-3d971ce6450d",
+        "operation": "convert_model",
+        "format": "FBX",
+        "texture_size": 512,
+        "credits": 10
+      }
+    ]
+  }
+}

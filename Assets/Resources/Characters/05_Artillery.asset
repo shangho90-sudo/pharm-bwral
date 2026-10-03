@@ -23,14 +23,14 @@ MonoBehaviour:
   maxHp: 2800
   speed: 4.8
   damage: 600
-  attackInterval: 1.15
+  attackInterval: 0.7
   range: 8
   projectileSpeed: 16
-  skillCooldown: 9
-  ultimateRequirement: 4000
+  skillCooldown: 6
+  ultimateRequirement: 2800
   ultimateVoice: {fileID: 0}
   characterPrefab: {fileID: 2678318222443868263, guid: 3fc7f75bd93147c48bc57b29e36e43d8, type: 3}
-  weaponPrefab: {fileID: 919132149155446097, guid: 6ea66effb45b6fd43af49b8a98ed930a, type: 3}
+  weaponPrefab: {fileID: 1030230564904803585, guid: 233413606df8bcc4c9b219110c0e4132, type: 3}
   weaponGripPosition: {x: 0, y: 0, z: 0}
   weaponGripEuler: {x: 0, y: 0, z: 0}
   weaponLength: 1.3

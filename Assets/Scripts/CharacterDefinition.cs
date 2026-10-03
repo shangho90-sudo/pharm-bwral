@@ -11,7 +11,7 @@ namespace PharmaBrawl
         public AttackKind kind;
         public Color color = Color.red;
         public float maxHp = 3000, speed = 5, damage = 400, attackInterval = .7f, range = 9;
-        public float projectileSpeed = 15, skillCooldown = 9, ultimateRequirement = 5000;
+        public float projectileSpeed = 15, skillCooldown = 6, ultimateRequirement = 2800;
         public AudioClip ultimateVoice;
         public GameObject characterPrefab, weaponPrefab;
         public Vector3 weaponGripPosition, weaponGripEuler;

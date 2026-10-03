@@ -16,8 +16,8 @@ MonoBehaviour:
   role: "\uC9C0\uC18D \uD53C\uD574"
   voiceLine: "\uB0B4 \uD2F0\uBAA8 \uB9DB \uC880 \uBD10\uB77C!"
   attackDescription: "\uBCF4\uB77C \uB3C5\uC131 \uC54C\uC57D + \uC9C0\uC18D \uD53C\uD574"
-  skillDescription: "5\uCD08 \uB3C5 \uC9C0\uC5ED"
-  ultimateDescription: "8\uCD08 \uB3C5\uAD6C\uB984 + \uC774\uB3D9\uC18D\uB3C4 \uAC10\uC18C"
+  skillDescription: "4\uCD08 \uB3C5 \uC9C0\uC5ED"
+  ultimateDescription: "5\uCD08 \uB3C5\uAD6C\uB984 + \uC774\uB3D9\uC18D\uB3C4 \uAC10\uC18C"
   kind: 9
   color: {r: 0.72, g: 0.28, b: 0.88, a: 1}
   maxHp: 3000
@@ -26,11 +26,11 @@ MonoBehaviour:
   attackInterval: 0.75
   range: 9
   projectileSpeed: 16
-  skillCooldown: 9
-  ultimateRequirement: 4000
+  skillCooldown: 8
+  ultimateRequirement: 3640
   ultimateVoice: {fileID: 0}
   characterPrefab: {fileID: 4883637322888111239, guid: 3fa85a472666b8e4baf8965241b1da14, type: 3}
-  weaponPrefab: {fileID: 919132149155446097, guid: 85f884968a717a74f85bbe9555805669, type: 3}
+  weaponPrefab: {fileID: 1584448538260971620, guid: 93c0d262568248948b695ff0bac49f80, type: 3}
   weaponGripPosition: {x: 0, y: 0, z: 0}
   weaponGripEuler: {x: 0, y: 0, z: 0}
   weaponLength: 1.3
